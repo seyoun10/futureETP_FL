@@ -20,6 +20,7 @@
 | 기기 설정 저장 | `shared_preferences` 2.5.6(`SharedPreferencesWithCache`) | FL-008, FL-019. 언어·등락 색(D-073) |
 | 시각 | `clock` 1.1.3 | FL-022. 자동 새로고침 시각을 테스트의 가짜 시간과 맞춘다 |
 | 기기 시간대 | `flutter_timezone` 5.1.1 | FL-023. IANA 이름(D-084) |
+| 실행 화면 | `flutter_native_splash` 2.4.8(dev) | 검정 배경 + RN `splash-icon.png` 76pt. `dart run flutter_native_splash:create`가 네이티브 파일을 만든다 |
 | QR | `mobile_scanner` 7.5.0 | FL-009. B-b 접근 키 QR(D-078) |
 | i18n | `flutter_localizations` + `intl` 0.20.3(SDK 고정) + gen-l10n | FL-009. ko 기준, en |
 | 푸시 | Android `firebase_messaging` 17.1.0 + `firebase_core` 5.2.0, iOS APNs 토큰 방식은 5단계 | FL-011(검토중) |

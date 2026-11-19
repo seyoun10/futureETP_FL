@@ -33,3 +33,4 @@
 - [x] 숫자·날짜 포맷(RN `formatNumber`·`formatDateTime`과 같은 결과) 단위 테스트 (FL-021, `formatAmount`도 함께)
 - [x] 공용 조회 UI: 기준 시각 줄(freshness)·로딩/오류/빈 상태 분기·`nextUpdateAt` + 1분 자동 새로고침·앱 복귀 재조회 (D-048, D-075) (FL-022)
 - [x] 앱 실행 때 시간대 PATCH (D-084), 세로 잠금·[⟲] 가로 전환 (D-076) (FL-023, FL-024. [⟲] 버튼은 C-a와 함께)
+- [x] 실행 화면(splash) 검정 배경·아이콘(RN `splash-icon.png` 76pt, `flutter_native_splash`. Android 첫 프레임 전 바탕도 검정)

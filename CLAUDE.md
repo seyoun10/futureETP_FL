@@ -90,5 +90,6 @@ Flutter SDK는 `~/development/flutter`(stable, PATH는 `~/.zshrc`).
 - `./tool/sync_contract.sh`: 원본 계약 스키마를 `test/contract/schemas/`로 복사(원본이 바뀌어 계약 테스트의 복사본 비교가 실패할 때, FL-017)
 - `dart fix --apply`: lint 자동 수정(Dart 3.14 생성자 표기 `const new(...)` 등)
 - `dart run flutter_launcher_icons`: 앱 아이콘 다시 만들기(`assets/icon`)
+- `dart run flutter_native_splash:create`: 실행 화면 다시 만들기(`assets/splash`, 설정은 `pubspec.yaml`)
 - dev 서버 실행은 `../futureETP`에서 `npm run dev -w apps/server`(port 3000)
 - 에뮬레이터에 RN dev 앱이 깔려 있으면 같은 앱 ID라 서명 충돌로 설치되지 않는다(FL-002). RN 앱을 지우거나 다른 AVD·시뮬레이터를 쓴다
