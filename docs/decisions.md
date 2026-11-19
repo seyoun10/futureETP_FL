@@ -120,3 +120,14 @@
 - 결정: GitHub `seyoun10/futureETP_FL`(public, RN 저장소와 같음). `.github/workflows/check.yml`이 push(main)·PR마다 Ubuntu에서 Flutter 3.50.0으로 `./tool/check.sh`를 돌린다. 앱 빌드(Android·iOS)는 CI에서 하지 않는다.
 - 근거: 개인 앱이고 설치는 로컬 빌드(D-039 대응)라 빌드 산출물이 필요 없다. 검사만 돌리면 Linux 러너 하나로 충분하다.
 - 영향: 로컬 Flutter를 올리면 워크플로의 `flutter-version`도 함께 올린다. 커밋된 파일에 비밀값을 두지 않는다(env/dev.json·google-services.json·서명 파일은 .gitignore).
+
+## FL-015: installation ID와 보안 저장소 옵션
+- 날짜: 2026-11-19
+- 상태: 확정
+- 맥락: D-120의 installation ID(첫 실행 UUID)와 D-044 접근 키를 `flutter_secure_storage`에 둔다. RN은 `expo-secure-store` 동기 읽기 + `Math.random` UUID였고, Android 자동 백업에서 SecureStore 값을 뺐다.
+- 결정:
+  - 저장소 인스턴스는 `lib/core/storage/secure_storage.dart`의 `secureStorageProvider` 하나. iOS `KeychainAccessibility.first_unlock_this_device`(백업으로 다른 기기에 옮겨지지 않음), Android는 기본 cipher.
+  - Android `allowBackup="false"`. 복원된 암호문은 읽을 수 없고, 같은 installation ID가 두 기기에 생기지 않게 한다.
+  - `DeviceIdStore`(`lib/core/api/device_id.dart`)가 처음 부를 때 읽고, 없거나 UUID v4가 아니면 `Random.secure()`로 만들어 저장한다. 읽기·쓰기 실패는 이번 실행만 만든 값을 쓴다(RN과 같음). Flutter 저장소는 비동기라 값은 `Future`로 메모리에 둔다.
+- 근거: 별도 uuid 패키지 없이 `dart:math`로 충분하다. 백업 제외 대상이 보안 저장소뿐인데 표시 설정(shared_preferences)도 복원할 가치가 작아 백업 전체를 끄는 편이 단순하다.
+- 영향: 앱을 지웠다 다시 깔면 Android는 새 기기, iOS는 Keychain이 남아 같은 기기일 수 있다(RN과 같음).

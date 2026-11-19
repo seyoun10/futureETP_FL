@@ -22,3 +22,6 @@
 - [x] dev 변형이 로컬 dev 서버 `GET /v1/health`를 부르는 최소 화면으로 연결 확인
   - 결과(2026-11-19): flavor는 FL-012, lint·import 방향 검사는 FL-010, material_ui는 FL-013. dev 변형이 iOS 시뮬레이터·Android 에뮬레이터에서 로컬 dev 서버 health 응답을 보였다
 - [x] (선택) 원격 저장소·CI(GitHub Actions에서 `./tool/check.sh`) (2026-11-19, FL-014)
+
+## 3. 공통 기반
+- [x] installation ID(첫 실행 UUID) 생성·보안 저장소 보관 (D-120, FL-015)

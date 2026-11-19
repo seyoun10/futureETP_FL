@@ -1,7 +1,7 @@
 # Architecture
 
 > Flutter 앱의 구조. API 규약·화면 동작은 원본(`../futureETP/docs/architecture.md`·`wireframes/screens.md`)을 따르고, 여기에는 이 앱의 구조와 대응만 적는다.
-> 디렉터리는 계획 구조다. 2단계 현재 있는 것은 `app/app.dart`, `core/config`, `core/api`(health만), `features/dev_health`(임시), `l10n`이다.
+> 디렉터리는 계획 구조다. 현재 있는 것은 `app/app.dart`, `core/config`, `core/api`, `core/storage`, `features/dev_health`(임시), `l10n`이다.
 
 ## 디렉터리 구조
 
@@ -19,6 +19,7 @@ lib/
 │  ├─ charts/                    CustomPainter 차트·뷰포트(핀치·드래그)
 │  ├─ widgets/                   공용 UI(ScreenHeader, FreshnessLine, QueryStateView, SegmentedControl)
 │  ├─ settings/                  기기 UI 설정 저장(언어·등락 색)
+│  ├─ storage/                   보안 저장소 인스턴스(FL-015)
 │  ├─ theme/                     테마 토큰(다크 전용), 등락 색
 │  ├─ push/                      토큰 등록, 알림 탭 이동
 │  └─ util/                      숫자·날짜 포맷, 햅틱, 실패 Alert
