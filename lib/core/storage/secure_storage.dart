@@ -5,10 +5,12 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 ///
 /// iOS는 이 기기에서 첫 잠금 해제 뒤 읽을 수 있고 백업으로 다른 기기에 옮겨지지 않는다.
 /// Android는 자동 백업을 끈다(`allowBackup="false"`, 복원된 암호문은 읽을 수 없음).
-final secureStorageProvider = Provider<FlutterSecureStorage>(
-  (ref) => const FlutterSecureStorage(
-    iOptions: IOSOptions(
-      accessibility: KeychainAccessibility.first_unlock_this_device,
-    ),
+const appSecureStorage = FlutterSecureStorage(
+  iOptions: IOSOptions(
+    accessibility: KeychainAccessibility.first_unlock_this_device,
   ),
+);
+
+final secureStorageProvider = Provider<FlutterSecureStorage>(
+  (ref) => appSecureStorage,
 );

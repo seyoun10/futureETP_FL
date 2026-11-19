@@ -3,9 +3,11 @@ import 'dart:convert';
 
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:futureetp/core/api/access_key.dart';
 import 'package:futureetp/core/api/app_error.dart';
 import 'package:futureetp/core/api/device_id.dart';
 import 'package:futureetp/core/api/health.dart';
+import 'package:futureetp/core/api/models/settings.dart';
 import 'package:futureetp/core/config/app_config.dart';
 
 /// 접근 키를 읽는 곳(D-072). 없으면 null.
@@ -58,6 +60,17 @@ class ApiClient {
     '/health',
     Health.fromJson,
     auth: false,
+    cancelToken: cancelToken,
+  );
+
+  /// `GET /v1/settings`. [token]을 주면 저장 전 키를 확인한다(D-044, D-081).
+  Future<DeviceSettings> getSettings({
+    String? token,
+    CancelToken? cancelToken,
+  }) => request(
+    '/settings',
+    (data) => DeviceSettings.fromJson(data! as Map<String, dynamic>),
+    token: token,
     cancelToken: cancelToken,
   );
 
@@ -195,13 +208,13 @@ class ApiClient {
   }
 }
 
-/// 접근 키는 지금 dev 변형의 `DEV_API_TOKEN`만 쓴다. B-b 항목에서 보안 저장소 키로 바꾼다(D-077).
+/// 접근 키는 [accessKeyProvider]의 메모리 값을 요청 때마다 읽는다(키를 바꿔도 client는 그대로).
 final apiClientProvider = Provider<ApiClient>((ref) {
   final config = ref.watch(appConfigProvider);
   final deviceIds = ref.watch(deviceIdStoreProvider);
   return ApiClient.forConfig(
     config,
-    accessToken: () async => config.devApiToken,
+    accessToken: () async => ref.read(accessKeyProvider).key,
     deviceId: deviceIds.get,
   );
 });
