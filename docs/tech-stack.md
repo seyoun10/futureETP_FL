@@ -22,6 +22,7 @@
 | i18n | `flutter_localizations` + `intl` 0.20.3(SDK 고정) + gen-l10n | FL-009. ko 기준, en |
 | 푸시 | Android `firebase_messaging` 17.1.0 + `firebase_core` 5.2.0, iOS APNs 토큰 방식은 5단계 | FL-011(검토중) |
 | 햅틱 | `HapticFeedback`(Flutter 기본) | D-109·D-138·D-139 |
+| CI | GitHub Actions `check.yml`(ubuntu, `subosito/flutter-action` v2, Flutter 3.50.0) | FL-014. 검사만, 앱 빌드 없음 |
 | 테스트 / lint | `flutter_test`·`integration_test` / `very_good_analysis` 11.0.0 | FL-010. import 방향 검사는 2단계 |
 
 ## RN 스택과의 대응

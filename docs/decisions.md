@@ -113,3 +113,10 @@
 - 결정: 앱 코드는 `package:material_ui/material_ui.dart`를 쓴다. 문구 delegate는 `AppLocalizations.delegate` + `material_ui`의 `GlobalMaterialLocalizations.delegates`(`lib/app/app.dart`의 `appLocalizationsDelegates`). `flutter_localizations`는 gen-l10n 생성 코드가 import해서 의존성으로만 둔다.
 - 근거: `flutter_localizations`의 delegate를 쓰면 `material_ui` 위젯이 ko 문구를 찾지 못한다(위젯 테스트로 확인).
 - 영향: `package:flutter/material.dart`에 기대는 외부 패키지(차트·날짜 피커 등)는 `MaterialUiCompatibilityBridge`가 필요할 수 있다. 4단계 차트 스파이크에서 확인.
+
+## FL-014: 원격 저장소와 CI
+- 날짜: 2026-11-19
+- 상태: 확정 (사용자 선택)
+- 결정: GitHub `seyoun10/futureETP_FL`(public, RN 저장소와 같음). `.github/workflows/check.yml`이 push(main)·PR마다 Ubuntu에서 Flutter 3.50.0으로 `./tool/check.sh`를 돌린다. 앱 빌드(Android·iOS)는 CI에서 하지 않는다.
+- 근거: 개인 앱이고 설치는 로컬 빌드(D-039 대응)라 빌드 산출물이 필요 없다. 검사만 돌리면 Linux 러너 하나로 충분하다.
+- 영향: 로컬 Flutter를 올리면 워크플로의 `flutter-version`도 함께 올린다. 커밋된 파일에 비밀값을 두지 않는다(env/dev.json·google-services.json·서명 파일은 .gitignore).

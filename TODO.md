@@ -10,9 +10,6 @@
 ## 1. 스택 확정
 - [ ] 차트 방식은 2단계 뒤 C-a 스파이크(아래 4단계 첫 항목)로 정한다
 
-## 2. 스캐폴딩
-- [ ] (선택) 원격 저장소·CI(GitHub Actions에서 `./tool/check.sh`)
-
 ## 3. 공통 기반
 - [ ] API client: 헤더(Bearer·`X-Device-Id`), 타임아웃 15초, 봉투 디코딩, `AppError`, 재시도 규칙 (D-042, D-072)
 - [ ] 응답 모델: `../futureETP/packages/shared/contract/schemas/*.json`과 맞춘 모델(손으로 또는 생성 도구) + 계약 테스트(실제 dev 서버 응답을 저장한 예시를 모델로 디코딩하고, 같은 예시가 JSON Schema를 통과하는지) (D-142)

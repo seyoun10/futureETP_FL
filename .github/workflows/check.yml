@@ -1,0 +1,28 @@
+# 커밋 전 검사(./tool/check.sh)를 push·PR마다 다시 돌린다. 앱 빌드는 하지 않는다(FL-014).
+name: check
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+      # 로컬 SDK(docs/tech-stack.md)와 같은 버전. 로컬을 올리면 여기도 올린다
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: 3.50.0
+          cache: true
+      - run: flutter --disable-analytics
+      - run: flutter pub get
+      - run: ./tool/check.sh
