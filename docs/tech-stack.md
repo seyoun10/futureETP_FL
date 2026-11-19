@@ -4,7 +4,7 @@
 > 결정 근거는 `decisions.md`(FL-xxx)에 적고 여기에는 결과만 적는다. 버전은 확정할 때 웹 검색으로 최신 안정판을 확인하고 출처 날짜를 함께 적는다.
 > 서버·DB·배치는 `../futureETP/docs/tech-stack.md`(공용).
 
-상태: 확정 (2026-11-19). 차트만 4단계 스파이크 뒤 확정, iOS 푸시는 5단계
+상태: 확정 (2026-11-19). iOS 푸시는 5단계
 
 | 영역 | 후보 / 선택 | 메모 |
 |---|---|---|
@@ -15,7 +15,7 @@
 | 내비게이션 | `go_router` 18.1.4 | FL-005. C 하단 탭은 `StatefulShellRoute.indexedStack` |
 | HTTP | `dio` 5.11.1 | FL-006. 재시도는 D-072대로 직접 구현 |
 | JSON 모델 | `freezed` 4.0.3·`freezed_annotation` 3.1.0·`json_serializable` 6.15.2·`json_annotation` 4.12.0·`build_runner` 2.17.1 | FL-007. 계약 테스트 `json_schema` 5.2.2(draft 2020-12) |
-| 차트 | 미정: `CustomPainter` 직접 구현(후보), `fl_chart` 1.3.1 검토 | 4단계 C-a 스파이크로 정한다 |
+| 차트 | `CustomPainter` 직접 구현(`lib/core/charts`) | FL-025. `fl_chart`는 log y축이 없어 쓰지 않는다 |
 | 보안 저장소 | `flutter_secure_storage` 11.2.0 | FL-008. 접근 키(D-044)·installation ID, Android minSdk 24 |
 | 기기 설정 저장 | `shared_preferences` 2.5.6(`SharedPreferencesWithCache`) | FL-008, FL-019. 언어·등락 색(D-073) |
 | 시각 | `clock` 1.1.3 | FL-022. 자동 새로고침 시각을 테스트의 가짜 시간과 맞춘다 |

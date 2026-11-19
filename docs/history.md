@@ -14,6 +14,7 @@
 
 ## 1. 스택 확정
 - [x] `docs/tech-stack.md`의 후보를 하나씩 정한다(2026-11-19, FL-004~FL-010 확정, FL-011 푸시는 iOS만 5단계로 남김). 버전은 pub.dev API로 확인
+- [x] 차트 방식은 2단계 뒤 C-a 스파이크(4단계 첫 항목)로 정한다 (2026-11-19, `CustomPainter` 직접 구현, FL-025)
 
 ## 2. 스캐폴딩
 - [x] 프로젝트 생성, 앱 ID `io.github.seyoon.futureetp`·dev `.dev` 두 변형, 앱 이름·아이콘(RN `apps/mobile/assets` 재사용)
@@ -34,3 +35,6 @@
 - [x] 공용 조회 UI: 기준 시각 줄(freshness)·로딩/오류/빈 상태 분기·`nextUpdateAt` + 1분 자동 새로고침·앱 복귀 재조회 (D-048, D-075) (FL-022)
 - [x] 앱 실행 때 시간대 PATCH (D-084), 세로 잠금·[⟲] 가로 전환 (D-076) (FL-023, FL-024. [⟲] 버튼은 C-a와 함께)
 - [x] 실행 화면(splash) 검정 배경·아이콘(RN `splash-icon.png` 76pt, `flutter_native_splash`. Android 첫 프레임 전 바탕도 검정. iOS 시뮬레이터·Android 에뮬레이터 API 37에서 확인)
+
+## 4. 화면 수직 슬라이스
+- [x] C-a 차트 스파이크: 봉 756개 + 이평선·rare-level 밴드, 핀치·드래그·십자선, 가장 과거 봉이 보이면 이전 3년 이어 받기에서 범위 유지, 60fps 이상 (D-056, D-087, D-104, D-106) → 차트 방식 결정 (2026-11-19, FL-025. Android 에뮬레이터 API 37 `-gpu host` profile 빌드로 측정, iOS·실기기는 설치 때)
