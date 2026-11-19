@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:futureetp/core/theme/tokens.dart';
 import 'package:futureetp/l10n/app_localizations.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
@@ -62,7 +63,7 @@ class _QrScannerState extends State<QrScanner> {
                 controller: _controller,
                 onDetect: _onDetect,
                 placeholderBuilder: (context) =>
-                    const ColoredBox(color: Colors.black),
+                    const ColoredBox(color: AppColors.background),
                 // 권한 거부·카메라 없음: 닫고 붙여넣기 안내. 그리는 중이라 다음 프레임에 알린다.
                 errorBuilder: (context, error) {
                   if (!_reportedUnavailable) {
@@ -71,7 +72,7 @@ class _QrScannerState extends State<QrScanner> {
                       (_) => widget.onUnavailable(),
                     );
                   }
-                  return const ColoredBox(color: Colors.black);
+                  return const ColoredBox(color: AppColors.background);
                 },
               ),
             ),

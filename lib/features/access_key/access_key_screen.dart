@@ -5,6 +5,7 @@ import 'package:futureetp/core/api/access_key.dart';
 import 'package:futureetp/core/api/api_client.dart';
 import 'package:futureetp/core/api/app_error.dart';
 import 'package:futureetp/core/api/error_text.dart';
+import 'package:futureetp/core/theme/tokens.dart';
 import 'package:futureetp/features/access_key/qr_scanner.dart';
 import 'package:futureetp/l10n/app_localizations.dart';
 import 'package:go_router/go_router.dart';
@@ -126,10 +127,10 @@ class _AccessKeyScreenState extends ConsumerState<AccessKeyScreen> {
     return Scaffold(
       appBar: AppBar(title: Text(l10n.accessKeyTitle)),
       body: ListView(
-        padding: const EdgeInsets.all(24),
+        padding: const EdgeInsets.all(AppSpacing.xl),
         children: [
           Text(l10n.accessKeyGuide),
-          const SizedBox(height: 16),
+          const SizedBox(height: AppSpacing.lg),
           if (_scanning)
             QrScanner(
               onScanned: _onScanned,
@@ -150,7 +151,7 @@ class _AccessKeyScreenState extends ConsumerState<AccessKeyScreen> {
                     }),
               child: Text(l10n.accessKeyScanQr),
             ),
-          const SizedBox(height: 16),
+          const SizedBox(height: AppSpacing.lg),
           TextField(
             key: const Key('access-key-input'),
             controller: _input,
@@ -161,11 +162,10 @@ class _AccessKeyScreenState extends ConsumerState<AccessKeyScreen> {
             enableSuggestions: false,
             decoration: InputDecoration(
               hintText: l10n.accessKeyPastePlaceholder,
-              border: const OutlineInputBorder(),
             ),
             onSubmitted: (_) => canSubmit ? _submit() : null,
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: AppSpacing.lg),
           FilledButton.tonal(
             onPressed: canSubmit ? _submit : null,
             child: _pending
@@ -179,7 +179,7 @@ class _AccessKeyScreenState extends ConsumerState<AccessKeyScreen> {
                 : Text(l10n.accessKeySubmit),
           ),
           if (error != null) ...[
-            const SizedBox(height: 16),
+            const SizedBox(height: AppSpacing.lg),
             Text(
               error,
               key: const Key('access-key-error'),

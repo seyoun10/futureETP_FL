@@ -20,7 +20,7 @@ lib/
 │  ├─ widgets/                   공용 UI(ScreenHeader, FreshnessLine, QueryStateView, SegmentedControl)
 │  ├─ settings/                  기기 UI 설정 저장(언어·등락 색, FL-019)
 │  ├─ storage/                   보안 저장소 인스턴스(FL-015)
-│  ├─ theme/                     테마 토큰(다크 전용), 등락 색
+│  ├─ theme/                     테마 토큰(다크 전용), ThemeData, 등락 색(FL-020)
 │  ├─ push/                      토큰 등록, 알림 탭 이동
 │  └─ util/                      숫자·날짜 포맷, 햅틱, 실패 Alert
 └─ l10n/                         app_ko.arb, app_en.arb, 생성 코드 app_localizations*.dart

@@ -187,3 +187,14 @@
 - 근거: RN이 동기 저장소를 고른 이유(언어·색 깜빡임, D-030)를 그대로 지킨다. 저장 값이 작아 캐시 비용이 없다.
   - iOS 권한 문구는 `ios/Runner/{ko,en}.lproj/InfoPlist.strings`(기기 언어를 따름, 앱 안 언어와 따로, D-078 보충). Info.plist의 영어 문구는 strings가 없는 언어의 기본이다.
 - 영향: 테스트는 `test/helpers/display_store.dart`(메모리 플랫폼 저장소, dev 의존성 `shared_preferences_platform_interface`).
+
+## FL-020: 테마 토큰과 등락 색 팔레트
+- 날짜: 2026-11-19
+- 상태: 확정
+- 맥락: D-031·D-073(RN `src/theme/tokens.ts`·`upDownColor.ts`)을 옮긴다. Material 위젯은 `ColorScheme`에서 색을 읽는다.
+- 결정:
+  - 토큰은 `lib/core/theme/tokens.dart`의 `AppColors`·`ChartColors`·`AppSpacing`·`AppFontSize`·`AppRadius`·`AppSize`(값은 RN과 같음). 화면·차트는 숫자·색을 직접 쓰지 않는다.
+  - `buildAppTheme()`(`app_theme.dart`)가 토큰을 다크 `ColorScheme`에 넣는다. RN처럼 버튼은 `surfaceSelected` 바탕(primary·secondaryContainer), 배경은 검정(surface), 카드·입력 칸은 `surface`(surfaceContainer*). 입력 칸은 테두리 없이 채움, 버튼 최소 높이 44.
+  - 등락 색은 `UpDownPalette.kr`·`.us` const 객체와 `changeColor`·`changePairColor`(반올림해 보이는 값으로 판단, RN 테스트와 같은 경우), 화면은 `upDownPaletteProvider`로 읽는다. 스타일이 같으면 같은 객체다.
+- 근거: Material 기본 색(보라 계열 seed)이 섞이지 않게 scheme 전체를 토큰으로 채운다.
+- 영향: B-b 화면을 iOS 시뮬레이터에서 확인했다(검정 배경·보라 버튼·회색 입력 칸). `changePctDecimals`는 숫자 포맷 항목에서 포맷 함수 쪽으로 옮긴다.

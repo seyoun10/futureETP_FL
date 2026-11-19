@@ -3,6 +3,7 @@ import 'package:futureetp/app/router.dart';
 import 'package:futureetp/core/api/access_key.dart';
 import 'package:futureetp/core/settings/device_settings.dart';
 import 'package:futureetp/core/settings/display_settings.dart';
+import 'package:futureetp/core/theme/app_theme.dart';
 import 'package:futureetp/l10n/app_localizations.dart';
 import 'package:material_ui/material_ui.dart';
 
@@ -13,7 +14,7 @@ const appLocalizationsDelegates = <LocalizationsDelegate<dynamic>>[
   ...GlobalMaterialLocalizations.delegates,
 ];
 
-/// 앱 루트. 테마 토큰은 3단계 테마 항목에서 넣는다.
+/// 앱 루트.
 class App extends ConsumerWidget {
   const new({super.key});
 
@@ -26,7 +27,7 @@ class App extends ConsumerWidget {
     return MaterialApp.router(
       onGenerateTitle: (context) => 'futureETP',
       // 다크 전용(D-031)
-      theme: ThemeData(brightness: Brightness.dark),
+      theme: buildAppTheme(),
       // 앱 안 언어 설정을 따른다(기본은 기기 언어, D-033, D-073)
       locale: ref.watch(displaySettingsProvider.select((s) => s.locale)),
       localizationsDelegates: appLocalizationsDelegates,
