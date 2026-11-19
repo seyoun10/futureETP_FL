@@ -133,6 +133,126 @@ abstract class AppLocalizations {
   /// In ko, this message translates to:
   /// **'다시 시도'**
   String get retry;
+
+  /// No description provided for @accessKeyTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'접근 키'**
+  String get accessKeyTitle;
+
+  /// No description provided for @accessKeyGuide.
+  ///
+  /// In ko, this message translates to:
+  /// **'서버 접근 키를 넣어 주세요. Mac에서 키 스크립트가 띄운 QR을 읽거나 키를 붙여넣으세요.'**
+  String get accessKeyGuide;
+
+  /// No description provided for @accessKeyPastePlaceholder.
+  ///
+  /// In ko, this message translates to:
+  /// **'키 붙여넣기'**
+  String get accessKeyPastePlaceholder;
+
+  /// No description provided for @accessKeySubmit.
+  ///
+  /// In ko, this message translates to:
+  /// **'확인'**
+  String get accessKeySubmit;
+
+  /// No description provided for @accessKeyVerifying.
+  ///
+  /// In ko, this message translates to:
+  /// **'확인 중'**
+  String get accessKeyVerifying;
+
+  /// No description provided for @accessKeyBadFormat.
+  ///
+  /// In ko, this message translates to:
+  /// **'키 형식이 맞지 않습니다.'**
+  String get accessKeyBadFormat;
+
+  /// No description provided for @accessKeyRejected.
+  ///
+  /// In ko, this message translates to:
+  /// **'키가 맞지 않습니다.'**
+  String get accessKeyRejected;
+
+  /// No description provided for @accessKeyScanQr.
+  ///
+  /// In ko, this message translates to:
+  /// **'QR 읽기'**
+  String get accessKeyScanQr;
+
+  /// No description provided for @accessKeyScannerLabel.
+  ///
+  /// In ko, this message translates to:
+  /// **'QR 카메라'**
+  String get accessKeyScannerLabel;
+
+  /// No description provided for @accessKeyNotKeyQr.
+  ///
+  /// In ko, this message translates to:
+  /// **'접근 키 QR이 아닙니다.'**
+  String get accessKeyNotKeyQr;
+
+  /// No description provided for @accessKeyCameraUnavailable.
+  ///
+  /// In ko, this message translates to:
+  /// **'카메라를 쓸 수 없습니다. 키를 붙여넣어 주세요.'**
+  String get accessKeyCameraUnavailable;
+
+  /// No description provided for @cancel.
+  ///
+  /// In ko, this message translates to:
+  /// **'취소'**
+  String get cancel;
+
+  /// No description provided for @errorUnauthorized.
+  ///
+  /// In ko, this message translates to:
+  /// **'접근 키가 없거나 맞지 않습니다.'**
+  String get errorUnauthorized;
+
+  /// No description provided for @errorRateLimited.
+  ///
+  /// In ko, this message translates to:
+  /// **'요청이 너무 많습니다. 잠시 뒤 다시 시도해 주세요.'**
+  String get errorRateLimited;
+
+  /// No description provided for @errorValidationFailed.
+  ///
+  /// In ko, this message translates to:
+  /// **'입력값이 올바르지 않습니다.'**
+  String get errorValidationFailed;
+
+  /// No description provided for @errorNotFound.
+  ///
+  /// In ko, this message translates to:
+  /// **'데이터를 찾을 수 없습니다.'**
+  String get errorNotFound;
+
+  /// No description provided for @errorInternal.
+  ///
+  /// In ko, this message translates to:
+  /// **'서버에 문제가 생겼습니다. 잠시 뒤 다시 시도해 주세요.'**
+  String get errorInternal;
+
+  /// No description provided for @errorNetwork.
+  ///
+  /// In ko, this message translates to:
+  /// **'네트워크에 연결할 수 없습니다.'**
+  String get errorNetwork;
+
+  /// No description provided for @errorTimeout.
+  ///
+  /// In ko, this message translates to:
+  /// **'서버 응답이 늦습니다. 잠시 뒤 다시 시도해 주세요.'**
+  String get errorTimeout;
+
+  /// No description provided for @errorSchemaMismatch.
+  ///
+  /// In ko, this message translates to:
+  /// **'앱과 서버 버전이 맞지 않습니다. 앱을 업데이트해 주세요.'**
+  String get errorSchemaMismatch;
 }
 
 class _AppLocalizationsDelegate

@@ -159,3 +159,17 @@
   - 생성 파일(`*.g.dart`·`*.freezed.dart`)은 커밋한다(CI가 build_runner를 돌리지 않음, l10n과 같음).
 - 근거: 왕복 비교가 모델의 필드 누락·타입 변환 오류를 잡는다. 복사본 비교로 원본 변경을 놓치지 않는다.
 - 영향: 원본 계약이 바뀌면 `./tool/sync_contract.sh` → 모델 수정 → `dart run build_runner build` → fixture 다시 저장.
+
+## FL-018: 접근 키 B-b를 Riverpod·go_router로 옮긴 방법
+- 날짜: 2026-11-19
+- 상태: 확정
+- 맥락: D-044·D-077~D-079(RN: 동기 SecureStore 읽기 + zustand store, 루트 레이아웃이 스택 대신 B-b, TanStack 캐시 `onError`로 거절 표시, `expo-camera`)를 Flutter로 옮긴다. `flutter_secure_storage`는 비동기만 있다.
+- 결정:
+  - 저장된 키는 `main`에서 `runApp` 전에 한 번 읽어 `storedAccessKeyProvider`로 넣는다. 첫 프레임부터 키 유무가 정해져 로딩 분기가 없다. 상태는 `accessKeyProvider`(`AccessKeyNotifier`: `key`·`rejected`)이고 `lib/core/api/access_key.dart`에 둔다.
+  - `apiClientProvider`가 키를 watch한다. 새 키를 저장하면 client가 바뀌어 이것을 쓰는 조회가 모두 새 키로 다시 불린다(RN의 모든 query 무효화).
+  - 거절 표시는 `ProviderObserver`(`AuthErrorObserver`)가 모든 Provider 실패에서 `UNAUTHORIZED`를 받아 한다. 실패 알림 중에는 다른 Provider를 바꿀 수 없어 microtask로 미룬다. B-b의 새 키 확인은 Provider 밖(화면 상태)에서 불러 거절 표시에 들어가지 않는다(RN `checksNewKey`).
+  - 라우터는 `lib/app/router.dart`의 go_router. 키가 없으면 `redirect`로 B-b(스택의 처음이라 [←] 없음), `rejected`가 되면 라우터 Provider가 지금 화면 위에 B-b를 `push`한다. 저장하면 pop할 수 있으면 pop, 아니면 `/`로 간다. B-b를 떠나면(dispose) 거절 표시를 지운다.
+  - QR은 `mobile_scanner` 7.5.0의 화면 안 미리보기(`formats: [qrCode]`, Android MLKit 기본 bundled). 권한은 스캐너가 시작할 때 요청하고, 권한 거부·카메라 없음(`errorBuilder`)이면 닫고 붙여넣기 안내를 보인다. iOS `NSCameraUsageDescription`은 영어 기본 문구만(한국어 InfoPlist.strings는 i18n 항목).
+  - 에러 문구 `errorText(l10n, error)`는 `lib/core/api/error_text.dart`.
+- 근거: go_router `redirect`만으로 거절 이동까지 하면 스택이 바뀌어 [←]로 돌아갈 곳이 없다. 첫 실행 게이트는 redirect, 거절은 push로 나눠 RN 동작과 같게 했다.
+- 영향: 기기 확인(Android 에뮬레이터): 첫 화면 B-b·[←] 없음, 권한 거부 안내, 형식 오류, 서버 거절, 맞는 키 저장 → A, 재실행 때 바로 A. QR을 실제로 읽는 경우는 기기에서 아직 확인하지 않았다. mobile_scanner 때문에 Android SDK Platform 35가 빌드 때 자동 설치됐다.

@@ -208,13 +208,15 @@ class ApiClient {
   }
 }
 
-/// 접근 키는 [accessKeyProvider]의 메모리 값을 요청 때마다 읽는다(키를 바꿔도 client는 그대로).
+/// 접근 키가 바뀌면 client를 새로 만들어, 이것을 쓰는 조회가 모두 새 키로 다시 불린다
+/// (RN의 저장 뒤 모든 query 무효화, D-044). 거절 표시만 바뀌면 그대로다.
 final apiClientProvider = Provider<ApiClient>((ref) {
   final config = ref.watch(appConfigProvider);
   final deviceIds = ref.watch(deviceIdStoreProvider);
+  final key = ref.watch(accessKeyProvider.select((s) => s.key));
   return ApiClient.forConfig(
     config,
-    accessToken: () async => ref.read(accessKeyProvider).key,
+    accessToken: () async => key,
     deviceId: deviceIds.get,
   );
 });

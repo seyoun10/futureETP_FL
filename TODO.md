@@ -11,12 +11,12 @@
 - [ ] 차트 방식은 2단계 뒤 C-a 스파이크(아래 4단계 첫 항목)로 정한다
 
 ## 3. 공통 기반
-- [ ] 접근 키 B-b: 붙여넣기·QR(`futureetp-key:v1:` 접두사), `GET /v1/settings`로 확인 뒤 저장, 키 없으면 첫 화면이 B-b, `UNAUTHORIZED`면 어느 화면에서든 B-b + 거절 줄 (D-044, D-077~D-079)
-- [ ] i18n ko/en, 앱 안 언어 설정을 서버 기기 설정과 맞춤 (D-033, D-073, D-137)
+- [ ] i18n ko/en, 앱 안 언어 설정을 서버 기기 설정과 맞춤 (D-033, D-073, D-137). iOS 카메라 권한 문구 한국어(InfoPlist.strings, D-078 보충)
 - [ ] 테마 토큰(다크 전용)·등락 색 설정 저장 (D-031, D-073)
 - [ ] 공용 조회 UI: 기준 시각 줄(freshness)·로딩/오류/빈 상태 분기·`nextUpdateAt` + 1분 자동 새로고침·앱 복귀 재조회 (D-048, D-075)
 - [ ] 앱 실행 때 시간대 PATCH (D-084), 세로 잠금·[⟲] 가로 전환 (D-076)
-- [ ] 라우터(go_router)·첫 화면 분기를 넣고 2단계 임시 화면 `lib/features/dev_health`·관련 ARB 키(`devHealth*`)를 지운다
+- [ ] 2단계 임시 화면 `lib/features/dev_health`·관련 ARB 키(`devHealth*`)를 지운다(지금 `/` 자리, A 화면이 생기면. 라우터·첫 화면 분기는 FL-018에서 넣음)
+- [ ] 접근 키 QR 읽기를 실제 기기에서 확인(키 스크립트 QR, FL-018)
 - [ ] 실행 화면(splash) 검정 배경·아이콘(RN `splash-icon.png`, 지금은 Flutter 기본 흰 화면)과 iPad 전체 화면(`UIRequiresFullScreen`, RN `requireFullScreen`)
 - [ ] 숫자·날짜 포맷(RN `formatNumber`·`formatDateTime`과 같은 결과) 단위 테스트
 

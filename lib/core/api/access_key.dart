@@ -82,7 +82,8 @@ class AccessKeyNotifier extends Notifier<AccessKeyState> {
 
   /// B-b를 떠나면 지운다. 옛 키로 다시 거절되면 다시 B-b로 온다.
   void clearRejected() {
-    if (state.rejected) state = AccessKeyState(key: state.key);
+    // B-b dispose에서 미뤄 부르므로 앱(컨테이너)이 먼저 끝났을 수 있다
+    if (ref.mounted && state.rejected) state = AccessKeyState(key: state.key);
   }
 }
 

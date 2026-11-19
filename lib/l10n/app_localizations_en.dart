@@ -34,4 +34,69 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get retry => 'Retry';
+
+  @override
+  String get accessKeyTitle => 'Access key';
+
+  @override
+  String get accessKeyGuide =>
+      'Enter the server access key. Scan the QR shown by the key script on your Mac, or paste the key.';
+
+  @override
+  String get accessKeyPastePlaceholder => 'Paste key';
+
+  @override
+  String get accessKeySubmit => 'Confirm';
+
+  @override
+  String get accessKeyVerifying => 'Verifying';
+
+  @override
+  String get accessKeyBadFormat => 'The key format is invalid.';
+
+  @override
+  String get accessKeyRejected => 'The key was not accepted.';
+
+  @override
+  String get accessKeyScanQr => 'Scan QR';
+
+  @override
+  String get accessKeyScannerLabel => 'QR camera';
+
+  @override
+  String get accessKeyNotKeyQr => 'This QR is not an access key.';
+
+  @override
+  String get accessKeyCameraUnavailable =>
+      'The camera is unavailable. Paste the key instead.';
+
+  @override
+  String get cancel => 'Cancel';
+
+  @override
+  String get errorUnauthorized => 'The access key is missing or invalid.';
+
+  @override
+  String get errorRateLimited => 'Too many requests. Please try again shortly.';
+
+  @override
+  String get errorValidationFailed => 'The input is invalid.';
+
+  @override
+  String get errorNotFound => 'Data not found.';
+
+  @override
+  String get errorInternal =>
+      'Something went wrong on the server. Please try again shortly.';
+
+  @override
+  String get errorNetwork => 'Unable to connect to the network.';
+
+  @override
+  String get errorTimeout =>
+      'The server is taking too long. Please try again shortly.';
+
+  @override
+  String get errorSchemaMismatch =>
+      'The app and server versions do not match. Please update the app.';
 }

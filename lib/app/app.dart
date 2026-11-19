@@ -1,4 +1,5 @@
-import 'package:futureetp/features/dev_health/health_screen.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:futureetp/app/router.dart';
 import 'package:futureetp/l10n/app_localizations.dart';
 import 'package:material_ui/material_ui.dart';
 
@@ -9,17 +10,17 @@ const appLocalizationsDelegates = <LocalizationsDelegate<dynamic>>[
   ...GlobalMaterialLocalizations.delegates,
 ];
 
-/// 앱 루트. 라우터(go_router)·테마 토큰은 3단계에서 넣는다.
-class App extends StatelessWidget {
+/// 앱 루트. 테마 토큰은 3단계 테마 항목에서 넣는다.
+class App extends ConsumerWidget {
   const new({super.key});
 
   @override
-  Widget build(BuildContext context) => MaterialApp(
-    onGenerateTitle: (context) => AppLocalizations.of(context).devHealthTitle,
+  Widget build(BuildContext context, WidgetRef ref) => MaterialApp.router(
+    onGenerateTitle: (context) => 'futureETP',
     // 다크 전용(D-031)
     theme: ThemeData(brightness: Brightness.dark),
     localizationsDelegates: appLocalizationsDelegates,
     supportedLocales: AppLocalizations.supportedLocales,
-    home: const HealthScreen(),
+    routerConfig: ref.watch(routerProvider),
   );
 }
