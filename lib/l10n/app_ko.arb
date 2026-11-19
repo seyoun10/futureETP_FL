@@ -98,5 +98,22 @@
   "freshnessDelayed": "지연",
   "marketStateOpen": "장중",
   "marketStateClosed": "휴장",
-  "marketStateSettlementPending": "정산 대기"
+  "marketStateSettlementPending": "정산 대기",
+  "back": "뒤로",
+  "confirm": "확인",
+  "commodityName": "{code, select, GC{금} SI{은} CL{원유} NG{천연가스} other{{code}}}",
+  "@commodityName": {
+    "description": "원자재 이름. 원자재가 늘면 여기에 더한다",
+    "placeholders": {
+      "code": {
+        "type": "String"
+      }
+    }
+  },
+  "commodityListAlert": "알림 대상",
+  "commodityListNoTrade": "거래 없음",
+  "commodityListRefreshFailedTitle": "새로고침을 마치지 못했습니다",
+  "commodityListRefreshFailedMessage": "잠시 뒤 다시 당겨 주세요.",
+  "settingsTitle": "설정",
+  "settingsAlertOffBadge": "알림 꺼짐"
 }

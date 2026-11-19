@@ -5,16 +5,25 @@ import 'dart:typed_data';
 import 'package:dio/dio.dart';
 
 /// 가짜 응답. [error]가 있으면 던지고, [hang]이면 취소될 때까지 응답하지 않는다.
+/// [delay]만큼 늦게 응답한다(위젯 테스트의 가짜 시간).
 class FakeResponse {
-  const new({this.status = 200, this.body = '', this.error, this.hang = false});
+  const new({
+    this.status = 200,
+    this.body = '',
+    this.error,
+    this.hang = false,
+    this.delay,
+  });
 
   /// 봉투 JSON 응답.
   factory json(Object envelope, {int status = 200}) =>
       FakeResponse(status: status, body: jsonEncode(envelope));
 
   /// `{ success: true, data }`.
-  factory ok(Object? data) =>
-      FakeResponse.json({'success': true, 'data': data});
+  factory ok(Object? data, {Duration? delay}) => FakeResponse(
+    body: jsonEncode({'success': true, 'data': data}),
+    delay: delay,
+  );
 
   /// `{ success: false, error }`.
   factory fail(String code, int status) => FakeResponse.json({
@@ -26,6 +35,7 @@ class FakeResponse {
   final String body;
   final DioException? error;
   final bool hang;
+  final Duration? delay;
 }
 
 /// 요청마다 [handler]로 응답을 고르는 dio 어댑터. 받은 요청과 본문을 기록한다.
@@ -54,6 +64,7 @@ class FakeHttpAdapter implements HttpClientAdapter {
     final response = handler(options);
     if (response.error case final DioException error) throw error;
     if (response.hang) await Completer<void>().future;
+    if (response.delay case final delay?) await Future<void>.delayed(delay);
     return ResponseBody.fromString(response.body, response.status);
   }
 

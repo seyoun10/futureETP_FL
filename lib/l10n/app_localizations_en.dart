@@ -132,4 +132,41 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get marketStateSettlementPending => 'Settlement pending';
+
+  @override
+  String get back => 'Back';
+
+  @override
+  String get confirm => 'OK';
+
+  @override
+  String commodityName(String code) {
+    String _temp0 = intl.Intl.selectLogic(code, {
+      'GC': 'Gold',
+      'SI': 'Silver',
+      'CL': 'Crude Oil',
+      'NG': 'Natural Gas',
+      'other': '$code',
+    });
+    return '$_temp0';
+  }
+
+  @override
+  String get commodityListAlert => 'Alert target';
+
+  @override
+  String get commodityListNoTrade => 'No trade';
+
+  @override
+  String get commodityListRefreshFailedTitle => 'Couldn\'t finish refreshing';
+
+  @override
+  String get commodityListRefreshFailedMessage =>
+      'Pull down again in a moment.';
+
+  @override
+  String get settingsTitle => 'Settings';
+
+  @override
+  String get settingsAlertOffBadge => 'Alerts off';
 }

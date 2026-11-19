@@ -307,6 +307,60 @@ abstract class AppLocalizations {
   /// In ko, this message translates to:
   /// **'정산 대기'**
   String get marketStateSettlementPending;
+
+  /// No description provided for @back.
+  ///
+  /// In ko, this message translates to:
+  /// **'뒤로'**
+  String get back;
+
+  /// No description provided for @confirm.
+  ///
+  /// In ko, this message translates to:
+  /// **'확인'**
+  String get confirm;
+
+  /// 원자재 이름. 원자재가 늘면 여기에 더한다
+  ///
+  /// In ko, this message translates to:
+  /// **'{code, select, GC{금} SI{은} CL{원유} NG{천연가스} other{{code}}}'**
+  String commodityName(String code);
+
+  /// No description provided for @commodityListAlert.
+  ///
+  /// In ko, this message translates to:
+  /// **'알림 대상'**
+  String get commodityListAlert;
+
+  /// No description provided for @commodityListNoTrade.
+  ///
+  /// In ko, this message translates to:
+  /// **'거래 없음'**
+  String get commodityListNoTrade;
+
+  /// No description provided for @commodityListRefreshFailedTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'새로고침을 마치지 못했습니다'**
+  String get commodityListRefreshFailedTitle;
+
+  /// No description provided for @commodityListRefreshFailedMessage.
+  ///
+  /// In ko, this message translates to:
+  /// **'잠시 뒤 다시 당겨 주세요.'**
+  String get commodityListRefreshFailedMessage;
+
+  /// No description provided for @settingsTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'설정'**
+  String get settingsTitle;
+
+  /// No description provided for @settingsAlertOffBadge.
+  ///
+  /// In ko, this message translates to:
+  /// **'알림 꺼짐'**
+  String get settingsAlertOffBadge;
 }
 
 class _AppLocalizationsDelegate

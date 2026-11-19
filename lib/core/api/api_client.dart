@@ -7,6 +7,7 @@ import 'package:futureetp/core/api/access_key.dart';
 import 'package:futureetp/core/api/app_error.dart';
 import 'package:futureetp/core/api/device_id.dart';
 import 'package:futureetp/core/api/health.dart';
+import 'package:futureetp/core/api/models/commodities.dart';
 import 'package:futureetp/core/api/models/settings.dart';
 import 'package:futureetp/core/config/app_config.dart';
 
@@ -83,6 +84,13 @@ class ApiClient {
     _decodeSettings,
     method: ApiMethod.patch,
     body: patch.toJson(),
+    cancelToken: cancelToken,
+  );
+
+  /// `GET /v1/commodities`(A, D-085).
+  Future<CommodityList> getCommodities({CancelToken? cancelToken}) => request(
+    '/commodities',
+    (data) => CommodityList.fromJson(data! as Map<String, dynamic>),
     cancelToken: cancelToken,
   );
 

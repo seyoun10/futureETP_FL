@@ -128,4 +128,40 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get marketStateSettlementPending => '정산 대기';
+
+  @override
+  String get back => '뒤로';
+
+  @override
+  String get confirm => '확인';
+
+  @override
+  String commodityName(String code) {
+    String _temp0 = intl.Intl.selectLogic(code, {
+      'GC': '금',
+      'SI': '은',
+      'CL': '원유',
+      'NG': '천연가스',
+      'other': '$code',
+    });
+    return '$_temp0';
+  }
+
+  @override
+  String get commodityListAlert => '알림 대상';
+
+  @override
+  String get commodityListNoTrade => '거래 없음';
+
+  @override
+  String get commodityListRefreshFailedTitle => '새로고침을 마치지 못했습니다';
+
+  @override
+  String get commodityListRefreshFailedMessage => '잠시 뒤 다시 당겨 주세요.';
+
+  @override
+  String get settingsTitle => '설정';
+
+  @override
+  String get settingsAlertOffBadge => '알림 꺼짐';
 }

@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:futureetp/core/api/access_key.dart';
 import 'package:futureetp/features/access_key/access_key_screen.dart';
 import 'package:futureetp/features/chart_spike/chart_spike_screen.dart';
+import 'package:futureetp/features/commodity_list/commodity_list_screen.dart';
 import 'package:futureetp/features/dev_health/health_screen.dart';
 import 'package:go_router/go_router.dart';
 import 'package:material_ui/material_ui.dart';
@@ -11,6 +12,7 @@ import 'package:material_ui/material_ui.dart';
 /// 경로(RN Expo Router와 같은 경로, D-074).
 abstract final class AppRoutes {
   static const home = '/';
+  static const settings = '/settings';
   static const accessKey = '/settings/access-key';
 
   /// 4단계 차트 스파이크(dev). 스파이크가 끝나면 지운다.
@@ -30,9 +32,15 @@ final routerProvider = Provider<GoRouter>((ref) {
         ? AppRoutes.accessKey
         : null,
     routes: [
-      // A 원자재 목록 자리. 4단계 A 화면이 생기면 바꾼다.
       GoRoute(
         path: AppRoutes.home,
+        builder: (context, state) => CommodityListScreen(
+          onOpenSettings: () => unawaited(context.push(AppRoutes.settings)),
+        ),
+      ),
+      // B 설정 자리. B 화면이 생기면 바꾼다(지금은 서버 연결 확인·차트 스파이크 진입)
+      GoRoute(
+        path: AppRoutes.settings,
         builder: (context, state) => const HealthScreen(),
       ),
       GoRoute(

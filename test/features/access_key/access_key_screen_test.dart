@@ -13,7 +13,7 @@ import 'package:futureetp/core/config/app_config.dart';
 import 'package:futureetp/core/settings/device_settings.dart';
 import 'package:futureetp/core/settings/display_settings.dart';
 import 'package:futureetp/features/access_key/access_key_screen.dart';
-import 'package:futureetp/features/dev_health/health_screen.dart';
+import 'package:futureetp/features/commodity_list/commodity_list_screen.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -27,9 +27,12 @@ const _badKey = 'BADbadBADbadBADbadBADbadBADbadBADbadBADbad1';
 final Object? _settings = jsonDecode(
   File('test/contract/fixtures/settings.json').readAsStringSync(),
 );
+final Object? _commodities = jsonDecode(
+  File('test/contract/fixtures/commodities.json').readAsStringSync(),
+);
 
-/// 서버 흉내: `/settings`는 _goodKey만 받고, `/health`는 [healthStatus]로 응답한다.
-FakeHttpAdapter _server({int healthStatus = 200, bool offline = false}) =>
+/// 서버 흉내: `/settings`는 _goodKey만 받고, A의 `/commodities`는 [listStatus]로 응답한다.
+FakeHttpAdapter _server({int listStatus = 200, bool offline = false}) =>
     FakeHttpAdapter((req) {
       if (offline) {
         return FakeResponse(
@@ -41,11 +44,11 @@ FakeHttpAdapter _server({int healthStatus = 200, bool offline = false}) =>
       }
       final authorized = req.headers['Authorization'] == 'Bearer $_goodKey';
       return switch (req.path) {
-        '/health' when healthStatus == 401 => FakeResponse.fail(
+        '/commodities' when listStatus == 401 => FakeResponse.fail(
           'UNAUTHORIZED',
           401,
         ),
-        '/health' => FakeResponse.ok({'status': 'ok', 'commit': null}),
+        '/commodities' => FakeResponse.ok(_commodities),
         '/settings' when authorized => FakeResponse.ok(_settings),
         _ => FakeResponse.fail('UNAUTHORIZED', 401),
       };
@@ -109,7 +112,7 @@ void main() {
     await tester.pumpAndSettle();
     await _enter(tester, '  $_goodKey ');
 
-    expect(find.byType(HealthScreen), findsOneWidget);
+    expect(find.byType(CommodityListScreen), findsOneWidget);
     expect(await readStoredAccessKey(const FlutterSecureStorage()), _goodKey);
     // 확인 요청은 입력한 키로 보냈다
     expect(adapter.requests.first.headers['Authorization'], 'Bearer $_goodKey');
@@ -150,9 +153,7 @@ void main() {
   });
 
   testWidgets('저장된 키가 거절되면 B-b를 올리고, 새 키 없이 떠나면 표시를 지운다', (tester) async {
-    await tester.pumpWidget(
-      _app(_server(healthStatus: 401), storedKey: _badKey),
-    );
+    await tester.pumpWidget(_app(_server(listStatus: 401), storedKey: _badKey));
     await tester.pumpAndSettle();
 
     expect(find.byType(AccessKeyScreen), findsOneWidget);
@@ -161,9 +162,9 @@ void main() {
 
     await tester.tap(find.byType(BackButton));
     await tester.pumpAndSettle();
-    expect(find.byType(HealthScreen), findsOneWidget);
+    expect(find.byType(CommodityListScreen), findsOneWidget);
     final container = ProviderScope.containerOf(
-      tester.element(find.byType(HealthScreen)),
+      tester.element(find.byType(CommodityListScreen)),
     );
     expect(container.read(accessKeyProvider).rejected, isFalse);
     // 키는 지우지 않는다
@@ -171,14 +172,10 @@ void main() {
   });
 
   testWidgets('거절돼서 온 B-b에서 새 키를 저장하면 돌아가고 다시 조회한다', (tester) async {
-    var healthStatus = 401;
     final adapter = FakeHttpAdapter((req) {
       final authorized = req.headers['Authorization'] == 'Bearer $_goodKey';
       return switch (req.path) {
-        '/health' =>
-          healthStatus == 401
-              ? FakeResponse.fail('UNAUTHORIZED', 401)
-              : FakeResponse.ok({'status': 'ok', 'commit': 'abc'}),
+        '/commodities' when authorized => FakeResponse.ok(_commodities),
         '/settings' when authorized => FakeResponse.ok(_settings),
         _ => FakeResponse.fail('UNAUTHORIZED', 401),
       };
@@ -187,9 +184,8 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.byType(AccessKeyScreen), findsOneWidget);
 
-    healthStatus = 200;
     await _enter(tester, _goodKey);
     expect(find.byType(AccessKeyScreen), findsNothing);
-    expect(find.byKey(const Key('health-ok')), findsOneWidget);
+    expect(find.byKey(const Key('commodity-GC')), findsOneWidget);
   });
 }

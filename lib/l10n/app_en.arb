@@ -34,5 +34,14 @@
   "freshnessDelayed": "Delayed",
   "marketStateOpen": "Open",
   "marketStateClosed": "Closed",
-  "marketStateSettlementPending": "Settlement pending"
+  "marketStateSettlementPending": "Settlement pending",
+  "back": "Back",
+  "confirm": "OK",
+  "commodityName": "{code, select, GC{Gold} SI{Silver} CL{Crude Oil} NG{Natural Gas} other{{code}}}",
+  "commodityListAlert": "Alert target",
+  "commodityListNoTrade": "No trade",
+  "commodityListRefreshFailedTitle": "Couldn't finish refreshing",
+  "commodityListRefreshFailedMessage": "Pull down again in a moment.",
+  "settingsTitle": "Settings",
+  "settingsAlertOffBadge": "Alerts off"
 }
