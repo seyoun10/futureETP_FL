@@ -1,5 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:futureetp/core/charts/candle_painter.dart';
+import 'package:futureetp/core/charts/candle_chart.dart';
 import 'package:futureetp/core/charts/candle_series.dart';
 import 'package:futureetp/core/charts/chart_viewport.dart';
 import 'package:futureetp/core/theme/tokens.dart';
@@ -38,15 +38,21 @@ class _ChartSpikeScreenState extends ConsumerState<ChartSpikeScreen> {
     ChartViewport.latest(_series.length, _periods['6M']!),
   );
 
+  final _crosshair = ValueNotifier<int?>(null);
+
   @override
   void dispose() {
     _stats.dispose();
+    _crosshair.dispose();
     _viewport.dispose();
     super.dispose();
   }
 
-  void _period(int bars) =>
-      _viewport.value = ChartViewport.latest(_series.length, bars);
+  // 기간을 바꾸면 십자선도 지운다(screens.md C-a)
+  void _period(int bars) {
+    _viewport.value = ChartViewport.latest(_series.length, bars);
+    _crosshair.value = null;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -69,16 +75,12 @@ class _ChartSpikeScreenState extends ConsumerState<ChartSpikeScreen> {
               ),
             ),
             Expanded(
-              child: RepaintBoundary(
-                child: CustomPaint(
-                  key: const Key('chart-spike-canvas'),
-                  size: Size.infinite,
-                  painter: CandlePainter(
-                    series: _series,
-                    viewport: _viewport,
-                    palette: palette,
-                  ),
-                ),
+              child: CandleChart(
+                key: const Key('chart-spike-chart'),
+                series: _series,
+                viewport: _viewport,
+                crosshair: _crosshair,
+                palette: palette,
               ),
             ),
             SizedBox(

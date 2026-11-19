@@ -1,6 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:futureetp/core/charts/candle_painter.dart';
+import 'package:futureetp/core/charts/candle_chart.dart';
 import 'package:futureetp/core/theme/up_down_color.dart';
 import 'package:futureetp/features/chart_spike/chart_spike_screen.dart';
 import 'package:futureetp/features/chart_spike/synthetic_bars.dart';
@@ -33,10 +33,9 @@ void main() {
         ),
       ),
     );
-    final paint = tester.widget<CustomPaint>(
-      find.byKey(const Key('chart-spike-canvas')),
-    );
-    final viewport = (paint.painter! as CandlePainter).viewport;
+    final viewport = tester
+        .widget<CandleChart>(find.byType(CandleChart))
+        .viewport;
     expect(viewport.value.span, 126);
 
     await tester.tap(find.text('12M'));
