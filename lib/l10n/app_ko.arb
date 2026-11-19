@@ -4,6 +4,24 @@
   "@devHealthTitle": {
     "description": "2단계 임시 dev 화면 제목. 3단계 B-b·A 화면이 생기면 지운다"
   },
+  "devChartSpikeTitle": "차트 스파이크",
+  "@devChartSpikeTitle": {
+    "description": "4단계 C-a 차트 스파이크 dev 화면. 스파이크가 끝나면 지운다"
+  },
+  "devChartSpikeStats": "{fps}fps · 최악 {worst}ms · 봉 {bars}개",
+  "@devChartSpikeStats": {
+    "placeholders": {
+      "fps": {
+        "type": "int"
+      },
+      "worst": {
+        "type": "String"
+      },
+      "bars": {
+        "type": "int"
+      }
+    }
+  },
   "devHealthVariant": "변형: {variant}",
   "@devHealthVariant": {
     "placeholders": {

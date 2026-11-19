@@ -13,6 +13,14 @@ class AppLocalizationsEn extends AppLocalizations {
   String get devHealthTitle => 'Server connection';
 
   @override
+  String get devChartSpikeTitle => 'Chart spike';
+
+  @override
+  String devChartSpikeStats(int fps, String worst, int bars) {
+    return '${fps}fps · worst ${worst}ms · $bars bars';
+  }
+
+  @override
   String devHealthVariant(String variant) {
     return 'Variant: $variant';
   }

@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:futureetp/core/api/access_key.dart';
 import 'package:futureetp/features/access_key/access_key_screen.dart';
+import 'package:futureetp/features/chart_spike/chart_spike_screen.dart';
 import 'package:futureetp/features/dev_health/health_screen.dart';
 import 'package:go_router/go_router.dart';
 import 'package:material_ui/material_ui.dart';
@@ -11,6 +12,9 @@ import 'package:material_ui/material_ui.dart';
 abstract final class AppRoutes {
   static const home = '/';
   static const accessKey = '/settings/access-key';
+
+  /// 4단계 차트 스파이크(dev). 스파이크가 끝나면 지운다.
+  static const chartSpike = '/dev/chart-spike';
 }
 
 /// 앱 라우터.
@@ -34,6 +38,10 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: AppRoutes.accessKey,
         builder: (context, state) => const AccessKeyScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.chartSpike,
+        builder: (context, state) => const ChartSpikeScreen(),
       ),
     ],
   );

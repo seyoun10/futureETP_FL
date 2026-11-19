@@ -1,6 +1,8 @@
 {
   "@@locale": "en",
   "devHealthTitle": "Server connection",
+  "devChartSpikeTitle": "Chart spike",
+  "devChartSpikeStats": "{fps}fps · worst {worst}ms · {bars} bars",
   "devHealthVariant": "Variant: {variant}",
   "devHealthServer": "Server: {url}",
   "devHealthOk": "Connected (status {status}, commit {commit})",

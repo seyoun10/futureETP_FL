@@ -13,6 +13,14 @@ class AppLocalizationsKo extends AppLocalizations {
   String get devHealthTitle => '서버 연결 확인';
 
   @override
+  String get devChartSpikeTitle => '차트 스파이크';
+
+  @override
+  String devChartSpikeStats(int fps, String worst, int bars) {
+    return '${fps}fps · 최악 ${worst}ms · 봉 $bars개';
+  }
+
+  @override
   String devHealthVariant(String variant) {
     return '변형: $variant';
   }
