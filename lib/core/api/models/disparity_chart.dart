@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:futureetp/core/api/models/enums.dart';
 import 'package:futureetp/core/api/models/freshness.dart';
@@ -86,4 +87,43 @@ abstract class Holding with _$Holding {
       _Holding;
 
   factory fromJson(Map<String, dynamic> json) => _$HoldingFromJson(json);
+}
+
+/// C-a 조회 조건. 기기 설정(기준값·이평선·윈도·rare 레벨)에서 온다(D-086).
+@immutable
+class DisparityParams {
+  const new({
+    required this.basis,
+    required this.ma,
+    required this.window,
+    required this.levels,
+  });
+
+  /// 오름차순 5개.
+  final List<double> levels;
+  final Basis basis;
+  final MaPeriod ma;
+  final DistributionWindow window;
+
+  /// 쿼리 값(disparityQuery.json). 레벨은 JS 숫자 표기(`1`, `2.5`)다.
+  Map<String, String> toQuery() => {
+    'basis': basis.name.toUpperCase(),
+    'ma': '${ma.days}',
+    'window': window.name.toUpperCase(),
+    'levels': levels.map(_jsNumber).join(','),
+  };
+
+  static String _jsNumber(double v) =>
+      v == v.truncateToDouble() ? '${v.toInt()}' : '$v';
+
+  @override
+  bool operator ==(Object other) =>
+      other is DisparityParams &&
+      other.basis == basis &&
+      other.ma == ma &&
+      other.window == window &&
+      listEquals(other.levels, levels);
+
+  @override
+  int get hashCode => Object.hash(basis, ma, window, Object.hashAll(levels));
 }

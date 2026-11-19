@@ -7,6 +7,7 @@ import 'package:futureetp/features/access_key/access_key_screen.dart';
 import 'package:futureetp/features/chart_spike/chart_spike_screen.dart';
 import 'package:futureetp/features/commodity/commodity_shell.dart';
 import 'package:futureetp/features/commodity/commodity_tab.dart';
+import 'package:futureetp/features/commodity/disparity_chart/disparity_chart_provider.dart';
 import 'package:futureetp/features/commodity/tab_placeholder.dart';
 import 'package:futureetp/features/commodity_list/commodity_list_screen.dart';
 import 'package:futureetp/features/dev_health/health_screen.dart';
@@ -40,8 +41,13 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: AppRoutes.home,
         builder: (context, state) => CommodityListScreen(
           onOpenSettings: () => unawaited(context.push(AppRoutes.settings)),
-          onOpenCommodity: (code) =>
-              context.go(CommodityTab.disparity.location(code)),
+          onOpenCommodity: (code) {
+            // 화면 전환 동안 C-a 조회를 먼저 시작한다. 실패는 화면이 다시 조회하고 보여 준다(RN prefetch)
+            if (CommodityCode.fromWire(code) case final c?) {
+              ref.read(disparityChartProvider(c).future).ignore();
+            }
+            context.go(CommodityTab.disparity.location(code));
+          },
         ),
         // C는 A 아래 경로라 스택이 늘 A → C다(Android 뒤로·[←]가 A로 간다)
         routes: [_commodityRoute],

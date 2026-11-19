@@ -8,6 +8,8 @@ import 'package:futureetp/core/api/app_error.dart';
 import 'package:futureetp/core/api/device_id.dart';
 import 'package:futureetp/core/api/health.dart';
 import 'package:futureetp/core/api/models/commodities.dart';
+import 'package:futureetp/core/api/models/disparity_chart.dart';
+import 'package:futureetp/core/api/models/enums.dart';
 import 'package:futureetp/core/api/models/settings.dart';
 import 'package:futureetp/core/config/app_config.dart';
 
@@ -91,6 +93,19 @@ class ApiClient {
   Future<CommodityList> getCommodities({CancelToken? cancelToken}) => request(
     '/commodities',
     (data) => CommodityList.fromJson(data! as Map<String, dynamic>),
+    cancelToken: cancelToken,
+  );
+
+  /// `GET /v1/commodities/:code/disparity`(C-a, D-086). [before]가 있으면 그 거래일보다 이른 3년(D-104).
+  Future<DisparityChart> getDisparityChart(
+    CommodityCode code,
+    DisparityParams params, {
+    String? before,
+    CancelToken? cancelToken,
+  }) => request(
+    '/commodities/${code.wire}/disparity',
+    (data) => DisparityChart.fromJson(data! as Map<String, dynamic>),
+    query: {...params.toQuery(), 'before': ?before},
     cancelToken: cancelToken,
   );
 
