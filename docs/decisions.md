@@ -197,4 +197,15 @@
   - `buildAppTheme()`(`app_theme.dart`)가 토큰을 다크 `ColorScheme`에 넣는다. RN처럼 버튼은 `surfaceSelected` 바탕(primary·secondaryContainer), 배경은 검정(surface), 카드·입력 칸은 `surface`(surfaceContainer*). 입력 칸은 테두리 없이 채움, 버튼 최소 높이 44.
   - 등락 색은 `UpDownPalette.kr`·`.us` const 객체와 `changeColor`·`changePairColor`(반올림해 보이는 값으로 판단, RN 테스트와 같은 경우), 화면은 `upDownPaletteProvider`로 읽는다. 스타일이 같으면 같은 객체다.
 - 근거: Material 기본 색(보라 계열 seed)이 섞이지 않게 scheme 전체를 토큰으로 채운다.
-- 영향: B-b 화면을 iOS 시뮬레이터에서 확인했다(검정 배경·보라 버튼·회색 입력 칸). `changePctDecimals`는 숫자 포맷 항목에서 포맷 함수 쪽으로 옮긴다.
+- 영향: B-b 화면을 iOS 시뮬레이터에서 확인했다(검정 배경·보라 버튼·회색 입력 칸). `changePctDecimals`는 FL-021에서 `format_number.dart`로 옮겼다.
+
+## FL-021: 숫자·날짜·금액 포맷
+- 날짜: 2026-11-19
+- 상태: 확정
+- 맥락: 시세 숫자·월물·기준 시각·큰 금액은 언어와 상관없이 RN `src/lib/formatNumber.ts`·`formatDateTime.ts`·`formatAmount.ts`와 같은 문자열이어야 한다.
+- 결정:
+  - `lib/core/util/format_number.dart`(`formatPrice`·`formatChange`·`formatChangePct`·`changePctDecimals`·`formatContractMonth(Short)`), `format_date_time.dart`(`formatLocalDateTime`·`formatTradeDate`), `format_amount.dart`(`compactAmount`, `AmountScheme.eok`·`.si`).
+  - intl `NumberFormat`·`DateFormat`은 쓰지 않는다. locale에 따라 결과가 바뀌어 RN과 어긋날 수 있다. 반올림은 `toStringAsFixed`로 JS `toFixed`와 같다(둘 다 double의 정확한 십진 값 기준).
+  - 시각은 모델의 `DateTime`을 받아 기기 현지 시각(`toLocal`)으로 쓴다. Dart에는 IANA 시간대 변환이 없어 테스트는 `utcOffset`으로 RN 테스트의 시간대 경우를 재현한다.
+  - 테스트는 RN 테스트 경우를 그대로 옮겼다(`test/core/util/format_test.dart`).
+- 근거: 직접 만든 RN 규칙을 그대로 옮기는 편이 결과를 맞추기 쉽다.

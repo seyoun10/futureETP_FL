@@ -16,7 +16,6 @@
 - [ ] 2단계 임시 화면 `lib/features/dev_health`·관련 ARB 키(`devHealth*`)를 지운다(지금 `/` 자리, A 화면이 생기면. 라우터·첫 화면 분기는 FL-018에서 넣음)
 - [ ] 접근 키 QR 읽기를 실제 기기에서 확인(키 스크립트 QR, FL-018)
 - [ ] 실행 화면(splash) 검정 배경·아이콘(RN `splash-icon.png`, 지금은 Flutter 기본 흰 화면)과 iPad 전체 화면(`UIRequiresFullScreen`, RN `requireFullScreen`)
-- [ ] 숫자·날짜 포맷(RN `formatNumber`·`formatDateTime`과 같은 결과) 단위 테스트
 
 ## 4. 화면 수직 슬라이스 (RN 순서)
 - [ ] C-a 차트 스파이크: 봉 756개 + 이평선·rare-level 밴드, 핀치·드래그·십자선, 가장 과거 봉이 보이면 이전 3년 이어 받기에서 범위 유지, 60fps 이상 (D-056, D-087, D-104, D-106) → 차트 방식 결정

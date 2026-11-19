@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:futureetp/core/settings/display_settings.dart';
 import 'package:futureetp/core/theme/tokens.dart';
+import 'package:futureetp/core/util/format_number.dart';
 import 'package:material_ui/material_ui.dart';
 
 /// 등락 색. 토큰이 아니라 표시 설정에서 고른다(D-031, D-073). 차트·목록이 같은 함수로 읽는다.
@@ -36,10 +37,6 @@ class UpDownPalette {
     UpDownStyle.us => us,
   };
 }
-
-/// 등락률 표시 자릿수(`+0.51%`). RN `CHANGE_PCT_DECIMALS`.
-/// 숫자 포맷 항목에서 포맷 함수 쪽으로 옮긴다(TODO.md 3단계).
-const changePctDecimals = 2;
 
 /// [value]를 [decimals] 자리로 반올림한 값(화면에 쓴 값). JS `Number(x.toFixed(d))`와 같다.
 double _shown(double value, int? decimals) =>
