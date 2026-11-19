@@ -88,7 +88,7 @@
 - 선택지: (a) `flutter_lints` 6.0.0 (b) `very_good_analysis` 11.0.0
 - 결정: (b). `public_member_api_docs`만 끈다(개인 앱, 공개 API 없음).
 - 근거: `flutter_lints`는 2025-05 뒤 갱신이 없고 규칙이 느슨하다. `very_good_analysis`는 2026-09 갱신, 엄격 규칙(타입 명시·불변·async 실수)이 RN의 strict TypeScript 수준에 가깝다.
-- 영향: import 방향 검사(D-041)는 lint 플러그인(`custom_lint` 0.8.1은 2025-09 뒤 갱신 없음) 대신 2단계에서 `lib/` import 경로를 검사하는 테스트로 정하는 쪽을 우선 검토한다.
+- 영향: import 방향 검사(D-041)는 lint 플러그인(`custom_lint` 0.8.1은 2025-09 뒤 갱신 없음) 대신 `test/architecture/import_direction_test.dart`가 `lib/`의 import·export 경로를 검사한다(2단계, `flutter test`에 포함). 분석 경고는 `--fatal-infos`로 모두 실패 처리, deprecated 사용은 오류(D-128).
 
 ## FL-011: 푸시 패키지
 - 날짜: 2026-11-19
@@ -96,3 +96,20 @@
 - 맥락: 서버는 Android FCM HTTP v1, iOS APNs 직접 발송(D-037). RN은 `expo-notifications`의 `getDevicePushTokenAsync`로 두 OS의 네이티브 토큰을 받는다(Firebase iOS 설정 없음).
 - 결정: Android는 `firebase_messaging` 17.1.0 + `firebase_core` 5.2.0. iOS는 Firebase iOS 앱 등록 없이 APNs 기기 토큰을 받는 방법(작은 플랫폼 채널 vs `firebase_messaging.getAPNSToken()` + GoogleService-Info.plist)을 Apple 가입 뒤 5단계에서 정한다.
 - 근거: RN과 같이 iOS에 Firebase 설정을 두지 않는 쪽이 서버·Firebase 설정을 바꾸지 않는다(FL-002).
+
+## FL-012: 변형(flavor) 구성 방법
+- 날짜: 2026-11-19
+- 상태: 확정
+- 맥락: D-043(dev·prod 변형)을 Flutter `--flavor`로 옮긴다. iOS는 Xcode 구성·scheme을 직접 만들어야 한다.
+- 선택지: (a) Android Gradle `productFlavors` + iOS는 `xcodeproj` gem 스크립트 (b) `flutter_flavorizr` (c) 진입점 파일만 나누고 앱 ID는 하나
+- 결정: (a). iOS는 `tool/ios_flavors.rb`가 `Debug|Release|Profile`을 `-dev`·`-prod`로 복제해 bundle ID·`APP_DISPLAY_NAME`을 넣고 scheme `dev`·`prod`를 만든다(CocoaPods에 들어 있는 xcodeproj gem 사용, 한 번만 실행). Android 앱 이름은 `manifestPlaceholders`(AGP 9가 `resValue`를 기본으로 막음). dev만 평문 HTTP 허용(`android/app/src/dev/AndroidManifest.xml`). 앱 코드는 진입점 하나(`lib/main.dart`)에서 `appFlavor`로 변형을 읽고, prod 서버 주소는 코드 상수, dev 주소·토큰만 `env/dev.json`.
+- 근거: flavorizr는 템플릿 파일을 덮어쓰고 설정 범위가 넓다. 필요한 변경이 작아 직접 스크립트가 투명하다. (c)는 FL-002의 dev `.dev` ID를 만들 수 없다.
+- 영향: `flutter run`에 `--flavor`가 꼭 필요하다(기본 `Runner` scheme 없음). iOS 서명·release 설정은 6단계.
+
+## FL-013: material_ui 패키지
+- 날짜: 2026-11-19
+- 상태: 확정
+- 맥락: Flutter 3.50의 `flutter create`가 Material 위젯을 프레임워크 밖 `material_ui` 패키지(1.11.x)로 import한다. `flutter_localizations`의 `GlobalMaterialLocalizations`와 이름이 겹친다.
+- 결정: 앱 코드는 `package:material_ui/material_ui.dart`를 쓴다. 문구 delegate는 `AppLocalizations.delegate` + `material_ui`의 `GlobalMaterialLocalizations.delegates`(`lib/app/app.dart`의 `appLocalizationsDelegates`). `flutter_localizations`는 gen-l10n 생성 코드가 import해서 의존성으로만 둔다.
+- 근거: `flutter_localizations`의 delegate를 쓰면 `material_ui` 위젯이 ko 문구를 찾지 못한다(위젯 테스트로 확인).
+- 영향: `package:flutter/material.dart`에 기대는 외부 패키지(차트·날짜 피커 등)는 `MaterialUiCompatibilityBridge`가 필요할 수 있다. 4단계 차트 스파이크에서 확인.

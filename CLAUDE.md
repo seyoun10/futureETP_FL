@@ -48,7 +48,7 @@ Flutter로 만드는 futureETP 앱(Android·iOS). 기능·화면·동작은 RN �
 
 상세는 `docs/architecture.md`, 스택은 `docs/tech-stack.md`.
 
-- 언어: Dart
+- 언어: Dart 3.14. Material 위젯은 `package:material_ui/material_ui.dart`로 import한다(`package:flutter/material.dart` 아님, FL-013)
 - 레이어: Widget(화면) → Riverpod Notifier → repository(조회·캐시) → API client. 화면에서 HTTP를 직접 부르지 않는다 (D-041 대응)
 - 앱은 계산하지 않는다. 서버 값을 표시만 한다(포맷·반올림 표시는 예외)
 - API
@@ -59,7 +59,7 @@ Flutter로 만드는 futureETP 앱(Android·iOS). 기능·화면·동작은 RN �
   - 응답 모델은 `../futureETP/packages/shared/contract/schemas/*.json`과 필드·nullable·enum 값을 맞춘다. 모델 생성 도구를 쓰면 이 파일을 입력으로 한다 (D-142)
 - 접근 키·installation ID는 `flutter_secure_storage`(iOS Keychain·Android Keystore)에만 둔다. 앱 번들·저장소에 넣지 않는다. 예외는 dev 변형의 `DEV_API_TOKEN`뿐 (D-043, D-044)
 - dev 서버 주소·`DEV_API_TOKEN`은 `env/dev.json`(커밋 안 함, `env/dev.example.json`만 커밋)을 `--dart-define-from-file`로 넣는다
-- 변형: Flutter flavor `dev`·`prod`(`--flavor` + `--dart-define-from-file`). Android `applicationIdSuffix ".dev"`, iOS scheme·configuration별 bundle ID (D-043, D-052 대응)
+- 변형: Flutter flavor `dev`·`prod`(`--flavor` + `--dart-define-from-file`). Android `productFlavors`(`applicationIdSuffix ".dev"`, 앱 이름은 `manifestPlaceholders`), iOS 구성 `<Debug|Release|Profile>-<flavor>`·scheme `dev`·`prod`(`tool/ios_flavors.rb`로 만듦). 앱 코드는 `appFlavor`로 변형을 읽는다(`lib/core/config/app_config.dart`) (D-043, D-052 대응, FL-012)
 - 사용자에게 보이는 문구는 i18n 리소스로만 쓴다(ko 기준, en). `flutter_localizations` + `intl`, ARB(`lib/l10n/app_ko.arb` 기준, `app_en.arb`) (D-033, D-073)
 - 시세 숫자·월물 표기(`2,405.1`·`+0.51%`·`DEC26`)는 언어와 상관없이 RN `../futureETP/apps/mobile/src/lib/formatNumber.ts` 규칙과 같게 만든다
 - 다크 전용 테마 토큰, 차트 색은 토큰에서, 등락 색은 표시 설정에서 읽는다 (D-031, D-073)
@@ -69,7 +69,7 @@ Flutter로 만드는 futureETP 앱(Android·iOS). 기능·화면·동작은 RN �
 ## Conventions
 
 - commit message: Conventional Commits(`feat:`, `fix:`, `chore:`, `docs:`). 관련 결정 번호를 끝에 `(D-xxx)`·`(FL-xxx)`로 붙인다
-- 커밋 전 검사 명령(아래 Commands의 check) 통과. 스캐폴딩 전에는 문서만이라 생략
+- 커밋 전 `./tool/check.sh` 통과
 - `fix:` 커밋은 회귀 테스트를 함께 넣는다. 시각 조정만 예외로 기기 확인으로 대신한다
 - 이름: 파일 `snake_case.dart`, 타입 `UpperCamelCase`, 멤버 `lowerCamelCase`. Effective Dart를 따른다
 - 테스트: `flutter test`(unit·widget), 통합은 `integration_test`
@@ -77,12 +77,16 @@ Flutter로 만드는 futureETP 앱(Android·iOS). 기능·화면·동작은 RN �
 
 ## Commands
 
-스캐폴딩(TODO 2단계) 전이라 예정 명령이다. 프로젝트를 만든 뒤 실제 명령으로 고친다.
+Flutter SDK는 `~/development/flutter`(stable, PATH는 `~/.zshrc`).
 
-- `flutter pub get`: 의존성 설치
-- `flutter run --flavor dev -t lib/main.dart`: dev 변형 실행(에뮬레이터·시뮬레이터)
-- `flutter analyze`: 정적 분석(`analysis_options.yaml`)
-- `dart format --output=none --set-exit-if-changed .`: 포맷 확인
-- `flutter test`: 전체 테스트. 단일: `flutter test test/<파일> --name "<이름>"`
-- `./tool/check.sh`: 위 셋을 차례로(스캐폴딩 때 만든다). 커밋 전 통과
-- dev 서버 실행은 `../futureETP`에서 `npm run dev -w apps/server`. 에뮬레이터는 `http://10.0.2.2:<port>`, iOS 시뮬레이터는 `http://localhost:<port>`
+- `flutter pub get`: 의존성 설치(`generate: true`라 ARB 문구 코드 `lib/l10n/app_localizations*.dart`도 다시 만든다. 직접은 `flutter gen-l10n`)
+- `cp env/dev.example.json env/dev.json`: 처음 한 번. 값이 비면 에뮬레이터 기본 주소(Android `http://10.0.2.2:3000`, iOS `http://localhost:3000`)
+- `flutter run --flavor dev --dart-define-from-file=env/dev.json`: dev 변형 실행. prod는 `--flavor prod`(env 파일 없이)
+- `flutter analyze`: 정적 분석(`analysis_options.yaml`, very_good_analysis)
+- `dart format lib test`: 포맷
+- `flutter test`: 전체 테스트(`test/architecture/`의 import 방향 검사 포함). 단일: `flutter test test/<파일> --name "<이름>"`
+- `./tool/check.sh`: analyze(`--fatal-infos`) → format 확인 → test. 커밋 전 통과
+- `dart fix --apply`: lint 자동 수정(Dart 3.14 생성자 표기 `const new(...)` 등)
+- `dart run flutter_launcher_icons`: 앱 아이콘 다시 만들기(`assets/icon`)
+- dev 서버 실행은 `../futureETP`에서 `npm run dev -w apps/server`(port 3000)
+- 에뮬레이터에 RN dev 앱이 깔려 있으면 같은 앱 ID라 서명 충돌로 설치되지 않는다(FL-002). RN 앱을 지우거나 다른 AVD·시뮬레이터를 쓴다

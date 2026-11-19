@@ -1,0 +1,6 @@
+# gen-l10n(D-033, FL-009). ko가 기준 언어다.
+arb-dir: lib/l10n
+template-arb-file: app_ko.arb
+output-dir: lib/l10n
+output-localization-file: app_localizations.dart
+nullable-getter: false

@@ -11,11 +11,7 @@
 - [ ] 차트 방식은 2단계 뒤 C-a 스파이크(아래 4단계 첫 항목)로 정한다
 
 ## 2. 스캐폴딩
-- [ ] 프로젝트 생성, 앱 ID `io.github.seyoon.futureetp`·dev `.dev` 두 변형, 앱 이름·아이콘(RN `apps/mobile/assets` 재사용)
-- [ ] lint·format·test 설정과 검사 명령 하나(`check`), CLAUDE.md Commands를 실제 명령으로 갱신
-  - import 방향 규칙(architecture.md "규칙")을 검사에 넣는다. 후보: dart 검사 스크립트(테스트로 `lib/` import 경로 검사) 또는 lint 플러그인
-- [ ] dev 변형이 로컬 dev 서버 `GET /v1/health`를 부르는 최소 화면으로 연결 확인
-- [ ] (선택) 원격 저장소·CI(GitHub Actions에서 check)
+- [ ] (선택) 원격 저장소·CI(GitHub Actions에서 `./tool/check.sh`)
 
 ## 3. 공통 기반
 - [ ] API client: 헤더(Bearer·`X-Device-Id`), 타임아웃 15초, 봉투 디코딩, `AppError`, 재시도 규칙 (D-042, D-072)
@@ -26,6 +22,8 @@
 - [ ] 테마 토큰(다크 전용)·등락 색 설정 저장 (D-031, D-073)
 - [ ] 공용 조회 UI: 기준 시각 줄(freshness)·로딩/오류/빈 상태 분기·`nextUpdateAt` + 1분 자동 새로고침·앱 복귀 재조회 (D-048, D-075)
 - [ ] 앱 실행 때 시간대 PATCH (D-084), 세로 잠금·[⟲] 가로 전환 (D-076)
+- [ ] 라우터(go_router)·첫 화면 분기를 넣고 2단계 임시 화면 `lib/features/dev_health`·관련 ARB 키(`devHealth*`)를 지운다
+- [ ] 실행 화면(splash) 검정 배경·아이콘(RN `splash-icon.png`, 지금은 Flutter 기본 흰 화면)과 iPad 전체 화면(`UIRequiresFullScreen`, RN `requireFullScreen`)
 - [ ] 숫자·날짜 포맷(RN `formatNumber`·`formatDateTime`과 같은 결과) 단위 테스트
 
 ## 4. 화면 수직 슬라이스 (RN 순서)
@@ -47,3 +45,4 @@
 - [ ] prod 변형 release 빌드를 개인 기기에 설치하는 절차를 `docs/ops.md`(새로 만든다)에 기록
 - [ ] RN 앱과 같은 앱 ID라 바꿔 설치할 때 할 일(기존 앱 삭제, 접근 키 다시 입력, 기기 설정 다시 맞춤) 기록
 - [ ] 업데이트 배포 방식(OTA 없음, 재설치) 결정
+- [ ] Android release 서명(RN과 같은 키 `~/.config/futureetp/android-release.properties`면 RN 앱 위에 덮어 설치 가능, D-039)·`versionCode`(RN은 커밋 수)·arm64-v8a만 넣기

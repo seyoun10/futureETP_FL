@@ -1,0 +1,9 @@
+{
+  "@@locale": "en",
+  "devHealthTitle": "Server connection",
+  "devHealthVariant": "Variant: {variant}",
+  "devHealthServer": "Server: {url}",
+  "devHealthOk": "Connected (status {status}, commit {commit})",
+  "devHealthFailed": "Connection failed: {error}",
+  "retry": "Retry"
+}

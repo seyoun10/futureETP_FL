@@ -1,19 +1,20 @@
 # Architecture
 
 > Flutter 앱의 구조. API 규약·화면 동작은 원본(`../futureETP/docs/architecture.md`·`wireframes/screens.md`)을 따르고, 여기에는 이 앱의 구조와 대응만 적는다.
-> 디렉터리는 초안이다. 스캐폴딩(TODO 2단계) 때 실제 구조로 고친다.
+> 디렉터리는 계획 구조다. 2단계 현재 있는 것은 `app/app.dart`, `core/config`, `core/api`(health만), `features/dev_health`(임시), `l10n`이다.
 
-## 디렉터리 구조 (초안)
+## 디렉터리 구조
 
 ```
 lib/
-├─ main.dart / main_dev.dart     진입점(flavor별 설정 주입)
+├─ main.dart                     진입점 하나. 변형은 appFlavor, dev 값은 dart-define(FL-012)
 ├─ app/                          라우터(go_router), 앱 루트, 테마 적용
 ├─ features/                     화면 단위: 화면 Widget·전용 위젯·Provider
 │  ├─ commodity_list/            A
 │  ├─ settings/ alert_settings/ access_key/ data_sources/   B, B-a, B-b
 │  └─ commodity/                 C: disparity_chart(C-a)·contract_chart(C-c)·curve(C-b)·etp(C-d, C-d-a)
 ├─ core/
+│  ├─ config/                    변형·서버 주소(AppConfig)
 │  ├─ api/                       HTTP 래퍼, AppError, 엔드포인트 함수, 응답 모델
 │  ├─ charts/                    CustomPainter 차트·뷰포트(핀치·드래그)
 │  ├─ widgets/                   공용 UI(ScreenHeader, FreshnessLine, QueryStateView, SegmentedControl)
@@ -21,15 +22,17 @@ lib/
 │  ├─ theme/                     테마 토큰(다크 전용), 등락 색
 │  ├─ push/                      토큰 등록, 알림 탭 이동
 │  └─ util/                      숫자·날짜 포맷, 햅틱, 실패 Alert
-└─ l10n/                         app_ko.arb, app_en.arb
-test/                            lib와 같은 구조
+└─ l10n/                         app_ko.arb, app_en.arb, 생성 코드 app_localizations*.dart
+test/                            lib와 같은 구조, architecture/(import 방향 검사)
+tool/                            check.sh, ios_flavors.rb
+env/                             dev.example.json(커밋), dev.json(커밋 안 함)
 docs/                            tech-stack, architecture, decisions
 ```
 
 규칙
 - 화면 → Riverpod Notifier → repository → API client 한 방향. 화면은 HTTP·저장소를 직접 부르지 않는다.
 - 화면 전용 코드는 해당 feature 안에, 두 곳 이상에서 쓰면 공용 계층(`core`)으로 옮긴다.
-- import 방향(RN D-041, 2026-11-19 lint로 강제): feature끼리 import하지 않는다(컴포넌트·헬퍼·조회도 다른 feature가 쓰면 `lib/core`로 옮긴다). `lib/core`는 features·`lib/app`을 import하지 않고, features는 `lib/app`(라우트)을 import하지 않는다. 2단계에서 검사로 강제한다.
+- import 방향(RN D-041, 2026-11-19 lint로 강제): feature끼리 import하지 않는다(컴포넌트·헬퍼·조회도 다른 feature가 쓰면 `lib/core`로 옮긴다). `lib/core`는 features·`lib/app`을 import하지 않고, features는 `lib/app`(라우트)을 import하지 않는다. `test/architecture/import_direction_test.dart`가 강제한다(FL-010).
 - RN에서 공용으로 옮긴 것: `SectionHeader`·`SettingsHeaderButton`(공용 UI), 에러 code → 사용자 문구 함수 `errorText`(API의 `AppError` 옆), ETP 정렬 기준 `ETP_SORTS`(util).
 - 월물 심볼은 서버 표준형(`CLZ26`)만 쓴다. 표시 표기(`DEC26`)는 포맷 함수가 만든다.
 
