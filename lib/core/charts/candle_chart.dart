@@ -1,7 +1,10 @@
+import 'dart:math' as math;
+
 import 'package:flutter/gestures.dart';
 import 'package:flutter/services.dart';
 import 'package:futureetp/core/charts/candle_painter.dart';
 import 'package:futureetp/core/charts/candle_series.dart';
+import 'package:futureetp/core/charts/chart_decor.dart';
 import 'package:futureetp/core/charts/chart_viewport.dart';
 import 'package:futureetp/core/theme/tokens.dart';
 import 'package:futureetp/core/theme/up_down_color.dart';
@@ -30,6 +33,7 @@ class CandleChart extends StatefulWidget {
     this.padding = EdgeInsets.zero,
     this.onGesture,
     this.formatPrice,
+    this.decor,
     this.locked = false,
   });
 
@@ -48,6 +52,9 @@ class CandleChart extends StatefulWidget {
 
   /// 십자선 가격 라벨. 없으면 소수 셋째 자리.
   final String Function(double price)? formatPrice;
+
+  /// 축·라벨·롤 표시.
+  final ChartDecor? decor;
 
   /// 이전 데이터를 받는 동안 터치를 막는다(D-108, D-139).
   final bool locked;
@@ -179,6 +186,7 @@ class _CandleChartState extends State<CandleChart> {
                       viewport: _viewport,
                       palette: widget.palette,
                       padding: widget.padding,
+                      decor: widget.decor,
                     ),
                   ),
                 ),
@@ -192,6 +200,7 @@ class _CandleChartState extends State<CandleChart> {
                       padding: widget.padding,
                       formatPrice:
                           widget.formatPrice ?? (p) => p.toStringAsFixed(3),
+                      dates: widget.decor?.dates,
                     ),
                   ),
                 ),
@@ -212,6 +221,7 @@ class _CrosshairPainter extends CustomPainter {
     required this.crosshair,
     required this.padding,
     required this.formatPrice,
+    this.dates,
   }) : super(repaint: Listenable.merge([viewport, crosshair]));
 
   final CandleSeries series;
@@ -219,6 +229,9 @@ class _CrosshairPainter extends CustomPainter {
   final ValueNotifier<int?> crosshair;
   final EdgeInsets padding;
   final String Function(double) formatPrice;
+
+  /// 있으면 x축 자리에 십자선 날짜 라벨을 단다.
+  final List<String>? dates;
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -246,16 +259,37 @@ class _CrosshairPainter extends CustomPainter {
       ),
       textDirection: TextDirection.ltr,
     )..layout();
-    final box = Rect.fromLTWH(
-      size.width - text.width - AppSpacing.sm,
+    // 우측 y축 자리 전체 너비
+    final box = Rect.fromLTRB(
+      math.min(plot.right, size.width - text.width - AppSpacing.sm),
       y - text.height / 2 - 2,
-      text.width + AppSpacing.sm,
-      text.height + 4,
+      size.width,
+      y + text.height / 2 + 2,
     );
     canvas.drawRect(box, Paint()..color = ChartColors.crosshair);
     text
       ..paint(canvas, box.topLeft + const Offset(AppSpacing.xs, 2))
       ..dispose();
+    final dates = this.dates;
+    if (dates != null && i < dates.length) {
+      final date = TextPainter(
+        text: TextSpan(
+          text: dates[i],
+          style: const TextStyle(
+            color: ChartColors.crosshairText,
+            fontSize: AppFontSize.caption,
+          ),
+        ),
+        textDirection: TextDirection.ltr,
+      )..layout();
+      final w = date.width + AppSpacing.sm;
+      final left = math.max(0, math.min(x - w / 2, plot.right - w)).toDouble();
+      final dateBox = Rect.fromLTWH(left, plot.bottom + 1, w, date.height + 4);
+      canvas.drawRect(dateBox, Paint()..color = ChartColors.crosshair);
+      date
+        ..paint(canvas, dateBox.topLeft + const Offset(AppSpacing.xs, 2))
+        ..dispose();
+    }
   }
 
   @override

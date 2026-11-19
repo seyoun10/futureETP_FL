@@ -1,15 +1,20 @@
+import 'dart:math' as math;
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:futureetp/core/api/app_error.dart';
 import 'package:futureetp/core/api/error_text.dart';
 import 'package:futureetp/core/api/models/disparity_chart.dart';
 import 'package:futureetp/core/api/models/enums.dart';
 import 'package:futureetp/core/charts/candle_chart.dart';
+import 'package:futureetp/core/charts/chart_decor.dart';
+import 'package:futureetp/core/charts/chart_layout.dart';
 import 'package:futureetp/core/charts/chart_periods.dart';
 import 'package:futureetp/core/charts/chart_viewport.dart';
 import 'package:futureetp/core/charts/period_chips.dart';
 import 'package:futureetp/core/settings/device_settings.dart';
 import 'package:futureetp/core/theme/tokens.dart';
 import 'package:futureetp/core/theme/up_down_color.dart';
+import 'package:futureetp/core/util/format_date_time.dart';
 import 'package:futureetp/core/util/format_number.dart';
 import 'package:futureetp/core/util/orientation.dart';
 import 'package:futureetp/core/widgets/query_state_view.dart';
@@ -92,10 +97,6 @@ const _lineStyle = TextStyle(
   fontFeatures: [FontFeature.tabularFigures()],
 );
 
-/// 오른쪽 y축 라벨 자리와 아래 x축 라벨 자리.
-const _yAxisWidth = 56.0;
-const _xAxisHeight = 20.0;
-
 class _DisparityChartViewState extends ConsumerState<_DisparityChartView> {
   late DisparityModel _model = DisparityModel.from(widget.data.chart);
 
@@ -146,6 +147,25 @@ class _DisparityChartViewState extends ConsumerState<_DisparityChartView> {
     super.dispose();
   }
 
+  // 축·라벨 입력. 모델·언어가 바뀔 때만 새로 만든다(같은 객체면 다시 그리기만)
+  ChartDecor? _decor;
+  (DisparityModel, AppLocalizations)? _decorKey;
+
+  ChartDecor _decorFor(AppLocalizations l10n) {
+    final key = (_model, l10n);
+    if (_decor != null &&
+        identical(_decorKey?.$1, key.$1) &&
+        identical(_decorKey?.$2, key.$2)) {
+      return _decor!;
+    }
+    _decorKey = key;
+    return _decor = disparityDecor(
+      _model,
+      widget.data.chart.priceDecimals,
+      l10n,
+    );
+  }
+
   ChartViewport get _periodView =>
       ChartViewport.latest(_model.bars.length, _period.bars);
 
@@ -191,10 +211,17 @@ class _DisparityChartViewState extends ConsumerState<_DisparityChartView> {
     // 위 정보 줄 두 개 높이. 봉·선은 이만큼 비켜 그리고 격자는 뒤까지 이어진다(D-117)
     final lineHeight =
         textScaler.scale(AppFontSize.caption) * 1.4 + AppSpacing.xs * 2;
+    final decor = _decorFor(l10n);
+    final series = _model.series;
+    // y축 라벨 자리: 가장 넓은 가격 글자 + 여백
+    final yAxis = yAxisWidth([
+      formatPrice(series.envelopeHigh.reduce(math.max), decimals),
+      formatPrice(series.envelopeLow.reduce(math.min), decimals),
+    ]);
     final padding = EdgeInsets.only(
       top: lineHeight * 2,
-      right: _yAxisWidth,
-      bottom: _xAxisHeight,
+      right: yAxis,
+      bottom: xLabelHeight,
     );
     return Column(
       children: [
@@ -211,6 +238,7 @@ class _DisparityChartViewState extends ConsumerState<_DisparityChartView> {
                   padding: padding,
                   onGesture: _onGesture,
                   formatPrice: (p) => formatPrice(p, decimals),
+                  decor: decor,
                 ),
               ),
               Positioned(
@@ -245,8 +273,8 @@ class _DisparityChartViewState extends ConsumerState<_DisparityChartView> {
               if (_gesture != null)
                 Positioned(
                   left: 0,
-                  right: _yAxisWidth,
-                  bottom: _xAxisHeight + AppSpacing.sm,
+                  right: yAxis,
+                  bottom: xLabelHeight + AppSpacing.sm,
                   child: Center(child: ChartResetButton(onPressed: _resetView)),
                 ),
             ],
@@ -441,3 +469,40 @@ class _StatsLine extends StatelessWidget {
     );
   }
 }
+
+/// C-a 축·라벨 입력(RN `priceLabelsAt`·`ExtremeTagsLayer`·`RollLayer`).
+ChartDecor disparityDecor(
+  DisparityModel model,
+  int decimals,
+  AppLocalizations l10n,
+) {
+  final bars = model.bars;
+  final current = bars.last.close!;
+  return ChartDecor(
+    dates: [for (final b in bars) b.tradeDate],
+    priceDecimals: decimals,
+    monthLabel: (year, month) => monthLabel(l10n, year, month),
+    // 이평선·rare-level 값은 보이는 마지막 봉 기준, 선 색으로 쓴다
+    labelsAt: (index) => [
+      for (final l in model.lines)
+        if (!l.line.values[index].isNaN)
+          (price: l.line.values[index], color: l.line.color),
+    ],
+    extremeText: (kind, index) {
+      final bar = bars[index];
+      final price = kind == ExtremeKind.high ? bar.high! : bar.low!;
+      final p = formatPrice(price, decimals);
+      final pct = formatChangePct((price / current - 1) * 100);
+      final date = formatTradeDate(bar.tradeDate);
+      return kind == ExtremeKind.high
+          ? l10n.chartHighTag(p, pct, date)
+          : l10n.chartLowTag(p, pct, date);
+    },
+    rollShading: model.rollShading,
+    switches: model.frontSwitchAt.keys.toList(),
+  );
+}
+
+/// x축 월 라벨: 1월은 연도, 나머지는 월 이름(D-121).
+String monthLabel(AppLocalizations l10n, int year, int month) =>
+    month == 1 ? '$year' : l10n.chartMonth('$month');

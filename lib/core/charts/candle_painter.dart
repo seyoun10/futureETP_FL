@@ -2,6 +2,7 @@ import 'dart:ui' as ui;
 
 import 'package:flutter/foundation.dart';
 import 'package:futureetp/core/charts/candle_series.dart';
+import 'package:futureetp/core/charts/chart_decor.dart';
 import 'package:futureetp/core/charts/chart_viewport.dart';
 import 'package:futureetp/core/charts/line_sampling.dart';
 import 'package:futureetp/core/theme/tokens.dart';
@@ -15,6 +16,7 @@ class CandlePainter extends CustomPainter {
     required this.viewport,
     required this.palette,
     this.padding = EdgeInsets.zero,
+    this.decor,
   }) : super(repaint: viewport);
 
   final CandleSeries series;
@@ -23,6 +25,9 @@ class CandlePainter extends CustomPainter {
 
   /// 봉·선을 비켜 그릴 여백(위 정보 줄, 아래 x축, 오른쪽 y축). 격자는 위·아래 여백까지 이어진다.
   final EdgeInsets padding;
+
+  /// 축·라벨·롤 표시. 없으면 고정 격자만 그린다(스파이크).
+  final ChartDecor? decor;
 
   /// 봉 몸통 폭 / 봉 폭.
   static const _bodyRatio = 0.7;
@@ -36,16 +41,29 @@ class CandlePainter extends CustomPainter {
     if (v.count == 0) return;
     final range = LogPriceRange.fit(v, series.envelopeHigh, series.envelopeLow);
     final plot = padding.deflateRect(Offset.zero & size);
+    final decor = this.decor;
+    final frame = ChartFrame(size, padding, v, range);
     canvas
       ..save()
       ..clipRect(Rect.fromLTRB(0, 0, plot.right, size.height));
-    _grid(canvas, Size(plot.right, size.height));
+    if (decor == null) {
+      _grid(canvas, Size(plot.right, size.height));
+    } else {
+      paintDecorUnder(canvas, frame, decor);
+    }
     canvas.translate(plot.left, plot.top);
     _candles(canvas, plot.size, v, range);
     for (final line in series.lines) {
       _line(canvas, plot.size, v, range, line);
     }
     canvas.restore();
+    if (decor != null) {
+      canvas
+        ..save()
+        ..clipRect(Offset.zero & size);
+      paintDecorOver(canvas, frame, decor, series);
+      canvas.restore();
+    }
   }
 
   void _grid(Canvas canvas, Size size) {
@@ -172,5 +190,6 @@ class CandlePainter extends CustomPainter {
       old.series != series ||
       old.palette != palette ||
       old.viewport != viewport ||
-      old.padding != padding;
+      old.padding != padding ||
+      old.decor != decor;
 }
