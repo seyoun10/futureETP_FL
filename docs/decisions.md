@@ -271,7 +271,7 @@
   - iOS 시뮬레이터는 profile·release 빌드를 돌릴 수 없어 재지 않았다. 실기기를 설치할 때 iPhone에서 다시 잰다.
   - 십자선(길게 누르기 → 끌기 → 종가 라벨)과 이전 3년 이어 받기(756 → 4,000봉, 범위 유지, 받는 동안 차단·햅틱)는 에뮬레이터 화면과 위젯 테스트로 확인했다.
 - 근거: 검증 항목(봉 수, 이평선·밴드, 핀치·드래그·십자선, 이어 받기 범위 유지, 60fps)을 모두 직접 구현으로 통과했다. 라이브러리에 맞춰 우회할 일이 없고, RN에서 직접 만든 부분을 거의 그대로 옮길 수 있다.
-- 영향: `docs/tech-stack.md` 차트 행. 스파이크 화면(`features/chart_spike`, `/dev/chart-spike`, ARB `devChartSpike*`)은 C-a 본 구현 뒤 지운다. `lib/core/charts/`는 C-a·C-c 본 구현이 이어 쓰고, 축·라벨·롤 음영·꼬리표·상세 박스·한글 글자는 그때 더한다.
+- 영향: `docs/tech-stack.md` 차트 행. 스파이크 화면(`features/chart_spike`, `/dev/chart-spike`, ARB `devChartSpike*`)은 C-a 본 구현 뒤 지웠다(FL-027). 합성 봉은 `test/helpers/synthetic_bars.dart`로 옮겨 차트 제스처 테스트가 쓴다. `lib/core/charts/`는 C-a·C-c 본 구현이 이어 쓰고, 축·라벨·롤 음영·꼬리표·상세 박스·한글 글자는 그때 더한다.
 
 ## FL-026: A 원자재 목록과 공용 title-bar
 - 날짜: 2026-11-19
@@ -286,3 +286,21 @@
   - 행 누르기(햅틱·C-a 이동·미리 조회)는 C 화면과 함께 넣는다.
 - 근거: RN 동작과 같은 결과를 Flutter 기본 위젯으로 낸다. 접근 키 화면(B-b)은 아직 `AppBar`라 B 화면을 만들 때 `ScreenHeader`로 맞춘다.
 - 영향: B-b 위젯 테스트의 첫 화면 기대값을 A로 바꿨다. `test/helpers/fake_http.dart`에 응답 지연(`delay`)이 생겼다. Android 에뮬레이터(API 37)에서 dev 서버 데이터로 목록·기준 시각 줄·당겨서 새로고침 인디케이터를 확인했다(2026-11-19).
+
+## FL-027: C 원자재 화면과 C-a 이격도차트
+- 날짜: 2026-11-19
+- 상태: 확정 (핀치·드래그 손동작·햅틱 촉감·실기기 성능은 기기 설치 때 확인)
+- 맥락: TODO 4단계 C-a(screens.md C·C-a, D-047, D-076, D-086, D-087, D-102~D-108, D-117, D-121, D-139). FL-025 스파이크의 `lib/core/charts`를 이어 쓴다.
+- 결정:
+  - 경로: `/commodity/:code`를 A(`/`) 아래 하위 경로로 두고 `StatefulShellRoute.indexedStack` branch 4개(탭)로 나눈다. 그래서 스택은 늘 A → C이고 [←]·Android 뒤로가 A로 간다. 탭은 위치(`/commodity/GC/contracts`)로 바꾸고 `goBranch`는 쓰지 않는다. go_router가 경로 값이 있는 branch에 기본 위치를 요구해 `initialLocation`을 GC로 채워 둔다(쓰이지 않음).
+  - C 껍데기(`CommodityShell`): title-bar(`원자재명 (심볼)` 🔔 [⟲] [⚙]), 탭 줄, 지금 탭의 기준 시각 줄. 가로면 title-bar를 낮추고 탭 줄·기준 시각 줄을 숨기며 좌우 safe area만큼 안쪽에 둔다. ETP 탭으로 가거나 C를 떠나면 `lockPortrait`. 차트가 이전 3년을 받는 동안 `chartBusyProvider`로 화면 전체를 `AbsorbPointer`로 막는다. [⟲] 아이콘은 Material `stay_current_landscape`·`stay_current_portrait`다.
+  - C-a 조회(`DisparityChartNotifier`, family by 원자재): 기기 설정의 기준값·이평선·윈도·rare 레벨(`selectAsync`라 그 값이 바뀔 때만 다시 받음)로 최근 3년을 받는다. `loadOlder`가 가장 이른 봉 전 3년을 앞에 붙인다. 자동 새로고침·복귀 재조회는 최근 3년만 다시 받고 조건이 같으면 받아 둔 과거 봉을 이어 붙인다(RN infinite query가 모든 페이지를 다시 받는 것과 달리 요청 1번). `nextUpdateAt`까지 복귀 재조회를 하지 않고, 화면을 떠나도 1시간 둔다. A 행을 누르면 라우터가 이 조회를 먼저 시작한다.
+  - 기간 선택은 C-a 탭 State에 둔다. indexedStack이 C에 있는 동안 탭을 살려 두므로 D-107(C를 떠나면 잊음)과 같다.
+  - 차트 둘레(`chart_decor.dart`·`chart_layout.dart`): y 눈금은 d3 log 스케일 `ticks(6)`과 같은 계산, 특수 라벨은 겹치면 밀고, 기본 눈금 글자는 특수 라벨과 겹치면 숨긴다. x축은 겹치지 않는 가장 촘촘한 월 간격. 고가·저가 꼬리표, 롤 음영, 대표월물 전환일 점선, 마지막·보이는 마지막 봉 종가 점선. 모두 봉과 같은 `CustomPainter`에서 그리고 글자는 `TextPainter`를 캐시한다. 한글은 Flutter가 시스템 글꼴로 대체해 따로 번들하지 않는다(D-087의 Paragraph 대응).
+  - 십자선 라벨은 y축 칸 전체 너비 상자와 x축 날짜 상자로 그린다. RN은 십자선 라벨과 겹치는 축 글자를 숨기는데, 여기서는 불투명 상자가 그 글자를 덮는다.
+  - 상세 박스(`ChartDetailOverlay`)는 `CustomSingleChildLayout`으로 상자 크기를 레이아웃에서 받아 RN `leastCoveredCorner` 규칙으로 귀퉁이를 고른다.
+  - 위 정보 줄 두 개는 차트 위에 반투명(`overlay`)으로 겹치고, 봉·선은 그 높이(글자 크기 배율 반영)만큼 비켜 그린다. 격자는 줄 뒤까지 이어진다(D-117).
+  - 이전 3년 받기: 가장 과거 봉이 보이거나 그 자리에서 제스처가 끝나면 받는다. 가벼운 햅틱, 차트 왼쪽 가운데 로딩 표시, 차트 `locked`, C 화면 차단, 5초 시간 초과·실패 Alert. 회차 번호로 늦은 응답이 상태를 다시 바꾸지 않게 하고 데이터는 그대로 붙인다.
+  - 첫 기간 맞춤: 보이는 범위를 첫 프레임 전에 기간으로 정해 RN처럼 차트를 감출 동안이 없다. 첫 조회 중에는 `ChartSkeleton`(격자·칩 자리 + 가운데 스피너)이다.
+- 근거: RN과 같은 화면 결과를 Flutter 구조에 맞게 낸다. 행렬 대신 봉 순번 범위(FL-025)라 이어 붙이기·상세 배치·축 계산이 단순하다.
+- 영향: Android 에뮬레이터(API 37) dev 서버 데이터로 C-a 진입, 기간 칩, 십자선 상세, 이전 3년 연속 받기(2018년까지), 가로 모드를 확인했다(2026-11-19). 위젯 테스트로 기간·[↻]·핀치·끌기·이어 받기·시간 초과·실패·스켈레톤을 고정했다. C-b·C-c는 `lib/core/charts`의 축·상세·스켈레톤을 함께 쓴다.

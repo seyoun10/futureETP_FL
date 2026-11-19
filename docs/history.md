@@ -5,6 +5,7 @@
 ## 원본 변경 반영
 - [x] API 계약 JSON Schema 생성(2026-11-19, futureETP D-142): `../futureETP/packages/shared/contract/`. 3단계 응답 모델은 이 파일을 기준으로 한다(TODO 3단계 응답 모델 항목에 반영됨, 2026-11-19 확인)
 - [x] 레이어 import 방향 lint 강제(2026-11-19, futureETP D-041 변경): feature 간 import 금지, 공용 계층 → features·라우트 금지. `docs/architecture.md` "규칙"과 TODO 2단계에 반영됨 (2026-11-19 확인)
+- [x] 첫 로딩 가운데 스피너(2026-11-19, futureETP 527a3b2): 첫 조회 중 스켈레톤(공용 막대·차트 격자) 위 가운데에 큰 스피너를 겹친다. 차트 탭은 차트 자리 가운데이고, 데이터가 온 뒤 첫 기간 맞춤 전(차트를 감춘 동안)에도 띄운다(e94b2c2). `../futureETP/docs/wireframes/screens.md` 공통 로딩 항목. 공용 막대(`LoadingView`·`CenterSpinner`)는 넣음, 차트 격자 스켈레톤은 C-a와 함께 넣음(2026-11-19, `ChartSkeleton`). 첫 기간 맞춤은 첫 프레임 전에 끝나 감출 동안이 없다(FL-027)
 
 ## 0. 환경
 - [x] Flutter SDK 설치(현재 Mac에 없음): 공식 안내대로 설치하고 `flutter doctor`가 Android·iOS 모두 통과하는지 확인
@@ -39,3 +40,5 @@
 ## 4. 화면 수직 슬라이스
 - [x] C-a 차트 스파이크: 봉 756개 + 이평선·rare-level 밴드, 핀치·드래그·십자선, 가장 과거 봉이 보이면 이전 3년 이어 받기에서 범위 유지, 60fps 이상 (D-056, D-087, D-104, D-106) → 차트 방식 결정 (2026-11-19, FL-025. Android 에뮬레이터 API 37 `-gpu host` profile 빌드로 측정, iOS·실기기는 설치 때)
 - [x] A 원자재 목록: `GET /v1/commodities`, 대표월물 ●·알림 🔔·거래 없음, 당겨서 새로고침(햅틱·터치 차단·5초 시간 초과 Alert, D-138), [⚙] 알림 꺼짐 점(D-124) (2026-11-19, FL-026. Android 에뮬레이터 API 37 dev 서버로 확인. 행 누르기는 C 화면과 함께)
+- [x] A 원자재 목록 남은 것: 행을 누르면 선택 햅틱·C-a 이동·C-a 미리 조회(C 화면과 함께, D-085, D-109) (2026-11-19, FL-027)
+- [x] C-a 이격도차트: `GET /v1/commodities/:code/disparity`, 기간 버튼 6개(D-102), [⟲] 버튼(`lockLandscape`·ETP 탭·C 밖에서 `lockPortrait`, FL-024), 롤 음영, 십자선 상세, 가로 모드, 이전 3년 받기 중 화면 터치 차단·5초 시간 초과·실패 Alert (D-086, D-103, D-108, D-139). `lib/core/charts`(FL-025)를 이어 쓰고, 스파이크 화면은 지웠다 (2026-11-19, FL-027. Android 에뮬레이터 API 37 dev 서버로 확인, 실기기 손동작·성능은 남김)
