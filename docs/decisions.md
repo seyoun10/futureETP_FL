@@ -30,3 +30,13 @@
 - 결정: 앱 ID `io.github.seyoon.futureetp`, dev 변형 `io.github.seyoon.futureetp.dev`. `PUT /v1/devices`의 `appVersion`은 `fl-<버전>`.
 - 근거: 서버·Firebase·APNs 설정을 바꾸지 않는다. `appVersion`은 64자 문자열이라 스키마 변경 없이 어느 클라이언트인지 서버 기록에서 알 수 있다.
 - 영향: 한 기기에 RN 앱과 함께 설치할 수 없다. 바꿔 설치하면 새 installation ID로 새 기기 행이 생겨 접근 키·기기 설정을 다시 넣는다. 서명 키가 다르면 기존 앱을 지운 뒤 설치해야 한다(Android).
+
+## FL-003: iOS 의존성 통합
+- 날짜: 2026-11-19
+- 상태: 확정
+- 맥락: Flutter 3.44부터 iOS·macOS 기본 의존성 관리가 Swift Package Manager(SwiftPM)이고, CocoaPods 저장소는 2026-12-02 읽기 전용이 된다. 이 Mac의 Flutter 3.50.0은 `enable-swift-package-manager`가 기본 켜짐(`flutter doctor -v`), CocoaPods 1.17.0도 설치돼 있다.
+- 선택지: (a) SwiftPM 기본 (b) pubspec에서 끄고 CocoaPods
+- 결정: (a). 끄지 않는다. SwiftPM을 지원하지 않는 플러그인은 Flutter가 CocoaPods로 대신 통합하므로 CocoaPods는 지우지 않고 둔다.
+- 근거: Flutter 기본값이고 CocoaPods는 유지보수 단계다. 이 앱 후보 플러그인(FL-008·FL-009·FL-011)이 SwiftPM을 지원하지 않으면 스캐폴딩 때 `flutter build ios` 경고로 확인한다.
+- 출처: [Flutter 블로그 "Saying goodbye to CocoaPods"](https://flutter.dev/blog/saying-goodbye-to-cocoapods-swift-package-manager-is-soon-the-default-in-flutter) (2026-11-19 확인)
+

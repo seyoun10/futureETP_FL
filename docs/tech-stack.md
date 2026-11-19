@@ -8,7 +8,9 @@
 
 | 영역 | 후보 / 선택 | 메모 |
 |---|---|---|
-| SDK / 언어 | Flutter 3.50 · Dart 3.14 (2026-11 stable) | [VGV 블로그 2026-11-11](https://verygood.ventures/blog/flutter-3-50-dart-3-14/), 설치 때 `flutter --version`으로 확정 |
+| SDK / 언어 | Flutter 3.50.0 (stable, 2026-11-09) · Dart 3.14.0 | `~/development/flutter` git clone, `flutter --version` 2026-11-19 확인 |
+| iOS 의존성 | Swift Package Manager(기본), 미지원 플러그인만 CocoaPods 대체 | FL-003 |
+| Android 빌드 | Zulu JDK 17(`flutter config --jdk-dir`), Android SDK 37, AVD `Pixel_API_36` | RN과 공유 |
 | 상태 관리 | Riverpod(`flutter_riverpod`, 코드 생성 여부는 스캐폴딩 때) | RN의 TanStack Query(서버 상태) + Zustand(기기 UI 설정) 역할을 Provider로 나눈다 |
 | 내비게이션 | `go_router`(ShellRoute로 C 하단 탭) | Expo Router 구조(A → C 스택, C 안 하단 탭, 탭 밖 C-d-a)와 대응 |
 | HTTP | `http` 또는 `dio` | 타임아웃·취소·헤더 주입이 필요. 1단계에서 하나로 정한다 |
