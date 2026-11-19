@@ -10,6 +10,7 @@ import 'package:futureetp/core/api/access_key.dart';
 import 'package:futureetp/core/api/api_client.dart';
 import 'package:futureetp/core/api/app_error.dart';
 import 'package:futureetp/core/config/app_config.dart';
+import 'package:futureetp/core/settings/device_settings.dart';
 import 'package:futureetp/core/settings/display_settings.dart';
 import 'package:futureetp/features/access_key/access_key_screen.dart';
 import 'package:futureetp/features/dev_health/health_screen.dart';
@@ -56,6 +57,8 @@ Widget _app(FakeHttpAdapter adapter, {String? storedKey}) => ProviderScope(
   overrides: [
     storedAccessKeyProvider.overrideWithValue(storedKey),
     displaySettingsStoreProvider.overrideWithValue(_displayStore),
+    // 시간대는 fixture와 같아 언어만 보낸다
+    deviceTimeZoneProvider.overrideWithValue(() async => 'Asia/Seoul'),
     appConfigProvider.overrideWithValue(
       const AppConfig(variant: AppVariant.prod, apiUrl: 'http://test'),
     ),

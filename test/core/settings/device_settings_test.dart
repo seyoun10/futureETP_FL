@@ -24,6 +24,7 @@ class _Server {
   new({this.serverLocale = 'ko', this.patchFails});
 
   String serverLocale;
+  String serverTimeZone = 'Asia/Seoul';
   final (String, int)? patchFails;
 
   final patches = <Map<String, dynamic>>[];
@@ -37,20 +38,27 @@ class _Server {
         return FakeResponse.fail(code, status);
       }
       serverLocale = body['locale'] as String? ?? serverLocale;
+      serverTimeZone = body['timezone'] as String? ?? serverTimeZone;
     }
-    return FakeResponse.ok({..._fixture, 'locale': serverLocale});
+    return FakeResponse.ok({
+      ..._fixture,
+      'locale': serverLocale,
+      'timezone': serverTimeZone,
+    });
   });
 }
 
 Future<ProviderContainer> _container(
   _Server server, {
   Locale device = const Locale('en', 'US'),
+  String? timeZone = 'Asia/Seoul',
 }) async {
   final store = await openTestDisplayStore();
   final container = ProviderContainer(
     overrides: [
       displaySettingsStoreProvider.overrideWithValue(store),
       deviceLocaleProvider.overrideWithValue(device),
+      deviceTimeZoneProvider.overrideWithValue(() async => timeZone),
       storedAccessKeyProvider.overrideWithValue('stored-key'),
       apiClientProvider.overrideWithValue(
         ApiClient(
@@ -69,6 +77,9 @@ Future<ProviderContainer> _container(
 }
 
 void main() {
+  // 기기 설정은 앱 생명주기(AppLifecycleListener)를 듣는다
+  TestWidgetsFlutterBinding.ensureInitialized();
+
   test('앱 언어가 서버 locale과 다르면 한 번 PATCH하고 결과를 상태로 둔다', () async {
     final server = _Server();
     final c = await _container(server);
@@ -110,5 +121,43 @@ void main() {
     final server = _Server(patchFails: ('UNAUTHORIZED', 401));
     final c = await _container(server);
     expect(c.read(accessKeyProvider).rejected, isTrue);
+  });
+
+  test('기기 시간대가 서버와 다르면 PATCH한다', () async {
+    final server = _Server();
+    await _container(
+      server,
+      device: const Locale('ko', 'KR'),
+      timeZone: 'America/Chicago',
+    );
+    expect(server.patches, [
+      {'timezone': 'America/Chicago'},
+    ]);
+  });
+
+  test('언어·시간대가 둘 다 다르면 한 번에 보낸다', () async {
+    final server = _Server();
+    await _container(server, timeZone: 'America/Chicago');
+    expect(server.patches, [
+      {'locale': 'en', 'timezone': 'America/Chicago'},
+    ]);
+  });
+
+  test('시간대를 읽지 못하면 시간대는 보내지 않는다', () async {
+    final server = _Server();
+    await _container(server, device: const Locale('ko', 'KR'), timeZone: null);
+    expect(server.patches, isEmpty);
+  });
+
+  test('앱이 앞으로 돌아오면 설정을 다시 받는다', () async {
+    final server = _Server();
+    await _container(server, device: const Locale('ko', 'KR'));
+    expect(server.adapter.requests, hasLength(1));
+    final binding = TestWidgetsFlutterBinding.instance
+      ..handleAppLifecycleStateChanged(AppLifecycleState.inactive);
+    await pumpEventQueue();
+    binding.handleAppLifecycleStateChanged(AppLifecycleState.resumed);
+    await pumpEventQueue();
+    expect(server.adapter.requests, hasLength(2));
   });
 }

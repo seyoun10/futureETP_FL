@@ -183,7 +183,7 @@
   - 값은 JSON `{language: ko|en, upDownStyle: kr|us}`. 없거나 깨졌거나 모르는 필드는 그 필드만 기기 기본값(언어 `ko`면 한국어 아니면 영어, 지역 `KR`이면 한국식 아니면 미국식, D-073).
   - `displaySettingsProvider`(`lib/core/settings/display_settings.dart`)가 상태이고, 바꾸면 화면을 먼저 바꾸고 저장은 뒤에서 한다(실패는 로그만).
   - `MaterialApp.locale`이 표시 설정 언어를 따른다. 언어를 고르는 UI는 B 화면에서 넣는다.
-  - 서버 기기 설정은 `deviceSettingsProvider`(`lib/core/settings/device_settings.dart`, `AsyncNotifier`: 조회 + `patch`). D-137 `DeviceSettingsSync`는 `deviceSettingsSyncProvider`로, 키가 있을 때 앱 루트가 watch한다. 설정을 받을 때마다와 앱 언어가 바뀔 때 비교하고 같은 값은 프로세스당 한 번만 보낸다. PATCH의 `UNAUTHORIZED`는 Provider 실패가 아니라 직접 `reportError`로 알린다. 시간대는 D-084 항목에서 같은 PATCH에 더한다.
+  - 서버 기기 설정은 `deviceSettingsProvider`(`lib/core/settings/device_settings.dart`, `AsyncNotifier`: 조회 + `patch`). D-137 `DeviceSettingsSync`는 `deviceSettingsSyncProvider`로, 키가 있을 때 앱 루트가 watch한다. 설정을 받을 때마다와 앱 언어가 바뀔 때 비교하고 같은 값은 프로세스당 한 번만 보낸다. PATCH의 `UNAUTHORIZED`는 Provider 실패가 아니라 직접 `reportError`로 알린다. 시간대는 FL-023에서 같은 PATCH에 더했다.
 - 근거: RN이 동기 저장소를 고른 이유(언어·색 깜빡임, D-030)를 그대로 지킨다. 저장 값이 작아 캐시 비용이 없다.
   - iOS 권한 문구는 `ios/Runner/{ko,en}.lproj/InfoPlist.strings`(기기 언어를 따름, 앱 안 언어와 따로, D-078 보충). Info.plist의 영어 문구는 strings가 없는 언어의 기본이다.
 - 영향: 테스트는 `test/helpers/display_store.dart`(메모리 플랫폼 저장소, dev 의존성 `shared_preferences_platform_interface`).
@@ -222,4 +222,15 @@
   - 시각은 `clock` 패키지로 읽어 테스트의 가짜 시간(`tester.pump`)과 맞춘다.
 - 근거: 조회마다 타이머·생명주기 처리를 되풀이하지 않고 한 곳에 둔다. Notifier가 자동 새로고침을 맡는다는 레이어 규칙(architecture.md)과도 맞다.
 - 영향: 빈 상태는 RN에도 공용 컴포넌트가 없어 화면별로 둔다(A 목록·C-d ETP). 캐시 유지 시간(C 차트 gcTime 1시간)은 C-a 때 정한다.
+
+## FL-023: 시간대 PATCH
+- 날짜: 2026-11-19
+- 상태: 확정
+- 맥락: D-084(RN `DeviceSettingsSync`)는 설정을 받을 때마다 기기 IANA 시간대를 서버 `timezone`과 비교해 다르면 PATCH하고, 같은 값은 프로세스당 한 번만 보낸다. Dart `DateTime.timeZoneName`은 `KST` 같은 약어라 IANA 이름이 아니다.
+- 결정:
+  - `flutter_timezone` 5.1.1(`getLocalTimezone().identifier`)로 읽는다. `deviceTimeZoneProvider`(읽기 함수, 테스트에서 덮어쓴다)가 읽지 못하거나 IANA 모양(`Area/Location`, `UTC`)이 아니면 null이고 보내지 않는다. RN은 `Intl.DateTimeFormat`으로 실제 시간대인지까지 보지만 Dart에는 시간대 DB가 없어 모양만 본다(OS가 준 값이라 충분).
+  - FL-019의 `deviceSettingsSyncProvider`에 더한다. 언어·시간대가 둘 다 다르면 PATCH 한 번에 보낸다(RN과 같음). 시간대는 비교할 때마다 새로 읽어 앱을 켠 채 이동해도 맞춘다.
+  - `deviceSettingsProvider`는 앱이 앞으로 돌아오면 다시 받는다(RN 설정 query의 앱 복귀 재조회, D-030). 그래서 복귀 때 시간대도 다시 비교한다.
+- 근거: 플러그인은 iOS·Android 기본 API(`TimeZone.current.identifier`·`ZoneId.systemDefault`)를 읽기만 하고 pub.dev 내려받기가 많다.
+- 영향: iOS 시뮬레이터 빌드 확인. Android 빌드는 다음 Android 실행 때 확인한다.
 
