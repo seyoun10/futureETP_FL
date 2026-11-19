@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math' as math;
 
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -36,7 +37,8 @@ const _page = 756;
 /// 이전 3년을 받는 척 기다리는 시간(RN 실측 0.3~0.55초, D-106).
 const spikeOlderDelay = Duration(milliseconds: 400);
 
-class _ChartSpikeScreenState extends ConsumerState<ChartSpikeScreen> {
+class _ChartSpikeScreenState extends ConsumerState<ChartSpikeScreen>
+    with SingleTickerProviderStateMixin {
   final _bars = SyntheticBars();
   final _stats = FrameStats();
   late CandleSeries _series = _bars.latest(_page);
@@ -45,10 +47,28 @@ class _ChartSpikeScreenState extends ConsumerState<ChartSpikeScreen> {
   )..addListener(_maybeLoadOlder);
   var _loadingOlder = false;
 
+  /// 측정용 자동 확대·축소: 42봉 ↔ 전체를 log 비율로 오간다(adb로는 핀치를 넣을 수 없다).
+  late final AnimationController _bench =
+      AnimationController(vsync: this, duration: const Duration(seconds: 3))
+        ..addListener(() {
+          final n = _series.length;
+          final span = math.exp(
+            math.log(42) + (math.log(n) - math.log(42)) * _bench.value,
+          );
+          _viewport.value = ChartViewport(
+            count: n,
+            start: n - span,
+            span: span,
+          ).clamped();
+        });
+
+  void _runBench() => _bench.repeat(reverse: true, count: 4);
+
   final _crosshair = ValueNotifier<int?>(null);
 
   @override
   void dispose() {
+    _bench.dispose();
     _stats.dispose();
     _crosshair.dispose();
     _viewport.dispose();
@@ -136,6 +156,11 @@ class _ChartSpikeScreenState extends ConsumerState<ChartSpikeScreen> {
               height: AppSize.touchTarget,
               child: Row(
                 children: [
+                  IconButton(
+                    key: const Key('chart-spike-bench'),
+                    onPressed: _runBench,
+                    icon: const Icon(Icons.play_arrow),
+                  ),
                   for (final MapEntry(:key, :value) in _periods.entries)
                     Expanded(
                       child: TextButton(

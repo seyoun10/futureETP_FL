@@ -13,6 +13,10 @@ class FrameStats extends ValueNotifier<FrameStat> {
     SchedulerBinding.instance.addTimingsCallback(_onTimings);
     _timer = Timer.periodic(const Duration(seconds: 1), (_) {
       value = (fps: _frames, worstMs: _worst);
+      // 측정 기록용(adb logcat -s flutter)
+      if (_frames > 0) {
+        debugPrint('[fps] $_frames worst ${_worst.toStringAsFixed(1)}ms');
+      }
       _frames = 0;
       _worst = 0;
     });
