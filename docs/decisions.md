@@ -40,3 +40,59 @@
 - 근거: Flutter 기본값이고 CocoaPods는 유지보수 단계다. 이 앱 후보 플러그인(FL-008·FL-009·FL-011)이 SwiftPM을 지원하지 않으면 스캐폴딩 때 `flutter build ios` 경고로 확인한다.
 - 출처: [Flutter 블로그 "Saying goodbye to CocoaPods"](https://flutter.dev/blog/saying-goodbye-to-cocoapods-swift-package-manager-is-soon-the-default-in-flutter) (2026-11-19 확인)
 
+## FL-004: 상태 관리는 Riverpod 3, 코드 생성 없이
+- 날짜: 2026-11-19
+- 상태: 확정
+- 맥락: RN의 TanStack Query(서버 상태)와 Zustand(기기 설정)를 한 상태 계층으로 옮긴다.
+- 선택지: (a) `flutter_riverpod` 수동 Provider (b) (a) + `riverpod_generator` (c) Bloc
+- 결정: (a) `flutter_riverpod` 3.5.0. `Notifier`·`AsyncNotifier`와 family만 쓰고 `legacy.dart`(StateProvider·StateNotifier)는 쓰지 않는다.
+- 근거: CLAUDE.md 레이어(Widget → Notifier → repository)가 Riverpod 전제. Riverpod 3.4.1 changelog가 4.0이 곧 나온다고 밝혀 생성기 API가 흔들릴 수 있고, Provider 수가 적어 생성기 이득이 작다. 코드 생성은 모델(FL-007)에만 둔다.
+- 영향: 4.0이 나오면 이전 비용을 보고 다시 정한다.
+
+## FL-005: 내비게이션은 go_router
+- 날짜: 2026-11-19
+- 상태: 확정
+- 결정: `go_router` 18.1.4. C 하단 탭은 `StatefulShellRoute.indexedStack`으로 탭별 상태를 유지하고, C-d-a는 셸 밖 라우트.
+- 근거: Flutter 팀 관리 패키지이고 유지보수 단계(기능 고정, 버그 수정)라 안정적. Expo Router의 A → C 스택 + C 안 하단 탭 + 탭 밖 상세 구조와 1:1로 대응한다.
+
+## FL-006: HTTP는 dio
+- 날짜: 2026-11-19
+- 상태: 확정
+- 선택지: (a) `dio` (b) `http` + 직접 래퍼
+- 결정: (a) `dio` 5.11.1. 재시도는 패키지 없이 D-072 규칙(`NETWORK`·`TIMEOUT`·`INTERNAL`만 2회, 변경 요청 제외)대로 API client에 직접 구현한다.
+- 근거: 요청별 타임아웃·`CancelToken`·인터셉터(헤더 주입)가 기본이고, `DioException` 종류(`connectionTimeout`·`receiveTimeout`·`connectionError`)를 `AppError`의 `TIMEOUT`·`NETWORK`로 바로 나눌 수 있다. `http`는 이를 직접 만들어야 한다.
+
+## FL-007: 응답 모델은 freezed 손 작성 + JSON Schema 계약 테스트
+- 날짜: 2026-11-19
+- 상태: 확정
+- 맥락: D-142로 계약이 `../futureETP/packages/shared/contract/schemas/*.json`(draft 2020-12)에 있다.
+- 선택지: (a) `freezed` + `json_serializable`로 손 작성 + 계약 테스트 (b) 스키마에서 모델 자동 생성(quicktype 등)
+- 결정: (a) `freezed` 4.0.3·`freezed_annotation` 3.1.0·`json_serializable` 6.15.2·`json_annotation` 4.12.0·`build_runner` 2.17.1. 계약 테스트는 `json_schema` 5.2.2(draft 2020-12 지원)로 저장한 dev 서버 응답이 스키마를 통과하는지와 모델로 디코딩되는지를 함께 본다.
+- 근거: 스키마 생성 도구는 nullable·enum·`pattern` 표현이 거칠고 생성 결과를 손봐야 해 재생성이 어렵다. 스키마가 15개로 적어 손 작성 비용이 작고, 어긋남은 계약 테스트가 잡는다. 디코딩 실패는 `SCHEMA_MISMATCH`(D-042).
+- 영향: 스키마가 바뀌면(원본 변경 반영) 모델과 fixture를 함께 고친다.
+
+## FL-008: 저장소 패키지
+- 날짜: 2026-11-19
+- 상태: 확정
+- 결정: 접근 키·installation ID는 `flutter_secure_storage` 11.2.0(Android 최소 SDK 24), 언어·등락 색은 `shared_preferences` 2.5.6의 `SharedPreferencesAsync`.
+- 근거: D-043·D-044. `SharedPreferencesAsync`는 패키지가 권장하는 새 API로 캐시 불일치가 없다. 값이 두 개뿐이라 로컬 DB는 쓰지 않는다.
+
+## FL-009: QR·i18n
+- 날짜: 2026-11-19
+- 상태: 확정
+- 결정: QR은 `mobile_scanner` 7.5.0(D-078). i18n은 `flutter_localizations` + `intl`(Flutter SDK가 고정하는 버전, 현재 0.20.x) + gen-l10n, ARB는 `lib/l10n`(D-033, D-073).
+
+## FL-010: lint는 very_good_analysis
+- 날짜: 2026-11-19
+- 상태: 확정
+- 선택지: (a) `flutter_lints` 6.0.0 (b) `very_good_analysis` 11.0.0
+- 결정: (b). `public_member_api_docs`만 끈다(개인 앱, 공개 API 없음).
+- 근거: `flutter_lints`는 2025-05 뒤 갱신이 없고 규칙이 느슨하다. `very_good_analysis`는 2026-09 갱신, 엄격 규칙(타입 명시·불변·async 실수)이 RN의 strict TypeScript 수준에 가깝다.
+- 영향: import 방향 검사(D-041)는 lint 플러그인(`custom_lint` 0.8.1은 2025-09 뒤 갱신 없음) 대신 2단계에서 `lib/` import 경로를 검사하는 테스트로 정하는 쪽을 우선 검토한다.
+
+## FL-011: 푸시 패키지
+- 날짜: 2026-11-19
+- 상태: 검토중(iOS는 5단계에서 확정)
+- 맥락: 서버는 Android FCM HTTP v1, iOS APNs 직접 발송(D-037). RN은 `expo-notifications`의 `getDevicePushTokenAsync`로 두 OS의 네이티브 토큰을 받는다(Firebase iOS 설정 없음).
+- 결정: Android는 `firebase_messaging` 17.1.0 + `firebase_core` 5.2.0. iOS는 Firebase iOS 앱 등록 없이 APNs 기기 토큰을 받는 방법(작은 플랫폼 채널 vs `firebase_messaging.getAPNSToken()` + GoogleService-Info.plist)을 Apple 가입 뒤 5단계에서 정한다.
+- 근거: RN과 같이 iOS에 Firebase 설정을 두지 않는 쪽이 서버·Firebase 설정을 바꾸지 않는다(FL-002).

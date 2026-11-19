@@ -11,3 +11,6 @@
 - [x] `flutter config --jdk-dir`로 Zulu JDK 17(RN과 같은 JDK)을 쓰게 하고 Android SDK·에뮬레이터 `Pixel_API_36`은 RN과 함께 쓴다
 - [x] iOS: Xcode 27.2·CocoaPods 또는 Swift Package Manager 통합 중 어느 쪽인지 `flutter doctor` 결과로 정한다
   - 결과(2026-11-19): Flutter 3.50.0·Dart 3.14.0, `flutter doctor` 이슈 없음, iOS는 SwiftPM(FL-003)
+
+## 1. 스택 확정
+- [x] `docs/tech-stack.md`의 후보를 하나씩 정한다(2026-11-19, FL-004~FL-010 확정, FL-011 푸시는 iOS만 5단계로 남김). 버전은 pub.dev API로 확인
