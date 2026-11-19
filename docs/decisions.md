@@ -185,4 +185,5 @@
   - `MaterialApp.locale`이 표시 설정 언어를 따른다. 언어를 고르는 UI는 B 화면에서 넣는다.
   - 서버 기기 설정은 `deviceSettingsProvider`(`lib/core/settings/device_settings.dart`, `AsyncNotifier`: 조회 + `patch`). D-137 `DeviceSettingsSync`는 `deviceSettingsSyncProvider`로, 키가 있을 때 앱 루트가 watch한다. 설정을 받을 때마다와 앱 언어가 바뀔 때 비교하고 같은 값은 프로세스당 한 번만 보낸다. PATCH의 `UNAUTHORIZED`는 Provider 실패가 아니라 직접 `reportError`로 알린다. 시간대는 D-084 항목에서 같은 PATCH에 더한다.
 - 근거: RN이 동기 저장소를 고른 이유(언어·색 깜빡임, D-030)를 그대로 지킨다. 저장 값이 작아 캐시 비용이 없다.
+  - iOS 권한 문구는 `ios/Runner/{ko,en}.lproj/InfoPlist.strings`(기기 언어를 따름, 앱 안 언어와 따로, D-078 보충). Info.plist의 영어 문구는 strings가 없는 언어의 기본이다.
 - 영향: 테스트는 `test/helpers/display_store.dart`(메모리 플랫폼 저장소, dev 의존성 `shared_preferences_platform_interface`).

@@ -1,0 +1,2 @@
+/* iOS permission text for English devices (D-078). */
+"NSCameraUsageDescription" = "The camera is used to scan the server access key QR code.";
