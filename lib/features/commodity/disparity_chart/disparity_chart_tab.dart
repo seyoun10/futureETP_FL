@@ -1,5 +1,7 @@
+import 'dart:async';
 import 'dart:math' as math;
 
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:futureetp/core/api/app_error.dart';
 import 'package:futureetp/core/api/error_text.dart';
@@ -7,6 +9,7 @@ import 'package:futureetp/core/api/models/disparity_chart.dart';
 import 'package:futureetp/core/api/models/enums.dart';
 import 'package:futureetp/core/charts/candle_chart.dart';
 import 'package:futureetp/core/charts/chart_decor.dart';
+import 'package:futureetp/core/charts/chart_detail.dart';
 import 'package:futureetp/core/charts/chart_layout.dart';
 import 'package:futureetp/core/charts/chart_periods.dart';
 import 'package:futureetp/core/charts/chart_viewport.dart';
@@ -14,10 +17,12 @@ import 'package:futureetp/core/charts/period_chips.dart';
 import 'package:futureetp/core/settings/device_settings.dart';
 import 'package:futureetp/core/theme/tokens.dart';
 import 'package:futureetp/core/theme/up_down_color.dart';
+import 'package:futureetp/core/util/failed_alert.dart';
 import 'package:futureetp/core/util/format_date_time.dart';
 import 'package:futureetp/core/util/format_number.dart';
 import 'package:futureetp/core/util/orientation.dart';
 import 'package:futureetp/core/widgets/query_state_view.dart';
+import 'package:futureetp/features/commodity/chart_busy.dart';
 import 'package:futureetp/features/commodity/disparity_chart/disparity_chart_provider.dart';
 import 'package:futureetp/features/commodity/disparity_chart/disparity_model.dart';
 import 'package:futureetp/l10n/app_localizations.dart';
@@ -97,6 +102,9 @@ const _lineStyle = TextStyle(
   fontFeatures: [FontFeature.tabularFigures()],
 );
 
+/// 이전 3년 받기가 이 시간 안에 끝나지 않으면 로딩·차단을 거두고 실패 Alert를 띄운다(D-139).
+const olderLoadTimeout = Duration(seconds: 5);
+
 class _DisparityChartViewState extends ConsumerState<_DisparityChartView> {
   late DisparityModel _model = DisparityModel.from(widget.data.chart);
 
@@ -110,6 +118,57 @@ class _DisparityChartViewState extends ConsumerState<_DisparityChartView> {
     ChartViewport.latest(_model.bars.length, _period.bars),
   );
   final _crosshair = ValueNotifier<int?>(null);
+
+  // 이전 3년 받기(D-104, D-108, D-139). 회차 번호로 시간 초과로 거둔 회차의 늦은 응답이
+  // 상태를 다시 바꾸지 않게 한다(데이터는 Provider가 그대로 붙인다)
+  var _loadingOlder = false;
+  var _olderRun = 0;
+  Timer? _olderTimer;
+  late final ChartBusyNotifier _busy = ref.read(chartBusyProvider.notifier);
+
+  @override
+  void initState() {
+    super.initState();
+    _viewport.addListener(_maybeLoadOlder);
+  }
+
+  /// 가장 과거 봉이 화면에 보이고 더 받을 것이 있으면 이전 3년을 받는다.
+  void _maybeLoadOlder() {
+    if (_loadingOlder ||
+        !_viewport.value.showsOldest ||
+        !widget.data.chart.hasMore) {
+      return;
+    }
+    final id = ++_olderRun;
+    HapticFeedback.lightImpact().ignore();
+    setState(() => _loadingOlder = true);
+    _busy.set(busy: true);
+    _olderTimer = Timer(olderLoadTimeout, () => _finishOlder(id, failed: true));
+    ref
+        .read(disparityChartProvider(widget.code).notifier)
+        .loadOlder()
+        .then(
+          (_) => _finishOlder(id, failed: false),
+          onError: (Object _) => _finishOlder(id, failed: true),
+        )
+        .ignore();
+  }
+
+  void _finishOlder(int id, {required bool failed}) {
+    if (id != _olderRun || !mounted) return;
+    _olderRun++;
+    _olderTimer?.cancel();
+    setState(() => _loadingOlder = false);
+    _busy.set(busy: false);
+    if (failed) {
+      final l10n = AppLocalizations.of(context);
+      showFailedAlert(
+        context,
+        l10n.chartOlderFailedTitle,
+        l10n.chartOlderFailedMessage,
+      );
+    }
+  }
 
   @override
   void didUpdateWidget(_DisparityChartView old) {
@@ -142,6 +201,9 @@ class _DisparityChartViewState extends ConsumerState<_DisparityChartView> {
 
   @override
   void dispose() {
+    _olderRun++;
+    _olderTimer?.cancel();
+    if (_loadingOlder) _busy.set(busy: false);
     _viewport.dispose();
     _crosshair.dispose();
     super.dispose();
@@ -204,6 +266,8 @@ class _DisparityChartViewState extends ConsumerState<_DisparityChartView> {
     final l10n = AppLocalizations.of(context);
     if (_model.bars.isEmpty) return TabMessage(l10n.disparityNoData);
     final palette = ref.watch(upDownPaletteProvider);
+    // 차단 상태를 C 껍데기 밖(탭만 띄운 테스트)에서도 살려 둔다
+    ref.watch(chartBusyProvider);
     final chart = widget.data.chart;
     final decimals = chart.priceDecimals;
     final landscape = isLandscape(context);
@@ -237,6 +301,8 @@ class _DisparityChartViewState extends ConsumerState<_DisparityChartView> {
                   palette: palette,
                   padding: padding,
                   onGesture: _onGesture,
+                  onGestureEnd: _maybeLoadOlder,
+                  locked: _loadingOlder,
                   formatPrice: (p) => formatPrice(p, decimals),
                   decor: decor,
                 ),
@@ -270,6 +336,32 @@ class _DisparityChartViewState extends ConsumerState<_DisparityChartView> {
                   ),
                 ),
               ),
+              Positioned.fill(
+                child: ChartDetailOverlay(
+                  series: _model.series,
+                  viewport: _viewport,
+                  crosshair: _crosshair,
+                  padding: padding,
+                  builder: (context, index) => _CrosshairDetail(
+                    model: _model,
+                    chart: chart,
+                    index: index,
+                  ),
+                ),
+              ),
+              // 이전 3년을 받는 동안 차트 왼쪽 가운데 로딩 표시
+              if (_loadingOlder)
+                const Positioned.fill(
+                  child: IgnorePointer(
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: Padding(
+                        padding: EdgeInsets.only(left: AppSpacing.lg),
+                        child: _OlderIndicator(),
+                      ),
+                    ),
+                  ),
+                ),
               if (_gesture != null)
                 Positioned(
                   left: 0,
@@ -506,3 +598,113 @@ ChartDecor disparityDecor(
 /// x축 월 라벨: 1월은 연도, 나머지는 월 이름(D-121).
 String monthLabel(AppLocalizations l10n, int year, int month) =>
     month == 1 ? '$year' : l10n.chartMonth('$month');
+
+/// 이전 3년 받기 로딩 표시(RN `OlderDataIndicator`).
+class _OlderIndicator extends StatelessWidget {
+  const new();
+
+  @override
+  Widget build(BuildContext context) => Semantics(
+    label: AppLocalizations.of(context).loading,
+    child: Container(
+      key: const Key('older-loading'),
+      padding: const EdgeInsets.all(AppSpacing.sm),
+      decoration: BoxDecoration(
+        color: AppColors.overlay,
+        borderRadius: BorderRadius.circular(AppSpacing.lg),
+      ),
+      child: const SizedBox.square(
+        dimension: 20,
+        child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.text),
+      ),
+    ),
+  );
+}
+
+/// 십자선 상세: 날짜·월물 구성, 시고저종, 전일 대비, 이격도, 이평선·rare-level 값(screens.md C-a).
+/// 전일 대비·이격도는 부호대로 등락 색, 선 값은 가격 높은 순으로 선 색이다.
+class _CrosshairDetail extends ConsumerWidget {
+  const new({required this.model, required this.chart, required this.index});
+
+  final DisparityModel model;
+  final DisparityChart chart;
+  final int index;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
+    final palette = ref.watch(upDownPaletteProvider);
+    final bar = model.bars[index];
+    final prev = index > 0 ? model.bars[index - 1] : null;
+    final d = chart.priceDecimals;
+    final current = holdingsText(bar, chart.basis);
+    // 대표월물 전환일 봉이면 새 월물명을 이어 쓴다(차트에는 세로 점선만 있다, D-103)
+    final switchTo = model.frontSwitchAt[index];
+    final holdings = switchTo != null && current != null
+        ? '$current → $switchTo'
+        : current;
+    String lineName(LineLabel label) => switch (label) {
+      MaLabel() => l10n.disparityMa('${chart.maPeriod.days}'),
+      BandLabel(:final direction, :final level) => switch (direction) {
+        Direction.up => l10n.disparityTailUp(_levelText(level)),
+        Direction.down => l10n.disparityTailDown(_levelText(level)),
+      },
+    };
+    final lineValues = [
+      for (final l in model.lines)
+        if (!l.line.values[index].isNaN)
+          (label: l.label, price: l.line.values[index], color: l.line.color),
+    ]..sort((a, b) => b.price.compareTo(a.price));
+    Widget half(String label, double value) => Expanded(
+      child: DetailRow(label: label, value: formatPrice(value, d)),
+    );
+    return DetailBox(
+      children: [
+        DetailRow(label: bar.tradeDate, value: holdings),
+        Row(
+          spacing: AppSpacing.md,
+          children: [
+            half(l10n.disparityOpen, bar.open!),
+            half(l10n.disparityHigh, bar.high!),
+          ],
+        ),
+        Row(
+          spacing: AppSpacing.md,
+          children: [
+            half(l10n.disparityClose, bar.close!),
+            half(l10n.disparityLow, bar.low!),
+          ],
+        ),
+        if (prev != null)
+          DetailRow(
+            label: l10n.disparityPrevChange,
+            value:
+                '${formatChange(bar.close! - prev.close!, d)} '
+                '(${formatChangePct((bar.close! / prev.close! - 1) * 100)})',
+            color: changePairColor(
+              bar.close! - prev.close!,
+              (bar.close! / prev.close! - 1) * 100,
+              d,
+              palette,
+            ),
+          ),
+        if (bar.disparity case final value?)
+          DetailRow(
+            label: l10n.disparityLabel,
+            value: formatDisparity(value),
+            color: changeColor(value, palette, decimals: 1),
+          ),
+        for (final l in lineValues)
+          DetailRow(
+            label: lineName(l.label),
+            value: formatPrice(l.price, d),
+            color: l.color,
+          ),
+      ],
+    );
+  }
+}
+
+/// rare 레벨 값(`1`, `2.5`). JS 숫자 표기와 같다.
+String _levelText(double v) =>
+    v == v.truncateToDouble() ? '${v.toInt()}' : '$v';

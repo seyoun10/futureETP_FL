@@ -32,6 +32,7 @@ class CandleChart extends StatefulWidget {
     required this.palette,
     this.padding = EdgeInsets.zero,
     this.onGesture,
+    this.onGestureEnd,
     this.formatPrice,
     this.decor,
     this.locked = false,
@@ -49,6 +50,9 @@ class CandleChart extends StatefulWidget {
 
   /// 끌기·핀치가 보이는 범위를 실제로 바꿨을 때. 범위가 그대로인 제스처(끝에서 더 밀기 등)로는 부르지 않는다.
   final ValueChanged<ChartGesture>? onGesture;
+
+  /// 끌기·핀치가 끝났을 때(범위가 그대로여도). 가장 과거 끝에서 다시 끌면 이전 데이터를 다시 받는다(D-139).
+  final VoidCallback? onGestureEnd;
 
   /// 십자선 가격 라벨. 없으면 소수 셋째 자리.
   final String Function(double price)? formatPrice;
@@ -118,7 +122,10 @@ class _CandleChartState extends State<CandleChart> {
     widget.onGesture?.call(zoom ? ChartGesture.zoom : ChartGesture.pan);
   }
 
-  void _onScaleEnd(ScaleEndDetails d) => _startViewport = null;
+  void _onScaleEnd(ScaleEndDetails d) {
+    _startViewport = null;
+    widget.onGestureEnd?.call();
+  }
 
   void _onLongPressStart(LongPressStartDetails d) =>
       _moveCrosshair(_x(d.localPosition));

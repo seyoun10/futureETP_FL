@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:futureetp/app/app.dart';
+import 'package:futureetp/core/api/app_error.dart';
 import 'package:futureetp/core/api/models/disparity_chart.dart';
 import 'package:futureetp/core/api/models/enums.dart';
 import 'package:futureetp/core/charts/candle_chart.dart';
@@ -15,20 +16,26 @@ import 'package:futureetp/l10n/app_localizations.dart';
 import 'package:material_ui/material_ui.dart';
 
 /// fixture 봉 하나를 본으로 [n]개 봉을 만든다(날짜는 2025-01-01부터 하루씩, 종가는 조금씩 오른다).
-DisparityChart _chart({int n = 300, String basis = 'FRONT'}) {
+DisparityChart _chart({
+  int n = 300,
+  String basis = 'FRONT',
+  DateTime? start,
+  bool hasMore = true,
+}) {
   final json = jsonDecode(
     File('test/contract/fixtures/disparityChart.json').readAsStringSync(),
   ) as Map<String, Object?>;
   final template = (json['bars']! as List).last as Map<String, Object?>;
-  final start = DateTime.utc(2025);
+  final from = start ?? DateTime.utc(2025);
   return DisparityChart.fromJson({
     ...json,
     'basis': basis,
+    'hasMore': hasMore,
     'bars': [
       for (var i = 0; i < n; i++)
         {
           ...template,
-          'tradeDate': start
+          'tradeDate': from
               .add(Duration(days: i))
               .toIso8601String()
               .substring(0, 10),
@@ -49,15 +56,35 @@ const _params = DisparityParams(
   levels: [1, 2, 4, 8, 16],
 );
 
-/// 조회 결과를 바로 넣는 가짜 Notifier.
+/// 조회 결과를 바로 넣는 가짜 Notifier. 이전 3년은 `_olderDelay` 뒤 2024년 봉 300개를 붙이거나 실패한다.
 class _FakeChart extends DisparityChartNotifier {
   new(super.code, this.chart);
 
   final DisparityChart chart;
+  int olderCalls = 0;
 
   @override
   Future<DisparityData> build() async => DisparityData(_params, chart);
+
+  @override
+  Future<void> loadOlder() async {
+    olderCalls++;
+    await Future<void>.delayed(_olderDelay);
+    if (_olderFails) throw const AppError(AppErrorCode.network);
+    final now = state.requireValue.chart;
+    final older = _chart(start: DateTime.utc(2024, 3), hasMore: false);
+    state = AsyncData(
+      DisparityData(
+        _params,
+        now.copyWith(bars: [...older.bars, ...now.bars], hasMore: false),
+      ),
+    );
+  }
 }
+
+var _olderDelay = const Duration(milliseconds: 500);
+var _olderFails = false;
+late _FakeChart _fake;
 
 Future<void> _pump(WidgetTester tester, DisparityChart chart) async {
   tester.view
@@ -69,7 +96,7 @@ Future<void> _pump(WidgetTester tester, DisparityChart chart) async {
       overrides: [
         upDownPaletteProvider.overrideWithValue(UpDownPalette.kr),
         disparityChartProvider(CommodityCode.gc)
-            .overrideWith(() => _FakeChart(CommodityCode.gc, chart)),
+            .overrideWith(() => _fake = _FakeChart(CommodityCode.gc, chart)),
       ],
       child: const MaterialApp(
         localizationsDelegates: appLocalizationsDelegates,
@@ -108,7 +135,24 @@ Future<void> _pinchOut(WidgetTester tester) async {
   await tester.pumpAndSettle();
 }
 
+/// 한 번에 가장 과거까지 끈다(손가락은 떼지 않는다).
+Future<TestGesture> _dragToOldest(WidgetTester tester) async {
+  final g = await tester.startGesture(
+    tester.getCenter(find.byType(CandleChart)),
+  );
+  for (var i = 0; i < 10; i++) {
+    await g.moveBy(const Offset(300, 0));
+    await tester.pump(const Duration(milliseconds: 16));
+  }
+  return g;
+}
+
 void main() {
+  setUp(() {
+    _olderDelay = const Duration(milliseconds: 500);
+    _olderFails = false;
+  });
+
   testWidgets('6M으로 시작하고, 위 두 줄에 오늘 시고저종과 이격도·LC·HC', (tester) async {
     await _pump(tester, _chart());
     expect(_candle(tester).viewport.value.span, 126);
@@ -206,5 +250,79 @@ void main() {
       ),
     );
     expect(find.byType(TabMessage), findsOneWidget);
+  });
+
+  testWidgets('길게 누르면 상세 박스: 날짜·시고저종·전일 대비·이격도·선 값', (tester) async {
+    await _pump(tester, _chart());
+    final center = tester.getCenter(find.byType(CandleChart));
+    final g = await tester.startGesture(center);
+    await tester.pump(crosshairLongPress + const Duration(milliseconds: 50));
+    await g.up();
+    await tester.pump();
+    final i = _candle(tester).crosshair.value!;
+    final date = DateTime.utc(2025).add(Duration(days: i));
+    expect(find.byKey(const Key('chart-detail')), findsOneWidget);
+    expect(find.text(date.toIso8601String().substring(0, 10)), findsOneWidget);
+    expect(find.text('Chg'), findsOneWidget);
+    // 전일 대비 +1.0 (+…%)는 상승 색(한국식 빨강)
+    expect(
+      tester.widget<Text>(find.textContaining('+1.0 (')).style?.color,
+      UpDownPalette.kr.up,
+    );
+    expect(find.text('MA100'), findsOneWidget);
+  });
+
+  testWidgets('가장 과거가 보이면 햅틱과 함께 이전 3년을 받고, 받는 동안 막고, 붙인 뒤 범위를 지킨다', (
+    tester,
+  ) async {
+    await _pump(tester, _chart());
+    final g = await _dragToOldest(tester);
+    expect(_candle(tester).viewport.value.start, 0);
+    expect(find.byKey(const Key('older-loading')), findsOneWidget);
+    expect(_candle(tester).locked, isTrue);
+    await g.up();
+    final seen = _candle(tester).viewport.value;
+
+    await tester.pump(_olderDelay);
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('older-loading')), findsNothing);
+    expect(_candle(tester).locked, isFalse);
+    final v = _candle(tester).viewport.value;
+    expect(v.count, 600);
+    expect(v.start, seen.start + 300);
+    expect(v.span, seen.span);
+    expect(_fake.olderCalls, 1);
+  });
+
+  testWidgets('5초 안에 못 받으면 Alert, 늦게 온 봉은 그대로 붙는다', (tester) async {
+    _olderDelay = const Duration(seconds: 8);
+    await _pump(tester, _chart());
+    final g = await _dragToOldest(tester);
+    await g.up();
+    await tester.pump(olderLoadTimeout);
+    await tester.pumpAndSettle();
+    expect(find.text("Couldn't load older data"), findsOneWidget);
+    expect(find.byKey(const Key('older-loading')), findsNothing);
+    await tester.tap(find.text('OK'));
+    await tester.pump(const Duration(seconds: 4));
+    await tester.pumpAndSettle();
+    expect(_candle(tester).viewport.value.count, 600);
+  });
+
+  testWidgets('실패하면 Alert, 가장 과거 끝에서 다시 끌면 다시 받는다', (tester) async {
+    _olderFails = true;
+    await _pump(tester, _chart());
+    var g = await _dragToOldest(tester);
+    await g.up();
+    await tester.pumpAndSettle();
+    expect(find.text('Drag the chart again in a moment.'), findsOneWidget);
+    await tester.tap(find.text('OK'));
+    await tester.pumpAndSettle();
+
+    // 범위가 그대로인 끌기도 끝나면 다시 시도한다
+    g = await _dragToOldest(tester);
+    await g.up();
+    await tester.pumpAndSettle();
+    expect(_fake.olderCalls, 2);
   });
 }

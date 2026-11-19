@@ -222,3 +222,55 @@ double extremeTagTop(
     arrowFirst: arrowFirst,
   );
 }
+
+// ---- 십자선 상세 박스 ----
+
+/// 상세 박스를 둘 귀퉁이.
+typedef DetailCorner = ({bool top, bool left});
+
+/// 박스 영역과 겹치는 표시의 세로 길이 합(대략 가리는 픽셀 수)이 가장 작은 귀퉁이.
+/// 십자선 x를 덮는 귀퉁이는 다른 곳이 없을 때만 고르고, 같으면 손가락 반대편·위쪽 순이다
+/// (RN `leastCoveredCorner`). [marksIn]은 화면 x 범위의 표시(봉·선) 세로 구간 (y0, y1)들이다.
+DetailCorner leastCoveredCorner({
+  required ({double left, double top, double right, double bottom}) area,
+  required ({double width, double height}) box,
+  required double crosshairX,
+  required Iterable<(double, double)> Function(double x0, double x1) marksIn,
+}) {
+  final oppositeLeft = crosshairX >= (area.left + area.right) / 2;
+  final corners = <DetailCorner>[
+    (top: true, left: oppositeLeft),
+    (top: false, left: oppositeLeft),
+    (top: true, left: !oppositeLeft),
+    (top: false, left: !oppositeLeft),
+  ];
+  var best = corners.first;
+  var bestScore = double.infinity;
+  for (final corner in corners) {
+    final r = cornerRect(area, box, corner);
+    var score = crosshairX >= r.left && crosshairX <= r.right ? 1e9 : 0.0;
+    for (final (y0, y1) in marksIn(r.left, r.right)) {
+      score += math.max(0, math.min(y1, r.bottom) - math.max(y0, r.top));
+    }
+    if (score < bestScore) {
+      best = corner;
+      bestScore = score;
+    }
+  }
+  return best;
+}
+
+({double left, double top, double right, double bottom}) cornerRect(
+  ({double left, double top, double right, double bottom}) area,
+  ({double width, double height}) box,
+  DetailCorner corner,
+) {
+  final left = corner.left ? area.left : area.right - box.width;
+  final top = corner.top ? area.top : area.bottom - box.height;
+  return (
+    left: left,
+    top: top,
+    right: left + box.width,
+    bottom: top + box.height,
+  );
+}
