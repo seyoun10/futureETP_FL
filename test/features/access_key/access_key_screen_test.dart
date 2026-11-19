@@ -10,10 +10,13 @@ import 'package:futureetp/core/api/access_key.dart';
 import 'package:futureetp/core/api/api_client.dart';
 import 'package:futureetp/core/api/app_error.dart';
 import 'package:futureetp/core/config/app_config.dart';
+import 'package:futureetp/core/settings/display_settings.dart';
 import 'package:futureetp/features/access_key/access_key_screen.dart';
 import 'package:futureetp/features/dev_health/health_screen.dart';
 import 'package:material_ui/material_ui.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../helpers/display_store.dart';
 import '../../helpers/fake_http.dart';
 
 // 둘 다 형식(base64url 43자)은 맞다. 서버는 _goodKey만 받는다.
@@ -52,6 +55,7 @@ Widget _app(FakeHttpAdapter adapter, {String? storedKey}) => ProviderScope(
   observers: const [AuthErrorObserver()],
   overrides: [
     storedAccessKeyProvider.overrideWithValue(storedKey),
+    displaySettingsStoreProvider.overrideWithValue(_displayStore),
     appConfigProvider.overrideWithValue(
       const AppConfig(variant: AppVariant.prod, apiUrl: 'http://test'),
     ),
@@ -79,8 +83,13 @@ Future<void> _enter(WidgetTester tester, String text) async {
   await tester.pumpAndSettle();
 }
 
+late SharedPreferencesWithCache _displayStore;
+
 void main() {
-  setUp(() => FlutterSecureStorage.setMockInitialValues({}));
+  setUp(() async {
+    FlutterSecureStorage.setMockInitialValues({});
+    _displayStore = await openTestDisplayStore();
+  });
 
   testWidgets('키가 없으면 첫 화면이 B-b이고 [←]가 없다', (tester) async {
     await tester.pumpWidget(_app(_server()));

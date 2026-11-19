@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:futureetp/app/router.dart';
+import 'package:futureetp/core/settings/display_settings.dart';
 import 'package:futureetp/l10n/app_localizations.dart';
 import 'package:material_ui/material_ui.dart';
 
@@ -19,6 +20,8 @@ class App extends ConsumerWidget {
     onGenerateTitle: (context) => 'futureETP',
     // 다크 전용(D-031)
     theme: ThemeData(brightness: Brightness.dark),
+    // 앱 안 언어 설정을 따른다(기본은 기기 언어, D-033, D-073)
+    locale: ref.watch(displaySettingsProvider.select((s) => s.locale)),
     localizationsDelegates: appLocalizationsDelegates,
     supportedLocales: AppLocalizations.supportedLocales,
     routerConfig: ref.watch(routerProvider),

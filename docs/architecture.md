@@ -18,7 +18,7 @@ lib/
 │  ├─ api/                       HTTP 래퍼, AppError, 엔드포인트 함수, 응답 모델(`models/`, FL-017)
 │  ├─ charts/                    CustomPainter 차트·뷰포트(핀치·드래그)
 │  ├─ widgets/                   공용 UI(ScreenHeader, FreshnessLine, QueryStateView, SegmentedControl)
-│  ├─ settings/                  기기 UI 설정 저장(언어·등락 색)
+│  ├─ settings/                  기기 UI 설정 저장(언어·등락 색, FL-019)
 │  ├─ storage/                   보안 저장소 인스턴스(FL-015)
 │  ├─ theme/                     테마 토큰(다크 전용), 등락 색
 │  ├─ push/                      토큰 등록, 알림 탭 이동

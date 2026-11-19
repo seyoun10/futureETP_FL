@@ -173,3 +173,15 @@
   - 에러 문구 `errorText(l10n, error)`는 `lib/core/api/error_text.dart`.
 - 근거: go_router `redirect`만으로 거절 이동까지 하면 스택이 바뀌어 [←]로 돌아갈 곳이 없다. 첫 실행 게이트는 redirect, 거절은 push로 나눠 RN 동작과 같게 했다.
 - 영향: 기기 확인(Android 에뮬레이터): 첫 화면 B-b·[←] 없음, 권한 거부 안내, 형식 오류, 서버 거절, 맞는 키 저장 → A, 재실행 때 바로 A. QR을 실제로 읽는 경우는 기기에서 아직 확인하지 않았다. mobile_scanner 때문에 Android SDK Platform 35가 빌드 때 자동 설치됐다.
+
+## FL-019: 표시 설정(언어·등락 색) 저장과 앱 언어
+- 날짜: 2026-11-19
+- 상태: 확정
+- 맥락: D-073(RN: 동기 `expo-sqlite/kv-store` + zustand persist, 키 `display-settings`)을 옮긴다. FL-008은 `SharedPreferencesAsync`를 골랐지만 비동기만 있어 첫 프레임에 저장 값을 쓸 수 없다.
+- 결정:
+  - `SharedPreferencesWithCache`(allowList `display-settings`)를 `main`에서 `runApp` 전에 열어 `displaySettingsStoreProvider`로 넣는다. 캐시 읽기가 동기라 첫 프레임부터 저장된 언어·색이다.
+  - 값은 JSON `{language: ko|en, upDownStyle: kr|us}`. 없거나 깨졌거나 모르는 필드는 그 필드만 기기 기본값(언어 `ko`면 한국어 아니면 영어, 지역 `KR`이면 한국식 아니면 미국식, D-073).
+  - `displaySettingsProvider`(`lib/core/settings/display_settings.dart`)가 상태이고, 바꾸면 화면을 먼저 바꾸고 저장은 뒤에서 한다(실패는 로그만).
+  - `MaterialApp.locale`이 표시 설정 언어를 따른다. 언어를 고르는 UI는 B 화면에서 넣는다.
+- 근거: RN이 동기 저장소를 고른 이유(언어·색 깜빡임, D-030)를 그대로 지킨다. 저장 값이 작아 캐시 비용이 없다.
+- 영향: 테스트는 `test/helpers/display_store.dart`(메모리 플랫폼 저장소, dev 의존성 `shared_preferences_platform_interface`).
