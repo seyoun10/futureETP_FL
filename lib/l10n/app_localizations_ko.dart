@@ -95,4 +95,29 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get errorSchemaMismatch => '앱과 서버 버전이 맞지 않습니다. 앱을 업데이트해 주세요.';
+
+  @override
+  String get loading => '불러오는 중';
+
+  @override
+  String freshnessAsOf(String time) {
+    return '$time 기준';
+  }
+
+  @override
+  String freshnessTradeDate(String date) {
+    return '거래일 $date';
+  }
+
+  @override
+  String get freshnessDelayed => '지연';
+
+  @override
+  String get marketStateOpen => '장중';
+
+  @override
+  String get marketStateClosed => '휴장';
+
+  @override
+  String get marketStateSettlementPending => '정산 대기';
 }

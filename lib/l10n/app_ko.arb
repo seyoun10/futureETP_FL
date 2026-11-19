@@ -59,5 +59,26 @@
   "errorInternal": "서버에 문제가 생겼습니다. 잠시 뒤 다시 시도해 주세요.",
   "errorNetwork": "네트워크에 연결할 수 없습니다.",
   "errorTimeout": "서버 응답이 늦습니다. 잠시 뒤 다시 시도해 주세요.",
-  "errorSchemaMismatch": "앱과 서버 버전이 맞지 않습니다. 앱을 업데이트해 주세요."
+  "errorSchemaMismatch": "앱과 서버 버전이 맞지 않습니다. 앱을 업데이트해 주세요.",
+  "loading": "불러오는 중",
+  "freshnessAsOf": "{time} 기준",
+  "@freshnessAsOf": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "freshnessTradeDate": "거래일 {date}",
+  "@freshnessTradeDate": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "freshnessDelayed": "지연",
+  "marketStateOpen": "장중",
+  "marketStateClosed": "휴장",
+  "marketStateSettlementPending": "정산 대기"
 }

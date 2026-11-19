@@ -253,6 +253,48 @@ abstract class AppLocalizations {
   /// In ko, this message translates to:
   /// **'앱과 서버 버전이 맞지 않습니다. 앱을 업데이트해 주세요.'**
   String get errorSchemaMismatch;
+
+  /// No description provided for @loading.
+  ///
+  /// In ko, this message translates to:
+  /// **'불러오는 중'**
+  String get loading;
+
+  /// No description provided for @freshnessAsOf.
+  ///
+  /// In ko, this message translates to:
+  /// **'{time} 기준'**
+  String freshnessAsOf(String time);
+
+  /// No description provided for @freshnessTradeDate.
+  ///
+  /// In ko, this message translates to:
+  /// **'거래일 {date}'**
+  String freshnessTradeDate(String date);
+
+  /// No description provided for @freshnessDelayed.
+  ///
+  /// In ko, this message translates to:
+  /// **'지연'**
+  String get freshnessDelayed;
+
+  /// No description provided for @marketStateOpen.
+  ///
+  /// In ko, this message translates to:
+  /// **'장중'**
+  String get marketStateOpen;
+
+  /// No description provided for @marketStateClosed.
+  ///
+  /// In ko, this message translates to:
+  /// **'휴장'**
+  String get marketStateClosed;
+
+  /// No description provided for @marketStateSettlementPending.
+  ///
+  /// In ko, this message translates to:
+  /// **'정산 대기'**
+  String get marketStateSettlementPending;
 }
 
 class _AppLocalizationsDelegate

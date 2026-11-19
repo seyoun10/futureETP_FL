@@ -99,4 +99,29 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get errorSchemaMismatch =>
       'The app and server versions do not match. Please update the app.';
+
+  @override
+  String get loading => 'Loading';
+
+  @override
+  String freshnessAsOf(String time) {
+    return 'As of $time';
+  }
+
+  @override
+  String freshnessTradeDate(String date) {
+    return 'Trade date $date';
+  }
+
+  @override
+  String get freshnessDelayed => 'Delayed';
+
+  @override
+  String get marketStateOpen => 'Open';
+
+  @override
+  String get marketStateClosed => 'Closed';
+
+  @override
+  String get marketStateSettlementPending => 'Settlement pending';
 }

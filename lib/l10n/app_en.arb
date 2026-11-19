@@ -25,5 +25,12 @@
   "errorInternal": "Something went wrong on the server. Please try again shortly.",
   "errorNetwork": "Unable to connect to the network.",
   "errorTimeout": "The server is taking too long. Please try again shortly.",
-  "errorSchemaMismatch": "The app and server versions do not match. Please update the app."
+  "errorSchemaMismatch": "The app and server versions do not match. Please update the app.",
+  "loading": "Loading",
+  "freshnessAsOf": "As of {time}",
+  "freshnessTradeDate": "Trade date {date}",
+  "freshnessDelayed": "Delayed",
+  "marketStateOpen": "Open",
+  "marketStateClosed": "Closed",
+  "marketStateSettlementPending": "Settlement pending"
 }
