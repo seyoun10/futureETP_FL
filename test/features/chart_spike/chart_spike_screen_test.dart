@@ -45,4 +45,38 @@ void main() {
     // FrameStats 타이머를 멈춘다
     await tester.pumpWidget(const SizedBox());
   });
+
+  testWidgets('가장 과거 봉이 보이면 이전 3년을 앞에 붙이고, 보던 범위는 그대로다', (tester) async {
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [upDownPaletteProvider.overrideWithValue(UpDownPalette.kr)],
+        child: const MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: ChartSpikeScreen(),
+        ),
+      ),
+    );
+    final chart = find.byType(CandleChart);
+    final viewport = tester.widget<CandleChart>(chart).viewport;
+    // 한 번에 가장 과거까지 끈다
+    final g = await tester.startGesture(tester.getCenter(chart));
+    for (var i = 0; i < 20; i++) {
+      await g.moveBy(const Offset(400, 0));
+      await tester.pump(const Duration(milliseconds: 16));
+    }
+    expect(viewport.value.start, 0);
+    expect(find.byKey(const Key('chart-spike-older')), findsOneWidget);
+    expect(tester.widget<CandleChart>(chart).locked, isTrue);
+    await g.up();
+
+    final seen = viewport.value;
+    await tester.pump(spikeOlderDelay);
+    expect(find.byKey(const Key('chart-spike-older')), findsNothing);
+    expect(tester.widget<CandleChart>(chart).series.length, 1512);
+    expect(viewport.value.count, 1512);
+    expect(viewport.value.start, seen.start + 756);
+    expect(viewport.value.span, seen.span);
+    await tester.pumpWidget(const SizedBox());
+  });
 }

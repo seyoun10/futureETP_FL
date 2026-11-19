@@ -1,3 +1,6 @@
+import 'dart:async';
+
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:futureetp/core/charts/candle_chart.dart';
 import 'package:futureetp/core/charts/candle_series.dart';
@@ -30,13 +33,17 @@ const _periods = {
 /// 처음 받는 봉 수(3년, D-104).
 const _page = 756;
 
+/// 이전 3년을 받는 척 기다리는 시간(RN 실측 0.3~0.55초, D-106).
+const spikeOlderDelay = Duration(milliseconds: 400);
+
 class _ChartSpikeScreenState extends ConsumerState<ChartSpikeScreen> {
   final _bars = SyntheticBars();
   final _stats = FrameStats();
-  late final CandleSeries _series = _bars.latest(_page);
+  late CandleSeries _series = _bars.latest(_page);
   late final ValueNotifier<ChartViewport> _viewport = ValueNotifier(
     ChartViewport.latest(_series.length, _periods['6M']!),
-  );
+  )..addListener(_maybeLoadOlder);
+  var _loadingOlder = false;
 
   final _crosshair = ValueNotifier<int?>(null);
 
@@ -46,6 +53,33 @@ class _ChartSpikeScreenState extends ConsumerState<ChartSpikeScreen> {
     _crosshair.dispose();
     _viewport.dispose();
     super.dispose();
+  }
+
+  /// 가장 과거 봉이 보이면 이전 3년을 앞에 붙인다. 받는 동안 햅틱 한 번, 터치 차단(D-104, D-108).
+  void _maybeLoadOlder() {
+    if (_loadingOlder ||
+        !_viewport.value.showsOldest ||
+        _series.length >= _bars.total) {
+      return;
+    }
+    setState(() => _loadingOlder = true);
+    HapticFeedback.lightImpact().ignore();
+    unawaited(
+      Future<void>.delayed(spikeOlderDelay, () {
+        if (!mounted) return;
+        final before = _series.length;
+        final next = _bars.latest(before + _page);
+        final added = next.length - before;
+        setState(() {
+          _series = next;
+          _loadingOlder = false;
+        });
+        // 붙인 뒤에도 보던 날짜 범위는 그대로다
+        _viewport.value = _viewport.value.prepended(added);
+        final i = _crosshair.value;
+        if (i != null) _crosshair.value = i + added;
+      }),
+    );
   }
 
   // 기간을 바꾸면 십자선도 지운다(screens.md C-a)
@@ -75,12 +109,27 @@ class _ChartSpikeScreenState extends ConsumerState<ChartSpikeScreen> {
               ),
             ),
             Expanded(
-              child: CandleChart(
-                key: const Key('chart-spike-chart'),
-                series: _series,
-                viewport: _viewport,
-                crosshair: _crosshair,
-                palette: palette,
+              child: Stack(
+                children: [
+                  CandleChart(
+                    key: const Key('chart-spike-chart'),
+                    series: _series,
+                    viewport: _viewport,
+                    crosshair: _crosshair,
+                    palette: palette,
+                    locked: _loadingOlder,
+                  ),
+                  if (_loadingOlder)
+                    const Align(
+                      alignment: Alignment.centerLeft,
+                      child: Padding(
+                        padding: EdgeInsets.all(AppSpacing.lg),
+                        child: CircularProgressIndicator(
+                          key: Key('chart-spike-older'),
+                        ),
+                      ),
+                    ),
+                ],
               ),
             ),
             SizedBox(
@@ -90,7 +139,7 @@ class _ChartSpikeScreenState extends ConsumerState<ChartSpikeScreen> {
                   for (final MapEntry(:key, :value) in _periods.entries)
                     Expanded(
                       child: TextButton(
-                        onPressed: () => _period(value),
+                        onPressed: _loadingOlder ? null : () => _period(value),
                         child: Text(key),
                       ),
                     ),
