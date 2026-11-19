@@ -234,3 +234,15 @@
 - 근거: 플러그인은 iOS·Android 기본 API(`TimeZone.current.identifier`·`ZoneId.systemDefault`)를 읽기만 하고 pub.dev 내려받기가 많다.
 - 영향: iOS 시뮬레이터 빌드 확인. Android 빌드는 다음 Android 실행 때 확인한다.
 
+## FL-024: 화면 방향
+- 날짜: 2026-11-19
+- 상태: 확정
+- 맥락: D-076(RN `src/lib/orientation.ts`): 앱은 세로로 잠그고 C-a~C-c [⟲]만 가로로 잠근다. 레이아웃은 잠금이 아니라 창 모양을 따른다. iPad 잠금은 `requireFullScreen`이 조건이다.
+- 결정:
+  - `lib/core/util/orientation.dart`: `lockPortrait`(위쪽 세로)·`lockLandscape`(양쪽 가로)는 `SystemChrome.setPreferredOrientations`로 잠그고 실패는 무시한다. `isLandscape(context)`는 창 너비 > 높이.
+  - `main`이 `runApp` 전에 `lockPortrait`한다. Info.plist 허용 방향은 가로를 남겨 둔다(빼면 가로 잠금이 거부된다). Android 매니페스트는 바꾸지 않는다.
+  - iOS Info.plist `UIRequiresFullScreen` true(RN `requireFullScreen`).
+  - [⟲] 버튼과 ETP 탭·C 밖에서의 세로 복귀는 C 화면을 만들 때 넣는다.
+- 근거: RN과 같은 방식이다. iOS 27은 크기 조절 가능한 앱에서 잠금을 선호값으로만 다뤄, 레이아웃을 창 모양으로 정해야 잠금이 거부돼도 화면이 깨지지 않는다.
+- 영향: iOS 시뮬레이터(iPhone Duo)에서 기기를 돌려도 세로로 남는 것을 확인했다. Android는 다음 Android 실행 때 확인한다.
+
