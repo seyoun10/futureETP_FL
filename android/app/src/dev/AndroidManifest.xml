@@ -1,0 +1,4 @@
+<!-- dev 변형만: 로컬 dev 서버(http://10.0.2.2:3000, LAN IP)는 HTTP라 평문 통신을 허용한다. prod는 HTTPS만. -->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <application android:usesCleartextTraffic="true" />
+</manifest>
