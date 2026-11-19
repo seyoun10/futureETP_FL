@@ -183,5 +183,6 @@
   - 값은 JSON `{language: ko|en, upDownStyle: kr|us}`. 없거나 깨졌거나 모르는 필드는 그 필드만 기기 기본값(언어 `ko`면 한국어 아니면 영어, 지역 `KR`이면 한국식 아니면 미국식, D-073).
   - `displaySettingsProvider`(`lib/core/settings/display_settings.dart`)가 상태이고, 바꾸면 화면을 먼저 바꾸고 저장은 뒤에서 한다(실패는 로그만).
   - `MaterialApp.locale`이 표시 설정 언어를 따른다. 언어를 고르는 UI는 B 화면에서 넣는다.
+  - 서버 기기 설정은 `deviceSettingsProvider`(`lib/core/settings/device_settings.dart`, `AsyncNotifier`: 조회 + `patch`). D-137 `DeviceSettingsSync`는 `deviceSettingsSyncProvider`로, 키가 있을 때 앱 루트가 watch한다. 설정을 받을 때마다와 앱 언어가 바뀔 때 비교하고 같은 값은 프로세스당 한 번만 보낸다. PATCH의 `UNAUTHORIZED`는 Provider 실패가 아니라 직접 `reportError`로 알린다. 시간대는 D-084 항목에서 같은 PATCH에 더한다.
 - 근거: RN이 동기 저장소를 고른 이유(언어·색 깜빡임, D-030)를 그대로 지킨다. 저장 값이 작아 캐시 비용이 없다.
 - 영향: 테스트는 `test/helpers/display_store.dart`(메모리 플랫폼 저장소, dev 의존성 `shared_preferences_platform_interface`).

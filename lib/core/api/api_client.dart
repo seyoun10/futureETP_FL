@@ -69,10 +69,25 @@ class ApiClient {
     CancelToken? cancelToken,
   }) => request(
     '/settings',
-    (data) => DeviceSettings.fromJson(data! as Map<String, dynamic>),
+    _decodeSettings,
     token: token,
     cancelToken: cancelToken,
   );
+
+  /// `PATCH /v1/settings`. 바꾼 뒤의 설정 전체를 돌려받는다(D-081).
+  Future<DeviceSettings> patchSettings(
+    SettingsPatch patch, {
+    CancelToken? cancelToken,
+  }) => request(
+    '/settings',
+    _decodeSettings,
+    method: ApiMethod.patch,
+    body: patch.toJson(),
+    cancelToken: cancelToken,
+  );
+
+  static DeviceSettings _decodeSettings(Object? data) =>
+      DeviceSettings.fromJson(data! as Map<String, dynamic>);
 
   /// [path]는 `/v1` 뒤 경로. [auth]가 false면 인증 헤더 없이 보낸다(`/v1/health`).
   /// [token]이 있으면 저장된 키 대신 보낸다(B-b에서 저장 전 키 확인, D-044).

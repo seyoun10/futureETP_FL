@@ -110,6 +110,11 @@ void main() {
     expect(await readStoredAccessKey(const FlutterSecureStorage()), _goodKey);
     // 확인 요청은 입력한 키로 보냈다
     expect(adapter.requests.first.headers['Authorization'], 'Bearer $_goodKey');
+    // 키가 생기면 서버 언어(fixture ko)를 앱 언어(테스트 기기 en)로 맞춘다(D-137)
+    expect(
+      adapter.requests.where((r) => r.method == 'PATCH').map((r) => r.path),
+      ['/settings'],
+    );
   });
 
   testWidgets('형식이 아니면 서버에 묻지 않는다', (tester) async {
