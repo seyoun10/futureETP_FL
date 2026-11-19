@@ -232,7 +232,7 @@
   - FL-019의 `deviceSettingsSyncProvider`에 더한다. 언어·시간대가 둘 다 다르면 PATCH 한 번에 보낸다(RN과 같음). 시간대는 비교할 때마다 새로 읽어 앱을 켠 채 이동해도 맞춘다.
   - `deviceSettingsProvider`는 앱이 앞으로 돌아오면 다시 받는다(RN 설정 query의 앱 복귀 재조회, D-030). 그래서 복귀 때 시간대도 다시 비교한다.
 - 근거: 플러그인은 iOS·Android 기본 API(`TimeZone.current.identifier`·`ZoneId.systemDefault`)를 읽기만 하고 pub.dev 내려받기가 많다.
-- 영향: iOS 시뮬레이터 빌드 확인. Android 빌드는 다음 Android 실행 때 확인한다.
+- 영향: iOS 시뮬레이터 빌드 확인. Android 에뮬레이터(API 37, 2026-11-19): 기기 시간대를 America/Chicago로 바꿔 실행하면 dev 서버 기기 설정이 America/Chicago, 되돌려 실행하면 Asia/Seoul로 바뀌는 것을 확인했다.
 
 ## FL-024: 화면 방향
 - 날짜: 2026-11-19
@@ -244,5 +244,5 @@
   - iOS Info.plist `UIRequiresFullScreen` true(RN `requireFullScreen`).
   - [⟲] 버튼과 ETP 탭·C 밖에서의 세로 복귀는 C 화면을 만들 때 넣는다.
 - 근거: RN과 같은 방식이다. iOS 27은 크기 조절 가능한 앱에서 잠금을 선호값으로만 다뤄, 레이아웃을 창 모양으로 정해야 잠금이 거부돼도 화면이 깨지지 않는다.
-- 영향: iOS 시뮬레이터(iPhone Duo)에서 기기를 돌려도 세로로 남는 것을 확인했다. Android는 다음 Android 실행 때 확인한다.
+- 영향: iOS 시뮬레이터(iPhone Duo)에서 기기를 돌려도 세로로 남는 것을 확인했다. Android 에뮬레이터(API 37)에서도 회전을 가로로 강제해도 `requestedOrientation=PORTRAIT`로 세로에 남는 것을 확인했다(2026-11-19).
 
