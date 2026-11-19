@@ -361,6 +361,36 @@ abstract class AppLocalizations {
   /// In ko, this message translates to:
   /// **'알림 꺼짐'**
   String get settingsAlertOffBadge;
+
+  /// No description provided for @commodityRotate.
+  ///
+  /// In ko, this message translates to:
+  /// **'가로/세로 전환'**
+  String get commodityRotate;
+
+  /// No description provided for @commodityTabDisparity.
+  ///
+  /// In ko, this message translates to:
+  /// **'이격도차트'**
+  String get commodityTabDisparity;
+
+  /// No description provided for @commodityTabContracts.
+  ///
+  /// In ko, this message translates to:
+  /// **'월물차트'**
+  String get commodityTabContracts;
+
+  /// No description provided for @commodityTabCurve.
+  ///
+  /// In ko, this message translates to:
+  /// **'월물커브'**
+  String get commodityTabCurve;
+
+  /// No description provided for @commodityTabEtps.
+  ///
+  /// In ko, this message translates to:
+  /// **'ETP'**
+  String get commodityTabEtps;
 }
 
 class _AppLocalizationsDelegate

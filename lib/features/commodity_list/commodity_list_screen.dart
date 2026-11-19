@@ -20,10 +20,17 @@ const pullRefreshTimeout = Duration(seconds: 5);
 /// A 원자재 목록(screens.md A, D-085, RN `CommodityListScreen`).
 /// 원자재와 월물 줄은 서버가 준 순서대로 그린다.
 class CommodityListScreen extends ConsumerStatefulWidget {
-  const new({super.key, required this.onOpenSettings});
+  const new({
+    super.key,
+    required this.onOpenSettings,
+    required this.onOpenCommodity,
+  });
 
   /// [⚙]. 라우트는 앱 계층이 갖는다.
   final VoidCallback onOpenSettings;
+
+  /// 행을 누르면 C(C-a 탭)로 간다. 인자는 경로 코드(`GC`).
+  final ValueChanged<String> onOpenCommodity;
 
   @override
   ConsumerState<CommodityListScreen> createState() =>
@@ -105,6 +112,10 @@ class _CommodityListScreenState extends ConsumerState<CommodityListScreen> {
                     itemBuilder: (context, i) => _CommodityRow(
                       commodity: data.commodities[i],
                       palette: palette,
+                      onTap: () {
+                        tapHaptic();
+                        widget.onOpenCommodity(data.commodities[i].code.wire);
+                      },
                     ),
                   ),
                 ),
@@ -126,54 +137,62 @@ class _CommodityListScreenState extends ConsumerState<CommodityListScreen> {
 const _figures = [FontFeature.tabularFigures()];
 
 class _CommodityRow extends StatelessWidget {
-  const new({required this.commodity, required this.palette});
+  const new({
+    required this.commodity,
+    required this.palette,
+    required this.onTap,
+  });
 
   final CommodityQuotes commodity;
   final UpDownPalette palette;
+  final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final code = commodity.code.wire;
-    return Container(
+    return InkWell(
       key: Key('commodity-$code'),
-      padding: const EdgeInsets.all(AppSpacing.lg),
-      decoration: const BoxDecoration(
-        border: Border(bottom: BorderSide(color: AppColors.separator)),
-      ),
-      child: Row(
-        children: [
-          SizedBox(
-            width: 104,
-            child: Column(
-              spacing: AppSpacing.xs,
-              children: [
-                Text(
-                  '${l10n.commodityName(code)}\n($code)',
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(
-                    color: AppColors.text,
-                    fontSize: AppFontSize.body,
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.all(AppSpacing.lg),
+        decoration: const BoxDecoration(
+          border: Border(bottom: BorderSide(color: AppColors.separator)),
+        ),
+        child: Row(
+          children: [
+            SizedBox(
+              width: 104,
+              child: Column(
+                spacing: AppSpacing.xs,
+                children: [
+                  Text(
+                    '${l10n.commodityName(code)}\n($code)',
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(
+                      color: AppColors.text,
+                      fontSize: AppFontSize.body,
+                    ),
                   ),
-                ),
-                if (commodity.alert) const AlertBell(),
-              ],
+                  if (commodity.alert) const AlertBell(),
+                ],
+              ),
             ),
-          ),
-          Expanded(
-            child: Column(
-              spacing: AppSpacing.xs,
-              children: [
-                for (final quote in commodity.contracts)
-                  _QuoteLine(
-                    quote: quote,
-                    decimals: commodity.priceDecimals,
-                    palette: palette,
-                  ),
-              ],
+            Expanded(
+              child: Column(
+                spacing: AppSpacing.xs,
+                children: [
+                  for (final quote in commodity.contracts)
+                    _QuoteLine(
+                      quote: quote,
+                      decimals: commodity.priceDecimals,
+                      palette: palette,
+                    ),
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

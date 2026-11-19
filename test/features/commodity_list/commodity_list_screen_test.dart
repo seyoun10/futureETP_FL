@@ -101,7 +101,10 @@ Future<void> _pump(WidgetTester tester) async {
       child: MaterialApp(
         localizationsDelegates: appLocalizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
-        home: CommodityListScreen(onOpenSettings: () {}),
+        home: CommodityListScreen(
+          onOpenSettings: () {},
+          onOpenCommodity: (_) {},
+        ),
       ),
     ),
   );

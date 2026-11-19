@@ -115,5 +115,10 @@
   "commodityListRefreshFailedTitle": "새로고침을 마치지 못했습니다",
   "commodityListRefreshFailedMessage": "잠시 뒤 다시 당겨 주세요.",
   "settingsTitle": "설정",
-  "settingsAlertOffBadge": "알림 꺼짐"
+  "settingsAlertOffBadge": "알림 꺼짐",
+  "commodityRotate": "가로/세로 전환",
+  "commodityTabDisparity": "이격도차트",
+  "commodityTabContracts": "월물차트",
+  "commodityTabCurve": "월물커브",
+  "commodityTabEtps": "ETP"
 }

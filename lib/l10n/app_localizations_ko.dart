@@ -164,4 +164,19 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get settingsAlertOffBadge => '알림 꺼짐';
+
+  @override
+  String get commodityRotate => '가로/세로 전환';
+
+  @override
+  String get commodityTabDisparity => '이격도차트';
+
+  @override
+  String get commodityTabContracts => '월물차트';
+
+  @override
+  String get commodityTabCurve => '월물커브';
+
+  @override
+  String get commodityTabEtps => 'ETP';
 }

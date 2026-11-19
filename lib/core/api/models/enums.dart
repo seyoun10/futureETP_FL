@@ -13,6 +13,14 @@ enum CommodityCode {
 
   /// 경로·서버 값(`GC`).
   String get wire => name.toUpperCase();
+
+  /// 경로 값(`GC`)의 코드. 모르는 값이면 null.
+  static CommodityCode? fromWire(String? value) {
+    for (final code in values) {
+      if (code.wire == value) return code;
+    }
+    return null;
+  }
 }
 
 /// 장 상태(D-022).

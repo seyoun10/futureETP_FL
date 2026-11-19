@@ -169,4 +169,19 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get settingsAlertOffBadge => 'Alerts off';
+
+  @override
+  String get commodityRotate => 'Rotate screen';
+
+  @override
+  String get commodityTabDisparity => 'Disparity';
+
+  @override
+  String get commodityTabContracts => 'Contracts';
+
+  @override
+  String get commodityTabCurve => 'Curve';
+
+  @override
+  String get commodityTabEtps => 'ETP';
 }

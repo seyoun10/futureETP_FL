@@ -43,5 +43,10 @@
   "commodityListRefreshFailedTitle": "Couldn't finish refreshing",
   "commodityListRefreshFailedMessage": "Pull down again in a moment.",
   "settingsTitle": "Settings",
-  "settingsAlertOffBadge": "Alerts off"
+  "settingsAlertOffBadge": "Alerts off",
+  "commodityRotate": "Rotate screen",
+  "commodityTabDisparity": "Disparity",
+  "commodityTabContracts": "Contracts",
+  "commodityTabCurve": "Curve",
+  "commodityTabEtps": "ETP"
 }
