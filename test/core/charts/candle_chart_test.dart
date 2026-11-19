@@ -3,8 +3,9 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:futureetp/core/charts/candle_chart.dart';
 import 'package:futureetp/core/charts/chart_viewport.dart';
 import 'package:futureetp/core/theme/up_down_color.dart';
-import 'package:futureetp/features/chart_spike/synthetic_bars.dart';
 import 'package:material_ui/material_ui.dart';
+
+import '../../helpers/synthetic_bars.dart';
 
 const _size = Size(300, 400);
 

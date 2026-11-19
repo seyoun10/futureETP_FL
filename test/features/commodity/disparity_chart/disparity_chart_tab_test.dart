@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
@@ -8,6 +9,7 @@ import 'package:futureetp/core/api/app_error.dart';
 import 'package:futureetp/core/api/models/disparity_chart.dart';
 import 'package:futureetp/core/api/models/enums.dart';
 import 'package:futureetp/core/charts/candle_chart.dart';
+import 'package:futureetp/core/charts/chart_skeleton.dart';
 import 'package:futureetp/core/theme/tokens.dart';
 import 'package:futureetp/core/theme/up_down_color.dart';
 import 'package:futureetp/features/commodity/disparity_chart/disparity_chart_provider.dart';
@@ -325,4 +327,31 @@ void main() {
     await tester.pumpAndSettle();
     expect(_fake.olderCalls, 2);
   });
+
+  testWidgets('첫 조회 중에는 차트 격자·기간 칩 자리 스켈레톤', (tester) async {
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          disparityChartProvider(CommodityCode.gc)
+              .overrideWith(_PendingChart.new),
+        ],
+        child: const MaterialApp(
+          localizationsDelegates: appLocalizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: Scaffold(body: DisparityChartTab(codeText: 'GC')),
+        ),
+      ),
+    );
+    await tester.pump();
+    expect(find.byType(ChartSkeleton), findsOneWidget);
+    expect(find.byType(CandleChart), findsNothing);
+  });
+}
+
+/// 응답이 오지 않는 조회.
+class _PendingChart extends DisparityChartNotifier {
+  new() : super(CommodityCode.gc);
+
+  @override
+  Future<DisparityData> build() => Completer<DisparityData>().future;
 }

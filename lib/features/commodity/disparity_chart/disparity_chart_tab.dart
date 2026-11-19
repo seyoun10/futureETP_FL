@@ -12,6 +12,7 @@ import 'package:futureetp/core/charts/chart_decor.dart';
 import 'package:futureetp/core/charts/chart_detail.dart';
 import 'package:futureetp/core/charts/chart_layout.dart';
 import 'package:futureetp/core/charts/chart_periods.dart';
+import 'package:futureetp/core/charts/chart_skeleton.dart';
 import 'package:futureetp/core/charts/chart_viewport.dart';
 import 'package:futureetp/core/charts/period_chips.dart';
 import 'package:futureetp/core/settings/device_settings.dart';
@@ -55,6 +56,7 @@ class DisparityChartTab extends ConsumerWidget {
         onRetry: () => ref
           ..invalidate(deviceSettingsProvider)
           ..invalidate(provider),
+        skeleton: const ChartSkeleton(footer: ChartSkeletonFooter.periods),
         builder: (context, data) =>
             _DisparityChartView(key: ValueKey(code), code: code, data: data),
       ),

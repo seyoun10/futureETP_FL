@@ -104,18 +104,6 @@ abstract class AppLocalizations {
   /// **'서버 연결 확인'**
   String get devHealthTitle;
 
-  /// 4단계 C-a 차트 스파이크 dev 화면. 스파이크가 끝나면 지운다
-  ///
-  /// In ko, this message translates to:
-  /// **'차트 스파이크'**
-  String get devChartSpikeTitle;
-
-  /// No description provided for @devChartSpikeStats.
-  ///
-  /// In ko, this message translates to:
-  /// **'{fps}fps · 최악 {worst}ms · 봉 {bars}개'**
-  String devChartSpikeStats(int fps, String worst, int bars);
-
   /// No description provided for @devHealthVariant.
   ///
   /// In ko, this message translates to:

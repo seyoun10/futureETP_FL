@@ -4,7 +4,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:futureetp/core/api/access_key.dart';
 import 'package:futureetp/core/api/models/enums.dart';
 import 'package:futureetp/features/access_key/access_key_screen.dart';
-import 'package:futureetp/features/chart_spike/chart_spike_screen.dart';
 import 'package:futureetp/features/commodity/commodity_shell.dart';
 import 'package:futureetp/features/commodity/commodity_tab.dart';
 import 'package:futureetp/features/commodity/disparity_chart/disparity_chart_provider.dart';
@@ -20,9 +19,6 @@ abstract final class AppRoutes {
   static const home = '/';
   static const settings = '/settings';
   static const accessKey = '/settings/access-key';
-
-  /// 4단계 차트 스파이크(dev). 스파이크가 끝나면 지운다.
-  static const chartSpike = '/dev/chart-spike';
 }
 
 /// 앱 라우터.
@@ -53,7 +49,7 @@ final routerProvider = Provider<GoRouter>((ref) {
         // C는 A 아래 경로라 스택이 늘 A → C다(Android 뒤로·[←]가 A로 간다)
         routes: [_commodityRoute],
       ),
-      // B 설정 자리. B 화면이 생기면 바꾼다(지금은 서버 연결 확인·차트 스파이크 진입)
+      // B 설정 자리. B 화면이 생기면 바꾼다(지금은 서버 연결 확인)
       GoRoute(
         path: AppRoutes.settings,
         builder: (context, state) => const HealthScreen(),
@@ -61,10 +57,6 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: AppRoutes.accessKey,
         builder: (context, state) => const AccessKeyScreen(),
-      ),
-      GoRoute(
-        path: AppRoutes.chartSpike,
-        builder: (context, state) => const ChartSpikeScreen(),
       ),
     ],
   );

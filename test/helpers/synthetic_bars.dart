@@ -4,7 +4,7 @@ import 'dart:typed_data';
 import 'package:futureetp/core/charts/candle_series.dart';
 import 'package:futureetp/core/theme/tokens.dart';
 
-/// 스파이크용 합성 일봉(시드 고정). RN 스파이크처럼 4,000봉을 만들어 두고 뒤에서부터 잘라 쓴다.
+/// 테스트용 합성 일봉(시드 고정, FL-025 스파이크에서 옮김). 4,000봉을 만들어 두고 뒤에서부터 잘라 쓴다.
 class SyntheticBars {
   new({this.total = 4000, int seed = 42}) {
     final rnd = math.Random(seed);

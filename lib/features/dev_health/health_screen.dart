@@ -2,7 +2,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:futureetp/core/config/app_config.dart';
 import 'package:futureetp/features/dev_health/health_provider.dart';
 import 'package:futureetp/l10n/app_localizations.dart';
-import 'package:go_router/go_router.dart';
 import 'package:material_ui/material_ui.dart';
 
 /// 2단계 임시 화면: 서버 `GET /v1/health` 연결 확인. 3단계 화면이 생기면 지운다.
@@ -38,11 +37,6 @@ class HealthScreen extends ConsumerWidget {
             OutlinedButton(
               onPressed: () => ref.invalidate(healthProvider),
               child: Text(l10n.retry),
-            ),
-            // feature는 라우트(lib/app)를 import하지 않아 경로를 글자로 쓴다
-            OutlinedButton(
-              onPressed: () => context.push('/dev/chart-spike'),
-              child: Text(l10n.devChartSpikeTitle),
             ),
           ],
         ),
