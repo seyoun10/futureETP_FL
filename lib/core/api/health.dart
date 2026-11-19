@@ -5,7 +5,7 @@ import 'package:flutter/foundation.dart';
 class Health {
   const new({required this.status, required this.commit});
 
-  /// 스키마와 다르면 [FormatException]. 3단계에서 freezed 모델과 SCHEMA_MISMATCH로 바꾼다.
+  /// 스키마와 다르면 [FormatException](API client가 SCHEMA_MISMATCH로 바꾼다).
   factory fromJson(Object? json) {
     if (json case {'status': 'ok', 'commit': final String? commit}) {
       return Health(status: 'ok', commit: commit);

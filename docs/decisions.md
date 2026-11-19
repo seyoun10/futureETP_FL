@@ -131,3 +131,16 @@
   - `DeviceIdStore`(`lib/core/api/device_id.dart`)가 처음 부를 때 읽고, 없거나 UUID v4가 아니면 `Random.secure()`로 만들어 저장한다. 읽기·쓰기 실패는 이번 실행만 만든 값을 쓴다(RN과 같음). Flutter 저장소는 비동기라 값은 `Future`로 메모리에 둔다.
 - 근거: 별도 uuid 패키지 없이 `dart:math`로 충분하다. 백업 제외 대상이 보안 저장소뿐인데 표시 설정(shared_preferences)도 복원할 가치가 작아 백업 전체를 끄는 편이 단순하다.
 - 영향: 앱을 지웠다 다시 깔면 Android는 새 기기, iOS는 Keychain이 남아 같은 기기일 수 있다(RN과 같음).
+
+## FL-016: API client를 dio로 옮긴 방법
+- 날짜: 2026-11-19
+- 상태: 확정
+- 맥락: D-042·D-072의 RN `apiRequest`(fetch + zod + TanStack Query `retry`)를 dio + Riverpod로 옮긴다.
+- 결정:
+  - `ApiClient.request<T>(path, decode, {method, query, body, auth, token, cancelToken})` 하나가 모든 호출의 경로다(`lib/core/api/api_client.dart`). `decode`가 던지는 예외는 무엇이든 `SCHEMA_MISMATCH`.
+  - dio는 `validateStatus: (_) => true`·`ResponseType.plain`으로 받아 봉투를 직접 판정한다. 봉투가 아니거나 모르는 에러 코드면 5xx `INTERNAL`, 그 밖은 `SCHEMA_MISMATCH`(D-072 그대로).
+  - 타임아웃은 dio의 connect·receive 타임아웃(바이트 사이 간격)이 아니라 `Timer` 15초 + 내부 `CancelToken`으로 전체 시간을 잰다. 호출자 `CancelToken`을 내부 토큰에 잇고, 호출자 취소는 `DioException`(cancel) 그대로 던진다.
+  - 재시도는 루트 `ProviderScope(retry: appRetry)`(Riverpod 3 자동 재시도). `AppError`의 `NETWORK`·`TIMEOUT`·`INTERNAL`만 최대 2회, 간격 1초·2초(TanStack 기본값과 같음). 변경 요청은 Provider 밖에서 부르므로 재시도되지 않는다.
+  - 접근 키는 `AccessTokenReader`로 주입한다. 지금은 dev `DEV_API_TOKEN`만, B-b 항목에서 보안 저장소 키로 바꾼다. 키가 없으면 요청하지 않고 `UNAUTHORIZED`.
+- 근거: Riverpod 기본 재시도(10회, 모든 Exception)를 그대로 두면 4xx도 재시도한다. 봉투 판정을 dio 인터셉터에 두면 dio 예외 형식에 묶여 테스트가 복잡해진다.
+- 영향: 화면이 쓰는 Provider는 `ref.onDispose`로 `CancelToken`을 취소한다(화면을 떠나면 요청 취소).

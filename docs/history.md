@@ -25,3 +25,4 @@
 
 ## 3. 공통 기반
 - [x] installation ID(첫 실행 UUID) 생성·보안 저장소 보관 (D-120, FL-015)
+- [x] API client: 헤더(Bearer·`X-Device-Id`), 타임아웃 15초, 봉투 디코딩, `AppError`, 재시도 규칙 (D-042, D-072, FL-016). `UNAUTHORIZED` → B-b 이동은 접근 키 항목
