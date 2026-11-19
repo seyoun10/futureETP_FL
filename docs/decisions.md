@@ -144,3 +144,18 @@
   - 접근 키는 `AccessTokenReader`로 주입한다. 지금은 dev `DEV_API_TOKEN`만, B-b 항목에서 보안 저장소 키로 바꾼다. 키가 없으면 요청하지 않고 `UNAUTHORIZED`.
 - 근거: Riverpod 기본 재시도(10회, 모든 Exception)를 그대로 두면 4xx도 재시도한다. 봉투 판정을 dio 인터셉터에 두면 dio 예외 형식에 묶여 테스트가 복잡해진다.
 - 영향: 화면이 쓰는 Provider는 `ref.onDispose`로 `CancelToken`을 취소한다(화면을 떠나면 요청 취소).
+
+## FL-017: 응답 모델 세부와 계약 테스트 배치
+- 날짜: 2026-11-19
+- 상태: 확정
+- 맥락: FL-007로 freezed 손 작성 + JSON Schema 계약 테스트를 정했다. CI는 이 저장소만 checkout해 `../futureETP`의 스키마를 읽을 수 없다.
+- 결정:
+  - 모델은 `lib/core/api/models/`. 응답 9개(health는 손 작성 그대로)와 요청 본문 2개(`SettingsPatch`·`DeviceRegistration`, 손 작성 `toJson`).
+  - 시각(`asOf` 등)은 `DateTime`, CME 거래일·월물(`YYYY-MM-DD`·`YYYY-MM`)은 `String`(달력 시각이 아님). 가격 등 number는 `double`, integer는 `int`.
+  - enum은 Dart enum + `@JsonEnum`(이름을 SCREAMING_SNAKE로, 이평선은 `days` 값). 모르는 값은 디코딩 실패 → `SCHEMA_MISMATCH`. 서버가 새 필드를 더하는 것은 허용(무시).
+  - PATCH에서 "보내지 않음"과 "null로 지움"을 나누려고 지울 수 있는 필드는 `PatchValue<T?>`로 감싼다.
+  - 스키마는 `tool/sync_contract.sh`로 `test/contract/schemas/`에 복사해 커밋한다. 원본이 옆에 있으면 복사본이 같은지 테스트가 보고(다르면 실패), CI는 그 검사만 건너뛴다.
+  - fixture(`test/contract/fixtures/`)는 로컬 dev 서버 실제 응답의 `data`. 차트 두 개는 저장소 크기 때문에 마지막 60거래일만 남긴다. 테스트는 스키마 통과 + 모델 디코딩 + `toJson` 왕복이 원래 JSON과 같은지 본다.
+  - 생성 파일(`*.g.dart`·`*.freezed.dart`)은 커밋한다(CI가 build_runner를 돌리지 않음, l10n과 같음).
+- 근거: 왕복 비교가 모델의 필드 누락·타입 변환 오류를 잡는다. 복사본 비교로 원본 변경을 놓치지 않는다.
+- 영향: 원본 계약이 바뀌면 `./tool/sync_contract.sh` → 모델 수정 → `dart run build_runner build` → fixture 다시 저장.

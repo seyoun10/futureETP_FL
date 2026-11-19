@@ -26,3 +26,4 @@
 ## 3. 공통 기반
 - [x] installation ID(첫 실행 UUID) 생성·보안 저장소 보관 (D-120, FL-015)
 - [x] API client: 헤더(Bearer·`X-Device-Id`), 타임아웃 15초, 봉투 디코딩, `AppError`, 재시도 규칙 (D-042, D-072, FL-016). `UNAUTHORIZED` → B-b 이동은 접근 키 항목
+- [x] 응답 모델: `../futureETP/packages/shared/contract/schemas/*.json`과 맞춘 모델(손으로 또는 생성 도구) + 계약 테스트(실제 dev 서버 응답을 저장한 예시를 모델로 디코딩하고, 같은 예시가 JSON Schema를 통과하는지) (D-142, FL-017)

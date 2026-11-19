@@ -15,7 +15,7 @@ lib/
 │  └─ commodity/                 C: disparity_chart(C-a)·contract_chart(C-c)·curve(C-b)·etp(C-d, C-d-a)
 ├─ core/
 │  ├─ config/                    변형·서버 주소(AppConfig)
-│  ├─ api/                       HTTP 래퍼, AppError, 엔드포인트 함수, 응답 모델
+│  ├─ api/                       HTTP 래퍼, AppError, 엔드포인트 함수, 응답 모델(`models/`, FL-017)
 │  ├─ charts/                    CustomPainter 차트·뷰포트(핀치·드래그)
 │  ├─ widgets/                   공용 UI(ScreenHeader, FreshnessLine, QueryStateView, SegmentedControl)
 │  ├─ settings/                  기기 UI 설정 저장(언어·등락 색)
@@ -24,8 +24,8 @@ lib/
 │  ├─ push/                      토큰 등록, 알림 탭 이동
 │  └─ util/                      숫자·날짜 포맷, 햅틱, 실패 Alert
 └─ l10n/                         app_ko.arb, app_en.arb, 생성 코드 app_localizations*.dart
-test/                            lib와 같은 구조, architecture/(import 방향 검사)
-tool/                            check.sh, ios_flavors.rb
+test/                            lib와 같은 구조, architecture/(import 방향 검사), contract/(계약 스키마 복사본·dev 서버 응답 fixture)
+tool/                            check.sh, ios_flavors.rb, sync_contract.sh
 env/                             dev.example.json(커밋), dev.json(커밋 안 함)
 docs/                            tech-stack, architecture, decisions
 ```

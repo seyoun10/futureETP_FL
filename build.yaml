@@ -1,0 +1,7 @@
+targets:
+  $default:
+    builders:
+      json_serializable:
+        options:
+          # 중첩 모델도 toJson이 Map을 만든다(테스트 왕복·PATCH 본문)
+          explicit_to_json: true
