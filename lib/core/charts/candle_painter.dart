@@ -10,12 +10,19 @@ import 'package:material_ui/material_ui.dart';
 
 /// 봉·선·격자를 그린다. [viewport]가 바뀌면 위젯 다시 만들기 없이 다시 그린다.
 class CandlePainter extends CustomPainter {
-  new({required this.series, required this.viewport, required this.palette})
-    : super(repaint: viewport);
+  new({
+    required this.series,
+    required this.viewport,
+    required this.palette,
+    this.padding = EdgeInsets.zero,
+  }) : super(repaint: viewport);
 
   final CandleSeries series;
   final ValueListenable<ChartViewport> viewport;
   final UpDownPalette palette;
+
+  /// 봉·선을 비켜 그릴 여백(위 정보 줄, 아래 x축, 오른쪽 y축). 격자는 위·아래 여백까지 이어진다.
+  final EdgeInsets padding;
 
   /// 봉 몸통 폭 / 봉 폭.
   static const _bodyRatio = 0.7;
@@ -28,13 +35,15 @@ class CandlePainter extends CustomPainter {
     final v = viewport.value;
     if (v.count == 0) return;
     final range = LogPriceRange.fit(v, series.envelopeHigh, series.envelopeLow);
+    final plot = padding.deflateRect(Offset.zero & size);
     canvas
       ..save()
-      ..clipRect(Offset.zero & size);
-    _grid(canvas, size);
-    _candles(canvas, size, v, range);
+      ..clipRect(Rect.fromLTRB(0, 0, plot.right, size.height));
+    _grid(canvas, Size(plot.right, size.height));
+    canvas.translate(plot.left, plot.top);
+    _candles(canvas, plot.size, v, range);
     for (final line in series.lines) {
-      _line(canvas, size, v, range, line);
+      _line(canvas, plot.size, v, range, line);
     }
     canvas.restore();
   }
@@ -162,5 +171,6 @@ class CandlePainter extends CustomPainter {
   bool shouldRepaint(CandlePainter old) =>
       old.series != series ||
       old.palette != palette ||
-      old.viewport != viewport;
+      old.viewport != viewport ||
+      old.padding != padding;
 }

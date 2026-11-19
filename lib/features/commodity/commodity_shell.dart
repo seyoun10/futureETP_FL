@@ -7,9 +7,11 @@ import 'package:futureetp/core/theme/tokens.dart';
 import 'package:futureetp/core/util/haptics.dart';
 import 'package:futureetp/core/util/orientation.dart';
 import 'package:futureetp/core/widgets/footer_line.dart';
+import 'package:futureetp/core/widgets/freshness_line.dart';
 import 'package:futureetp/core/widgets/screen_header.dart';
 import 'package:futureetp/features/commodity/chart_busy.dart';
 import 'package:futureetp/features/commodity/commodity_tab.dart';
+import 'package:futureetp/features/commodity/disparity_chart/disparity_chart_provider.dart';
 import 'package:futureetp/l10n/app_localizations.dart';
 import 'package:go_router/go_router.dart';
 import 'package:material_ui/material_ui.dart';
@@ -28,7 +30,6 @@ class CommodityShell extends ConsumerStatefulWidget {
     required this.shell,
     required this.onBack,
     required this.onOpenSettings,
-    this.footer,
   });
 
   /// 경로의 원자재 코드(모르는 값일 수 있다).
@@ -36,9 +37,6 @@ class CommodityShell extends ConsumerStatefulWidget {
   final StatefulNavigationShell shell;
   final VoidCallback onBack;
   final VoidCallback onOpenSettings;
-
-  /// 지금 탭의 기준 시각 줄. 없으면 빈 줄로 자리를 지킨다.
-  final Widget? footer;
 
   @override
   ConsumerState<CommodityShell> createState() => _CommodityShellState();
@@ -60,6 +58,18 @@ class _CommodityShellState extends ConsumerState<CommodityShell> {
   void dispose() {
     unawaited(lockPortrait());
     super.dispose();
+  }
+
+  /// 지금 탭의 기준 시각 줄. 값이 없으면(첫 조회 중·만들지 않은 탭) 빈 줄로 자리를 지킨다.
+  Widget? _footer(CommodityCode? code) {
+    if (code == null) return null;
+    final freshness = switch (_tab) {
+      CommodityTab.disparity => ref.watch(
+        disparityChartProvider(code).select((s) => s.value?.chart.freshness),
+      ),
+      _ => null,
+    };
+    return freshness == null ? null : FreshnessLine(freshness);
   }
 
   void _select(CommodityTab tab) {
@@ -122,7 +132,7 @@ class _CommodityShellState extends ConsumerState<CommodityShell> {
               SizedBox(height: padding.bottom)
             else ...[
               _TabBar(selected: _tab, onSelect: _select),
-              FooterLine(child: widget.footer),
+              FooterLine(child: _footer(code)),
             ],
           ],
         ),

@@ -391,6 +391,180 @@ abstract class AppLocalizations {
   /// In ko, this message translates to:
   /// **'ETP'**
   String get commodityTabEtps;
+
+  /// No description provided for @basisFront.
+  ///
+  /// In ko, this message translates to:
+  /// **'대표월물'**
+  String get basisFront;
+
+  /// No description provided for @basisKr.
+  ///
+  /// In ko, this message translates to:
+  /// **'한국형'**
+  String get basisKr;
+
+  /// No description provided for @basisUs.
+  ///
+  /// In ko, this message translates to:
+  /// **'미국형'**
+  String get basisUs;
+
+  /// No description provided for @chartMonth.
+  ///
+  /// In ko, this message translates to:
+  /// **'{month, select, 1{1월} 2{2월} 3{3월} 4{4월} 5{5월} 6{6월} 7{7월} 8{8월} 9{9월} 10{10월} 11{11월} 12{12월} other{{month}}}'**
+  String chartMonth(String month);
+
+  /// No description provided for @chartHighTag.
+  ///
+  /// In ko, this message translates to:
+  /// **'고가 {price}({pct}, {date})'**
+  String chartHighTag(String price, String pct, String date);
+
+  /// No description provided for @chartLowTag.
+  ///
+  /// In ko, this message translates to:
+  /// **'저가 {price}({pct}, {date})'**
+  String chartLowTag(String price, String pct, String date);
+
+  /// No description provided for @chartPeriodsLabel.
+  ///
+  /// In ko, this message translates to:
+  /// **'기간'**
+  String get chartPeriodsLabel;
+
+  /// No description provided for @chartResetView.
+  ///
+  /// In ko, this message translates to:
+  /// **'선택한 기간의 최근 위치로'**
+  String get chartResetView;
+
+  /// No description provided for @chartOlderFailedTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'과거 데이터를 불러오지 못했습니다'**
+  String get chartOlderFailedTitle;
+
+  /// No description provided for @chartOlderFailedMessage.
+  ///
+  /// In ko, this message translates to:
+  /// **'잠시 뒤 차트를 다시 끌어 주세요.'**
+  String get chartOlderFailedMessage;
+
+  /// No description provided for @disparityBasisFallback.
+  ///
+  /// In ko, this message translates to:
+  /// **'{basis}*'**
+  String disparityBasisFallback(String basis);
+
+  /// No description provided for @disparityBasisInRoll.
+  ///
+  /// In ko, this message translates to:
+  /// **'{basis} (롤 중)'**
+  String disparityBasisInRoll(String basis);
+
+  /// No description provided for @disparityOpen.
+  ///
+  /// In ko, this message translates to:
+  /// **'시'**
+  String get disparityOpen;
+
+  /// No description provided for @disparityHigh.
+  ///
+  /// In ko, this message translates to:
+  /// **'고'**
+  String get disparityHigh;
+
+  /// No description provided for @disparityLow.
+  ///
+  /// In ko, this message translates to:
+  /// **'저'**
+  String get disparityLow;
+
+  /// No description provided for @disparityClose.
+  ///
+  /// In ko, this message translates to:
+  /// **'종'**
+  String get disparityClose;
+
+  /// No description provided for @disparityValue.
+  ///
+  /// In ko, this message translates to:
+  /// **'이격도 {value}'**
+  String disparityValue(String value);
+
+  /// No description provided for @disparityTailUp.
+  ///
+  /// In ko, this message translates to:
+  /// **'상위 {pct}%'**
+  String disparityTailUp(String pct);
+
+  /// No description provided for @disparityTailDown.
+  ///
+  /// In ko, this message translates to:
+  /// **'하위 {pct}%'**
+  String disparityTailDown(String pct);
+
+  /// No description provided for @disparityFromLow.
+  ///
+  /// In ko, this message translates to:
+  /// **'저점대비 {pct}'**
+  String disparityFromLow(String pct);
+
+  /// No description provided for @disparityFromHigh.
+  ///
+  /// In ko, this message translates to:
+  /// **'고점대비 {pct}'**
+  String disparityFromHigh(String pct);
+
+  /// No description provided for @disparityPrevChange.
+  ///
+  /// In ko, this message translates to:
+  /// **'전일 대비'**
+  String get disparityPrevChange;
+
+  /// No description provided for @disparityLabel.
+  ///
+  /// In ko, this message translates to:
+  /// **'이격도'**
+  String get disparityLabel;
+
+  /// No description provided for @disparityMa.
+  ///
+  /// In ko, this message translates to:
+  /// **'{n}일선'**
+  String disparityMa(String n);
+
+  /// No description provided for @disparityNoData.
+  ///
+  /// In ko, this message translates to:
+  /// **'표시할 봉이 없습니다.'**
+  String get disparityNoData;
+
+  /// No description provided for @disparityHintFront.
+  ///
+  /// In ko, this message translates to:
+  /// **'대표월물: 거래량이 가장 많은 월물의 실제 가격입니다. 월물이 바뀌는 날 가격이 건너뜁니다.'**
+  String get disparityHintFront;
+
+  /// No description provided for @disparityHintAdjusted.
+  ///
+  /// In ko, this message translates to:
+  /// **'{basis}: 롤 규칙대로 월물을 갈아탄 수익률을 이어 붙인 조정 가격입니다. 실제 월물 가격과 다릅니다.'**
+  String disparityHintAdjusted(String basis);
+
+  /// No description provided for @disparityHintFallback.
+  ///
+  /// In ko, this message translates to:
+  /// **'이 원자재에는 {basis} 상품이 없어 대표월물로 대신 보여 줍니다.'**
+  String disparityHintFallback(String basis);
+
+  /// No description provided for @disparityHintSameAsKr.
+  ///
+  /// In ko, this message translates to:
+  /// **'금·은은 미국형이 한국형과 같습니다.'**
+  String get disparityHintSameAsKr;
 }
 
 class _AppLocalizationsDelegate

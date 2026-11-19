@@ -8,6 +8,7 @@ import 'package:futureetp/features/chart_spike/chart_spike_screen.dart';
 import 'package:futureetp/features/commodity/commodity_shell.dart';
 import 'package:futureetp/features/commodity/commodity_tab.dart';
 import 'package:futureetp/features/commodity/disparity_chart/disparity_chart_provider.dart';
+import 'package:futureetp/features/commodity/disparity_chart/disparity_chart_tab.dart';
 import 'package:futureetp/features/commodity/tab_placeholder.dart';
 import 'package:futureetp/features/commodity_list/commodity_list_screen.dart';
 import 'package:futureetp/features/dev_health/health_screen.dart';
@@ -104,7 +105,11 @@ final _commodityRoute = StatefulShellRoute.indexedStack(
             path: tab == CommodityTab.disparity
                 ? 'commodity/:code'
                 : 'commodity/:code/${tab.segment}',
-            builder: (context, state) => const TabPlaceholder(),
+            builder: (context, state) => tab == CommodityTab.disparity
+                ? DisparityChartTab(
+                    codeText: state.pathParameters['code'] ?? '',
+                  )
+                : const TabPlaceholder(),
           ),
         ],
       ),

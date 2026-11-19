@@ -120,5 +120,137 @@
   "commodityTabDisparity": "이격도차트",
   "commodityTabContracts": "월물차트",
   "commodityTabCurve": "월물커브",
-  "commodityTabEtps": "ETP"
+  "commodityTabEtps": "ETP",
+  "basisFront": "대표월물",
+  "basisKr": "한국형",
+  "basisUs": "미국형",
+  "chartMonth": "{month, select, 1{1월} 2{2월} 3{3월} 4{4월} 5{5월} 6{6월} 7{7월} 8{8월} 9{9월} 10{10월} 11{11월} 12{12월} other{{month}}}",
+  "@chartMonth": {
+    "placeholders": {
+      "month": {
+        "type": "String"
+      }
+    }
+  },
+  "chartHighTag": "고가 {price}({pct}, {date})",
+  "@chartHighTag": {
+    "placeholders": {
+      "price": {
+        "type": "String"
+      },
+      "pct": {
+        "type": "String"
+      },
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "chartLowTag": "저가 {price}({pct}, {date})",
+  "@chartLowTag": {
+    "placeholders": {
+      "price": {
+        "type": "String"
+      },
+      "pct": {
+        "type": "String"
+      },
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "chartPeriodsLabel": "기간",
+  "chartResetView": "선택한 기간의 최근 위치로",
+  "chartOlderFailedTitle": "과거 데이터를 불러오지 못했습니다",
+  "chartOlderFailedMessage": "잠시 뒤 차트를 다시 끌어 주세요.",
+  "disparityBasisFallback": "{basis}*",
+  "@disparityBasisFallback": {
+    "placeholders": {
+      "basis": {
+        "type": "String"
+      }
+    }
+  },
+  "disparityBasisInRoll": "{basis} (롤 중)",
+  "@disparityBasisInRoll": {
+    "placeholders": {
+      "basis": {
+        "type": "String"
+      }
+    }
+  },
+  "disparityOpen": "시",
+  "disparityHigh": "고",
+  "disparityLow": "저",
+  "disparityClose": "종",
+  "disparityValue": "이격도 {value}",
+  "@disparityValue": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "disparityTailUp": "상위 {pct}%",
+  "@disparityTailUp": {
+    "placeholders": {
+      "pct": {
+        "type": "String"
+      }
+    }
+  },
+  "disparityTailDown": "하위 {pct}%",
+  "@disparityTailDown": {
+    "placeholders": {
+      "pct": {
+        "type": "String"
+      }
+    }
+  },
+  "disparityFromLow": "저점대비 {pct}",
+  "@disparityFromLow": {
+    "placeholders": {
+      "pct": {
+        "type": "String"
+      }
+    }
+  },
+  "disparityFromHigh": "고점대비 {pct}",
+  "@disparityFromHigh": {
+    "placeholders": {
+      "pct": {
+        "type": "String"
+      }
+    }
+  },
+  "disparityPrevChange": "전일 대비",
+  "disparityLabel": "이격도",
+  "disparityMa": "{n}일선",
+  "@disparityMa": {
+    "placeholders": {
+      "n": {
+        "type": "String"
+      }
+    }
+  },
+  "disparityNoData": "표시할 봉이 없습니다.",
+  "disparityHintFront": "대표월물: 거래량이 가장 많은 월물의 실제 가격입니다. 월물이 바뀌는 날 가격이 건너뜁니다.",
+  "disparityHintAdjusted": "{basis}: 롤 규칙대로 월물을 갈아탄 수익률을 이어 붙인 조정 가격입니다. 실제 월물 가격과 다릅니다.",
+  "@disparityHintAdjusted": {
+    "placeholders": {
+      "basis": {
+        "type": "String"
+      }
+    }
+  },
+  "disparityHintFallback": "이 원자재에는 {basis} 상품이 없어 대표월물로 대신 보여 줍니다.",
+  "@disparityHintFallback": {
+    "placeholders": {
+      "basis": {
+        "type": "String"
+      }
+    }
+  },
+  "disparityHintSameAsKr": "금·은은 미국형이 한국형과 같습니다."
 }

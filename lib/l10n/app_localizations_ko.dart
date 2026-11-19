@@ -179,4 +179,133 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get commodityTabEtps => 'ETP';
+
+  @override
+  String get basisFront => '대표월물';
+
+  @override
+  String get basisKr => '한국형';
+
+  @override
+  String get basisUs => '미국형';
+
+  @override
+  String chartMonth(String month) {
+    String _temp0 = intl.Intl.selectLogic(month, {
+      '1': '1월',
+      '2': '2월',
+      '3': '3월',
+      '4': '4월',
+      '5': '5월',
+      '6': '6월',
+      '7': '7월',
+      '8': '8월',
+      '9': '9월',
+      '10': '10월',
+      '11': '11월',
+      '12': '12월',
+      'other': '$month',
+    });
+    return '$_temp0';
+  }
+
+  @override
+  String chartHighTag(String price, String pct, String date) {
+    return '고가 $price($pct, $date)';
+  }
+
+  @override
+  String chartLowTag(String price, String pct, String date) {
+    return '저가 $price($pct, $date)';
+  }
+
+  @override
+  String get chartPeriodsLabel => '기간';
+
+  @override
+  String get chartResetView => '선택한 기간의 최근 위치로';
+
+  @override
+  String get chartOlderFailedTitle => '과거 데이터를 불러오지 못했습니다';
+
+  @override
+  String get chartOlderFailedMessage => '잠시 뒤 차트를 다시 끌어 주세요.';
+
+  @override
+  String disparityBasisFallback(String basis) {
+    return '$basis*';
+  }
+
+  @override
+  String disparityBasisInRoll(String basis) {
+    return '$basis (롤 중)';
+  }
+
+  @override
+  String get disparityOpen => '시';
+
+  @override
+  String get disparityHigh => '고';
+
+  @override
+  String get disparityLow => '저';
+
+  @override
+  String get disparityClose => '종';
+
+  @override
+  String disparityValue(String value) {
+    return '이격도 $value';
+  }
+
+  @override
+  String disparityTailUp(String pct) {
+    return '상위 $pct%';
+  }
+
+  @override
+  String disparityTailDown(String pct) {
+    return '하위 $pct%';
+  }
+
+  @override
+  String disparityFromLow(String pct) {
+    return '저점대비 $pct';
+  }
+
+  @override
+  String disparityFromHigh(String pct) {
+    return '고점대비 $pct';
+  }
+
+  @override
+  String get disparityPrevChange => '전일 대비';
+
+  @override
+  String get disparityLabel => '이격도';
+
+  @override
+  String disparityMa(String n) {
+    return '$n일선';
+  }
+
+  @override
+  String get disparityNoData => '표시할 봉이 없습니다.';
+
+  @override
+  String get disparityHintFront =>
+      '대표월물: 거래량이 가장 많은 월물의 실제 가격입니다. 월물이 바뀌는 날 가격이 건너뜁니다.';
+
+  @override
+  String disparityHintAdjusted(String basis) {
+    return '$basis: 롤 규칙대로 월물을 갈아탄 수익률을 이어 붙인 조정 가격입니다. 실제 월물 가격과 다릅니다.';
+  }
+
+  @override
+  String disparityHintFallback(String basis) {
+    return '이 원자재에는 $basis 상품이 없어 대표월물로 대신 보여 줍니다.';
+  }
+
+  @override
+  String get disparityHintSameAsKr => '금·은은 미국형이 한국형과 같습니다.';
 }

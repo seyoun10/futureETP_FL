@@ -10,6 +10,9 @@ import 'package:material_ui/material_ui.dart';
 /// 길게 누르기 시간(RN `activateAfterLongPress` 300ms, D-056).
 const crosshairLongPress = Duration(milliseconds: 300);
 
+/// 보이는 범위를 바꾼 제스처. 핀치는 기간 칩 선택 표시를 지우고, 이동은 남긴다(screens.md C-a).
+enum ChartGesture { pan, zoom }
+
 /// 봉차트와 제스처(D-056 보충).
 ///
 /// - 한 손가락 끌기: 이동. 두 손가락: 손가락 가운데 날짜를 고정한 채 확대·축소하고 함께 움직이면 이동.
@@ -24,6 +27,9 @@ class CandleChart extends StatefulWidget {
     required this.viewport,
     required this.crosshair,
     required this.palette,
+    this.padding = EdgeInsets.zero,
+    this.onGesture,
+    this.formatPrice,
     this.locked = false,
   });
 
@@ -33,6 +39,15 @@ class CandleChart extends StatefulWidget {
   /// 십자선이 붙은 봉 순번. null이면 없다.
   final ValueNotifier<int?> crosshair;
   final UpDownPalette palette;
+
+  /// 봉·선을 비켜 그릴 여백(위 정보 줄, 아래 x축, 오른쪽 y축). 손가락 위치도 이 안 기준이다.
+  final EdgeInsets padding;
+
+  /// 끌기·핀치가 보이는 범위를 실제로 바꿨을 때. 범위가 그대로인 제스처(끝에서 더 밀기 등)로는 부르지 않는다.
+  final ValueChanged<ChartGesture>? onGesture;
+
+  /// 십자선 가격 라벨. 없으면 소수 셋째 자리.
+  final String Function(double price)? formatPrice;
 
   /// 이전 데이터를 받는 동안 터치를 막는다(D-108, D-139).
   final bool locked;
@@ -63,6 +78,9 @@ class _CandleChartState extends State<CandleChart> {
   // ScaleGestureRecognizer는 판정을 넘은 자리를 시작점으로 주므로 누른 자리를 따로 기억한다.
   Offset? _down;
 
+  /// 차트 위젯 좌표 → 봉 영역 x.
+  double _x(Offset p) => p.dx - widget.padding.left;
+
   void _onScaleStart(ScaleStartDetails d) => _rebase(
     d.pointerCount == 1 ? _down ?? d.localFocalPoint : d.localFocalPoint,
     1,
@@ -75,27 +93,31 @@ class _CandleChartState extends State<CandleChart> {
       return;
     }
     if (d.pointerCount == 1 && widget.crosshair.value != null) {
-      _moveCrosshair(d.localFocalPoint.dx);
+      _moveCrosshair(_x(d.localFocalPoint));
       return;
     }
     final start = _startViewport!;
-    _viewport.value = d.pointerCount >= 2
+    final zoom = d.pointerCount >= 2;
+    final next = zoom
         ? start.zoomed(
             d.horizontalScale / _startScale,
-            _startFocal.dx,
-            d.localFocalPoint.dx,
+            _x(_startFocal),
+            _x(d.localFocalPoint),
             _width,
           )
         : start.panned(d.localFocalPoint.dx - _startFocal.dx, _width);
+    if (next == _viewport.value) return;
+    _viewport.value = next;
+    widget.onGesture?.call(zoom ? ChartGesture.zoom : ChartGesture.pan);
   }
 
   void _onScaleEnd(ScaleEndDetails d) => _startViewport = null;
 
   void _onLongPressStart(LongPressStartDetails d) =>
-      _moveCrosshair(d.localPosition.dx);
+      _moveCrosshair(_x(d.localPosition));
 
   void _onLongPressMove(LongPressMoveUpdateDetails d) =>
-      _moveCrosshair(d.localPosition.dx);
+      _moveCrosshair(_x(d.localPosition));
 
   void _moveCrosshair(double x) {
     final i = _viewport.value.indexAt(x, _width);
@@ -110,7 +132,7 @@ class _CandleChartState extends State<CandleChart> {
     final locked = widget.locked;
     return LayoutBuilder(
       builder: (context, constraints) {
-        _width = constraints.maxWidth;
+        _width = widget.padding.deflateSize(constraints.biggest).width;
         return RawGestureDetector(
           behavior: HitTestBehavior.opaque,
           gestures: locked
@@ -156,6 +178,7 @@ class _CandleChartState extends State<CandleChart> {
                       series: widget.series,
                       viewport: _viewport,
                       palette: widget.palette,
+                      padding: widget.padding,
                     ),
                   ),
                 ),
@@ -166,6 +189,9 @@ class _CandleChartState extends State<CandleChart> {
                       series: widget.series,
                       viewport: _viewport,
                       crosshair: widget.crosshair,
+                      padding: widget.padding,
+                      formatPrice:
+                          widget.formatPrice ?? (p) => p.toStringAsFixed(3),
                     ),
                   ),
                 ),
@@ -180,12 +206,19 @@ class _CandleChartState extends State<CandleChart> {
 
 /// 십자선: 붙은 봉 가운데 세로선, 그 봉 종가 가로선과 가격 라벨(RN `CrosshairLayer`).
 class _CrosshairPainter extends CustomPainter {
-  new({required this.series, required this.viewport, required this.crosshair})
-    : super(repaint: Listenable.merge([viewport, crosshair]));
+  new({
+    required this.series,
+    required this.viewport,
+    required this.crosshair,
+    required this.padding,
+    required this.formatPrice,
+  }) : super(repaint: Listenable.merge([viewport, crosshair]));
 
   final CandleSeries series;
   final ValueNotifier<ChartViewport> viewport;
   final ValueNotifier<int?> crosshair;
+  final EdgeInsets padding;
+  final String Function(double) formatPrice;
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -193,18 +226,19 @@ class _CrosshairPainter extends CustomPainter {
     final v = viewport.value;
     if (i == null || i >= v.count) return;
     final range = LogPriceRange.fit(v, series.envelopeHigh, series.envelopeLow);
-    final x = v.xOf(i, size.width);
+    final plot = padding.deflateRect(Offset.zero & size);
+    final x = plot.left + v.xOf(i, plot.width);
     final close = series.closes[i];
-    final y = range.yOf(close, size.height);
+    final y = plot.top + range.yOf(close, plot.height);
     final line = Paint()
       ..color = ChartColors.crosshairLine
       ..strokeWidth = 1;
     canvas
       ..drawLine(Offset(x, 0), Offset(x, size.height), line)
-      ..drawLine(Offset(0, y), Offset(size.width, y), line);
+      ..drawLine(Offset(0, y), Offset(plot.right, y), line);
     final text = TextPainter(
       text: TextSpan(
-        text: close.toStringAsFixed(3),
+        text: formatPrice(close),
         style: const TextStyle(
           color: ChartColors.crosshairText,
           fontSize: AppFontSize.caption,
@@ -228,5 +262,6 @@ class _CrosshairPainter extends CustomPainter {
   bool shouldRepaint(_CrosshairPainter old) =>
       old.series != series ||
       old.viewport != viewport ||
-      old.crosshair != crosshair;
+      old.crosshair != crosshair ||
+      old.padding != padding;
 }

@@ -184,4 +184,134 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get commodityTabEtps => 'ETP';
+
+  @override
+  String get basisFront => 'Front month';
+
+  @override
+  String get basisKr => 'KR-style';
+
+  @override
+  String get basisUs => 'US-style';
+
+  @override
+  String chartMonth(String month) {
+    String _temp0 = intl.Intl.selectLogic(month, {
+      '1': 'Jan',
+      '2': 'Feb',
+      '3': 'Mar',
+      '4': 'Apr',
+      '5': 'May',
+      '6': 'Jun',
+      '7': 'Jul',
+      '8': 'Aug',
+      '9': 'Sep',
+      '10': 'Oct',
+      '11': 'Nov',
+      '12': 'Dec',
+      'other': '$month',
+    });
+    return '$_temp0';
+  }
+
+  @override
+  String chartHighTag(String price, String pct, String date) {
+    return 'High $price ($pct, $date)';
+  }
+
+  @override
+  String chartLowTag(String price, String pct, String date) {
+    return 'Low $price ($pct, $date)';
+  }
+
+  @override
+  String get chartPeriodsLabel => 'Period';
+
+  @override
+  String get chartResetView => 'Back to the latest selected period';
+
+  @override
+  String get chartOlderFailedTitle => 'Couldn\'t load older data';
+
+  @override
+  String get chartOlderFailedMessage => 'Drag the chart again in a moment.';
+
+  @override
+  String disparityBasisFallback(String basis) {
+    return '$basis*';
+  }
+
+  @override
+  String disparityBasisInRoll(String basis) {
+    return '$basis (rolling)';
+  }
+
+  @override
+  String get disparityOpen => 'O';
+
+  @override
+  String get disparityHigh => 'H';
+
+  @override
+  String get disparityLow => 'L';
+
+  @override
+  String get disparityClose => 'C';
+
+  @override
+  String disparityValue(String value) {
+    return 'Disparity $value';
+  }
+
+  @override
+  String disparityTailUp(String pct) {
+    return 'top $pct%';
+  }
+
+  @override
+  String disparityTailDown(String pct) {
+    return 'bottom $pct%';
+  }
+
+  @override
+  String disparityFromLow(String pct) {
+    return 'LC $pct';
+  }
+
+  @override
+  String disparityFromHigh(String pct) {
+    return 'HC $pct';
+  }
+
+  @override
+  String get disparityPrevChange => 'Chg';
+
+  @override
+  String get disparityLabel => 'Disparity';
+
+  @override
+  String disparityMa(String n) {
+    return 'MA$n';
+  }
+
+  @override
+  String get disparityNoData => 'No bars to show.';
+
+  @override
+  String get disparityHintFront =>
+      'Front month: actual prices of the most traded contract. Prices jump on the day the contract changes.';
+
+  @override
+  String disparityHintAdjusted(String basis) {
+    return '$basis: adjusted prices chaining the returns of rolling contracts by the rule. They differ from actual contract prices.';
+  }
+
+  @override
+  String disparityHintFallback(String basis) {
+    return 'This commodity has no $basis product, so the front month is shown instead.';
+  }
+
+  @override
+  String get disparityHintSameAsKr =>
+      'For gold and silver, US style is the same as Korean style.';
 }
