@@ -272,3 +272,17 @@
   - 십자선(길게 누르기 → 끌기 → 종가 라벨)과 이전 3년 이어 받기(756 → 4,000봉, 범위 유지, 받는 동안 차단·햅틱)는 에뮬레이터 화면과 위젯 테스트로 확인했다.
 - 근거: 검증 항목(봉 수, 이평선·밴드, 핀치·드래그·십자선, 이어 받기 범위 유지, 60fps)을 모두 직접 구현으로 통과했다. 라이브러리에 맞춰 우회할 일이 없고, RN에서 직접 만든 부분을 거의 그대로 옮길 수 있다.
 - 영향: `docs/tech-stack.md` 차트 행. 스파이크 화면(`features/chart_spike`, `/dev/chart-spike`, ARB `devChartSpike*`)은 C-a 본 구현 뒤 지운다. `lib/core/charts/`는 C-a·C-c 본 구현이 이어 쓰고, 축·라벨·롤 음영·꼬리표·상세 박스·한글 글자는 그때 더한다.
+
+## FL-026: A 원자재 목록과 공용 title-bar
+- 날짜: 2026-11-19
+- 상태: 확정
+- 맥락: TODO 4단계 A(screens.md A, D-085, D-109, D-124, D-138). RN `CommodityListScreen`·`ScreenHeader`·`HeaderIconButton`·`SettingsHeaderButton`·`AlertBell`·`haptics`·`showFailedAlert`에 대응한다.
+- 결정:
+  - 조회: `ApiClient.getCommodities` → `CommodityListNotifier`(`AutoRefreshNotifier`, FL-022). 원자재·월물 줄은 서버 순서대로 그리고, 원자재 이름은 ARB `commodityName`(ICU select)으로 쓴다.
+  - 당겨서 새로고침: `RefreshIndicator.adaptive`의 `onRefresh`가 `ref.refresh(provider.future)`와 5초 타이머 중 먼저 끝나는 쪽에서 끝난다. 그동안 `AbsorbPointer`로 헤더까지 터치를 막는다. 시간 초과·실패면 `showFailedAlert`를 띄운다. 늦은 응답은 Provider가 받아 목록을 바꾸고, 회차 번호로 지난 회차가 화면 상태를 다시 바꾸지 않게 한다(RN `usePullRefresh`).
+  - 공통 실패 Alert(`core/util/failed_alert.dart`)는 `showAdaptiveDialog` + `AlertDialog.adaptive`라 iOS에서는 Cupertino 모양이다. iOS 버튼에 `CupertinoDialogAction`을 쓰려고 `cupertino_ui`를 직접 의존성으로 둔다. 떠 있는 동안 다시 부르면 겹쳐 띄우지 않는다.
+  - title-bar는 `ScreenHeader`(아래 1px 흰 구분선, 제목 왼쪽 정렬)다. 아이콘은 Material Community Icons 대신 Flutter Material Icons로 비슷한 모양을 쓴다(패키지 추가 없음). 회전 아이콘(`phone-rotate-*`)은 C 화면에서 정한다.
+  - [⚙]은 B 화면이 생길 때까지 `/settings`에 2단계 임시 화면(서버 연결 확인·차트 스파이크 진입)을 띄운다. 그래서 `dev_health`는 B 화면 때 지운다.
+  - 행 누르기(햅틱·C-a 이동·미리 조회)는 C 화면과 함께 넣는다.
+- 근거: RN 동작과 같은 결과를 Flutter 기본 위젯으로 낸다. 접근 키 화면(B-b)은 아직 `AppBar`라 B 화면을 만들 때 `ScreenHeader`로 맞춘다.
+- 영향: B-b 위젯 테스트의 첫 화면 기대값을 A로 바꿨다. `test/helpers/fake_http.dart`에 응답 지연(`delay`)이 생겼다. Android 에뮬레이터(API 37)에서 dev 서버 데이터로 목록·기준 시각 줄·당겨서 새로고침 인디케이터를 확인했다(2026-11-19).

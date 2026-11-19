@@ -8,16 +8,16 @@
 - [ ] 첫 로딩 가운데 스피너(2026-11-19, futureETP 527a3b2): 첫 조회 중 스켈레톤(공용 막대·차트 격자) 위 가운데에 큰 스피너를 겹친다. 차트 탭은 차트 자리 가운데이고, 데이터가 온 뒤 첫 기간 맞춤 전(차트를 감춘 동안)에도 띄운다(e94b2c2). `../futureETP/docs/wireframes/screens.md` 공통 로딩 항목. 공용 막대(`LoadingView`·`CenterSpinner`)는 넣음, 차트 격자 스켈레톤은 C-a 때
 
 ## 3. 공통 기반
-- [ ] 2단계 임시 화면 `lib/features/dev_health`·관련 ARB 키(`devHealth*`)를 지운다(지금 `/` 자리, A 화면이 생기면. 라우터·첫 화면 분기는 FL-018에서 넣음)
+- [ ] 2단계 임시 화면 `lib/features/dev_health`·관련 ARB 키(`devHealth*`)를 지운다(지금 [⚙] `/settings` 자리, B 화면이 생기면. 차트 스파이크 진입 버튼도 여기 있다, FL-026)
 - [ ] 접근 키 QR 읽기를 실제 기기에서 확인(키 스크립트 QR, FL-018)
 
 ## 4. 화면 수직 슬라이스 (RN 순서)
-- [ ] A 원자재 목록: `GET /v1/commodities`, 대표월물 ●·알림 🔔·거래 없음, 당겨서 새로고침(햅틱·터치 차단·5초 시간 초과 Alert, D-138), C-a 이동·미리 조회 (D-085)
+- [ ] A 원자재 목록 남은 것: 행을 누르면 선택 햅틱·C-a 이동·C-a 미리 조회(C 화면과 함께, D-085, D-109)
 - [ ] C-a 이격도차트: `GET /v1/commodities/:code/disparity`, 기간 버튼 6개(D-102), [⟲] 버튼(`lockLandscape`·ETP 탭·C 밖에서 `lockPortrait`, FL-024), 롤 음영, 십자선 상세, 가로 모드, 이전 3년 받기 중 화면 터치 차단·5초 시간 초과·실패 Alert (D-086, D-103, D-108, D-139). `lib/core/charts`(FL-025)를 이어 쓰고, 끝나면 스파이크 화면 `features/chart_spike`·`/dev/chart-spike`·ARB `devChartSpike*`를 지운다
 - [ ] C-c 월물차트: `GET /v1/commodities/:code/contracts`, log y축, 끝값 라벨 (D-092, D-093, D-113, D-118)
 - [ ] C-b 월물커브: `GET /v1/commodities/:code/curve?baseDate`, 기준일 OS 날짜 피커, 이전·다음 기준일, 변화율 라벨 배치, 롤 수익률 (D-090, D-091, D-114~D-123)
 - [ ] C-d ETP 목록(필터·정렬은 앱에서)·C-d-a 상세 (D-017)
-- [ ] B 설정·B-a 알림 설정: 낙관적 PATCH, rare-level 입력 검증, 알림 대상 없음 빨간 점 (D-081~D-083, D-124)
+- [ ] B 설정·B-a 알림 설정: 낙관적 PATCH, rare-level 입력 검증, 알림 대상 없음 빨간 점 (D-081~D-083, D-124). B-b title-bar도 `ScreenHeader`로 맞춘다(FL-026)
 - [ ] 화면별 세부 동작은 `../futureETP/docs/wireframes/screens.md`와 하나씩 대조
 
 ## 5. 푸시
