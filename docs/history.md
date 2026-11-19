@@ -31,3 +31,4 @@
 - [x] i18n ko/en, 앱 안 언어 설정을 서버 기기 설정과 맞춤 (D-033, D-073, D-137). iOS 카메라 권한 문구 한국어(InfoPlist.strings, D-078 보충) (FL-019)
 - [x] 테마 토큰(다크 전용)·등락 색 설정 저장 (D-031, D-073) (FL-019, FL-020)
 - [x] 숫자·날짜 포맷(RN `formatNumber`·`formatDateTime`과 같은 결과) 단위 테스트 (FL-021, `formatAmount`도 함께)
+- [x] 공용 조회 UI: 기준 시각 줄(freshness)·로딩/오류/빈 상태 분기·`nextUpdateAt` + 1분 자동 새로고침·앱 복귀 재조회 (D-048, D-075) (FL-022)

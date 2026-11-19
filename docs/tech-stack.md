@@ -18,6 +18,7 @@
 | 차트 | 미정: `CustomPainter` 직접 구현(후보), `fl_chart` 1.3.1 검토 | 4단계 C-a 스파이크로 정한다 |
 | 보안 저장소 | `flutter_secure_storage` 11.2.0 | FL-008. 접근 키(D-044)·installation ID, Android minSdk 24 |
 | 기기 설정 저장 | `shared_preferences` 2.5.6(`SharedPreferencesWithCache`) | FL-008, FL-019. 언어·등락 색(D-073) |
+| 시각 | `clock` 1.1.3 | FL-022. 자동 새로고침 시각을 테스트의 가짜 시간과 맞춘다 |
 | QR | `mobile_scanner` 7.5.0 | FL-009. B-b 접근 키 QR(D-078) |
 | i18n | `flutter_localizations` + `intl` 0.20.3(SDK 고정) + gen-l10n | FL-009. ko 기준, en |
 | 푸시 | Android `firebase_messaging` 17.1.0 + `firebase_core` 5.2.0, iOS APNs 토큰 방식은 5단계 | FL-011(검토중) |

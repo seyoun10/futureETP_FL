@@ -209,3 +209,17 @@
   - 시각은 모델의 `DateTime`을 받아 기기 현지 시각(`toLocal`)으로 쓴다. Dart에는 IANA 시간대 변환이 없어 테스트는 `utcOffset`으로 RN 테스트의 시간대 경우를 재현한다.
   - 테스트는 RN 테스트 경우를 그대로 옮겼다(`test/core/util/format_test.dart`).
 - 근거: 직접 만든 RN 규칙을 그대로 옮기는 편이 결과를 맞추기 쉽다.
+
+## FL-022: 공용 조회 UI와 자동 새로고침
+- 날짜: 2026-11-19
+- 상태: 확정
+- 맥락: RN은 TanStack Query(`QueryStateView`·`useAutoRefresh`·`focusManager`·`chartCacheOptions.staleTime`)로 상태 분기·`nextUpdateAt` + 1분 자동 새로고침·앱 복귀 재조회를 한다(D-030, D-048, D-075). Riverpod에는 화면 포커스·앱 복귀 재조회가 없다.
+- 결정:
+  - 화면: `lib/core/widgets`의 `FooterLine`·`FreshnessLine`(`.asOfOnly`는 ETP 수집 시각)·`FreshnessFooter`, `QueryStateView`(`AsyncValue`를 받는다)·`LoadingView`·`CenterSpinner`·`ErrorView`. 값이 있으면 새로고침 실패여도 값을, 재시도 중(로딩)이면 스켈레톤을 보인다.
+  - 조회: freshness가 있는 조회는 `lib/core/query/auto_refresh.dart`의 `AutoRefreshNotifier`(AsyncNotifier)를 상속해 `fetch`·`nextUpdateAtOf`만 쓴다. 조회가 끝날 때마다(성공·실패, 실패면 이전 값) `max(nextUpdateAt + 1분, 조회 + 1분)`에 `invalidateSelf`한다. 앱이 뒤에 있으면 타이머에서 부르지 않는다.
+  - 앱 복귀: `appLifecycleProvider`(`AppLifecycleListener`)가 resumed가 되면 조회를 다시 한다. C 차트는 `staleUntilNextUpdate`로 `nextUpdateAt`까지 다시 받지 않는다(RN staleTime).
+  - "화면이 보이는 동안"(RN `useFocusEffect`)은 Riverpod의 구독 멈춤으로 맞춘다. 가려진 화면의 Provider가 멈춰 있으면 다시 조회가 보이게 될 때로 미뤄진다.
+  - 시각은 `clock` 패키지로 읽어 테스트의 가짜 시간(`tester.pump`)과 맞춘다.
+- 근거: 조회마다 타이머·생명주기 처리를 되풀이하지 않고 한 곳에 둔다. Notifier가 자동 새로고침을 맡는다는 레이어 규칙(architecture.md)과도 맞다.
+- 영향: 빈 상태는 RN에도 공용 컴포넌트가 없어 화면별로 둔다(A 목록·C-d ETP). 캐시 유지 시간(C 차트 gcTime 1시간)은 C-a 때 정한다.
+
