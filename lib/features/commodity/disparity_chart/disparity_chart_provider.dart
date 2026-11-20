@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/misc.dart';
 import 'package:futureetp/core/api/api_client.dart';
@@ -7,11 +5,9 @@ import 'package:futureetp/core/api/models/disparity_chart.dart';
 import 'package:futureetp/core/api/models/enums.dart';
 import 'package:futureetp/core/api/models/settings.dart';
 import 'package:futureetp/core/query/auto_refresh.dart';
+import 'package:futureetp/core/query/keep_alive.dart';
 import 'package:futureetp/core/settings/device_settings.dart';
 import 'package:material_ui/material_ui.dart';
-
-/// C 차트 응답은 크고 첫 조회·그리기가 느리다. 화면을 떠나도 1시간은 둔다(RN `CHART_GC_TIME_MS`).
-const chartCacheTime = Duration(hours: 1);
 
 /// C-a 조회 결과와 그 조건. 조건이 같을 때만 받아 둔 과거 봉을 이어 쓴다.
 @immutable
@@ -52,7 +48,7 @@ class DisparityChartNotifier extends AutoRefreshNotifier<DisparityData> {
 
   @override
   Future<DisparityData> fetch() async {
-    _keepForCacheTime();
+    keepAliveFor(ref, chartCacheTime);
     final params = await ref.watch(
       deviceSettingsProvider.selectAsync(disparityParamsOf),
     );
@@ -113,16 +109,6 @@ class DisparityChartNotifier extends AutoRefreshNotifier<DisparityData> {
       bars: [...older, ...latest.bars],
       hasMore: previous.hasMore,
     );
-  }
-
-  /// 듣는 화면이 없어져도 [chartCacheTime] 동안 둔다.
-  void _keepForCacheTime() {
-    final link = ref.keepAlive();
-    Timer? timer;
-    ref
-      ..onCancel(() => timer = Timer(chartCacheTime, link.close))
-      ..onResume(() => timer?.cancel())
-      ..onDispose(() => timer?.cancel());
   }
 }
 

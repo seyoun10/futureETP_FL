@@ -12,6 +12,7 @@ import 'package:futureetp/core/charts/chart_skeleton.dart';
 import 'package:futureetp/core/charts/price_chart.dart';
 import 'package:futureetp/core/theme/tokens.dart';
 import 'package:futureetp/core/theme/up_down_color.dart';
+import 'package:futureetp/features/commodity/chart_tab.dart';
 import 'package:futureetp/features/commodity/disparity_chart/disparity_chart_provider.dart';
 import 'package:futureetp/features/commodity/disparity_chart/disparity_chart_tab.dart';
 import 'package:futureetp/l10n/app_localizations.dart';
