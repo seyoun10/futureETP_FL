@@ -2,19 +2,17 @@ import 'dart:async';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:futureetp/app/app.dart';
 import 'package:futureetp/core/api/app_error.dart';
 import 'package:futureetp/core/api/models/enums.dart';
 import 'package:futureetp/core/api/models/freshness.dart';
 import 'package:futureetp/core/widgets/freshness_line.dart';
 import 'package:futureetp/core/widgets/query_state_view.dart';
-import 'package:futureetp/l10n/app_localizations.dart';
 import 'package:material_ui/material_ui.dart';
 
-Widget _wrap(Widget child, {Locale locale = const Locale('ko')}) => MaterialApp(
+import '../../helpers/test_app.dart';
+
+Widget _wrap(Widget child, {Locale locale = const Locale('ko')}) => testApp(
   locale: locale,
-  localizationsDelegates: appLocalizationsDelegates,
-  supportedLocales: AppLocalizations.supportedLocales,
   home: Scaffold(body: child),
 );
 

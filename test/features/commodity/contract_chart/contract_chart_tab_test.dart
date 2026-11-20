@@ -1,6 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:futureetp/app/app.dart';
 import 'package:futureetp/core/api/models/contracts_chart.dart';
 import 'package:futureetp/core/api/models/enums.dart';
 import 'package:futureetp/core/api/models/freshness.dart';
@@ -10,8 +9,9 @@ import 'package:futureetp/core/theme/tokens.dart';
 import 'package:futureetp/core/theme/up_down_color.dart';
 import 'package:futureetp/features/commodity/contract_chart/contract_chart_provider.dart';
 import 'package:futureetp/features/commodity/contract_chart/contract_chart_tab.dart';
-import 'package:futureetp/l10n/app_localizations.dart';
 import 'package:material_ui/material_ui.dart';
+
+import '../../../helpers/test_app.dart';
 
 String _date(DateTime from, int i) =>
     from.add(Duration(days: i)).toIso8601String().substring(0, 10);
@@ -90,10 +90,8 @@ Future<void> _pump(WidgetTester tester, ContractsChart chart) async {
         contractChartProvider(CommodityCode.ng)
             .overrideWith(() => _fake = _FakeChart(CommodityCode.ng, chart)),
       ],
-      child: const MaterialApp(
-        localizationsDelegates: appLocalizationsDelegates,
-        supportedLocales: AppLocalizations.supportedLocales,
-        home: Scaffold(body: ContractChartTab(codeText: 'NG')),
+      child: testApp(
+        home: const Scaffold(body: ContractChartTab(codeText: 'NG')),
       ),
     ),
   );

@@ -1,16 +1,15 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:futureetp/app/app.dart';
 import 'package:futureetp/core/settings/display_settings.dart';
 import 'package:futureetp/core/theme/tokens.dart';
 import 'package:futureetp/features/settings/rare_levels_input.dart';
 import 'package:futureetp/features/settings/settings_screen.dart';
-import 'package:futureetp/l10n/app_localizations.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../helpers/display_store.dart';
 import '../../helpers/settings_server.dart';
+import '../../helpers/test_app.dart';
 
 late SharedPreferencesWithCache _displayStore;
 late List<String> _opened;
@@ -33,10 +32,8 @@ Future<SettingsServer> _pump(
         ...server.overrides(_displayStore),
         deviceLocaleProvider.overrideWithValue(const Locale('ko', 'KR')),
       ],
-      child: MaterialApp(
-        theme: ThemeData(platform: platform),
-        localizationsDelegates: appLocalizationsDelegates,
-        supportedLocales: AppLocalizations.supportedLocales,
+      child: testApp(
+        platform: platform,
         locale: const Locale('en'),
         home: SettingsScreen(
           onOpenAlerts: () => _opened.add('alerts'),

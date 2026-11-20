@@ -1,18 +1,16 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:futureetp/app/app.dart';
 import 'package:futureetp/core/push/push_service.dart';
-import 'package:futureetp/core/theme/app_theme.dart';
 import 'package:futureetp/core/theme/tokens.dart';
 import 'package:futureetp/features/alert_settings/alert_settings_screen.dart';
 import 'package:futureetp/features/data_sources/data_sources_screen.dart';
-import 'package:futureetp/l10n/app_localizations.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../helpers/display_store.dart';
 import '../../helpers/fake_push.dart';
 import '../../helpers/settings_server.dart';
+import '../../helpers/test_app.dart';
 
 late SharedPreferencesWithCache _displayStore;
 
@@ -34,14 +32,7 @@ Future<SettingsServer> _pump(
         ...server.overrides(_displayStore),
         if (push != null) pushServiceProvider.overrideWithValue(push),
       ],
-      child: MaterialApp(
-        // 앱 테마의 버튼 최소 크기(가로 무한대)가 배너 Row에서 레이아웃 예외를 낸 회귀를 잡는다
-        theme: buildAppTheme(),
-        localizationsDelegates: appLocalizationsDelegates,
-        supportedLocales: AppLocalizations.supportedLocales,
-        locale: const Locale('en'),
-        home: home,
-      ),
+      child: testApp(locale: const Locale('en'), home: home),
     ),
   );
   await tester.pumpAndSettle();

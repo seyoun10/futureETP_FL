@@ -4,13 +4,12 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:futureetp/app/app.dart';
 import 'package:futureetp/core/api/api_client.dart';
 import 'package:futureetp/features/commodity/etp/etp_detail_screen.dart';
-import 'package:futureetp/l10n/app_localizations.dart';
 import 'package:material_ui/material_ui.dart';
 
 import '../../../helpers/fake_http.dart';
+import '../../../helpers/test_app.dart';
 
 const _id = '9d468af9-3a01-4b91-9c08-63a5ee7a511a';
 
@@ -36,9 +35,7 @@ Future<void> _pump(WidgetTester tester, Map<String, Object?> data) async {
           ),
         ),
       ],
-      child: MaterialApp(
-        localizationsDelegates: appLocalizationsDelegates,
-        supportedLocales: AppLocalizations.supportedLocales,
+      child: testApp(
         home: EtpDetailScreen(
           id: _id,
           openUrl: (url) async => _opened.add(url),

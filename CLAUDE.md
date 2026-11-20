@@ -73,7 +73,7 @@ Flutter로 만드는 futureETP 앱(Android·iOS). 기능·화면·동작은 RN �
 - 커밋 전 `./tool/check.sh` 통과
 - `fix:` 커밋은 회귀 테스트를 함께 넣는다. 시각 조정만 예외로 기기 확인으로 대신한다
 - 이름: 파일 `snake_case.dart`, 타입 `UpperCamelCase`, 멤버 `lowerCamelCase`. Effective Dart를 따른다
-- 테스트: `flutter test`(unit·widget), 통합은 `integration_test`
+- 테스트: `flutter test`(unit·widget), 통합은 `integration_test`. 화면 위젯 테스트는 `MaterialApp`을 직접 만들지 말고 `test/helpers/test_app.dart`의 `testApp`(앱 테마·문구 설정)으로 감싼다 (FL-033)
 - 화면 전용 코드는 해당 feature 안에 두고, 두 곳 이상에서 쓰면 공용 계층으로 옮긴다
 
 ## Commands

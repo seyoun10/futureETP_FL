@@ -6,17 +6,16 @@ import 'package:dio/dio.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:futureetp/app/app.dart';
 import 'package:futureetp/core/api/api_client.dart';
 import 'package:futureetp/core/api/models/enums.dart';
 import 'package:futureetp/core/api/models/settings.dart';
 import 'package:futureetp/core/settings/device_settings.dart';
 import 'package:futureetp/core/theme/up_down_color.dart';
 import 'package:futureetp/features/commodity_list/commodity_list_screen.dart';
-import 'package:futureetp/l10n/app_localizations.dart';
 import 'package:material_ui/material_ui.dart';
 
 import '../../helpers/fake_http.dart';
+import '../../helpers/test_app.dart';
 
 Map<String, Object?> _quote(
   String month, {
@@ -102,9 +101,7 @@ Future<void> _pump(WidgetTester tester) async {
           ),
         ),
       ],
-      child: MaterialApp(
-        localizationsDelegates: appLocalizationsDelegates,
-        supportedLocales: AppLocalizations.supportedLocales,
+      child: testApp(
         home: CommodityListScreen(
           onOpenSettings: () {},
           onOpenCommodity: (_) {},

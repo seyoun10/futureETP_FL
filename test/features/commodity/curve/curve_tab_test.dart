@@ -2,7 +2,6 @@ import 'package:cupertino_ui/cupertino_ui.dart' hide Curve;
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:futureetp/app/app.dart';
 import 'package:futureetp/core/api/api_client.dart';
 import 'package:futureetp/core/api/models/curve.dart';
 import 'package:futureetp/core/api/models/enums.dart';
@@ -12,10 +11,10 @@ import 'package:futureetp/core/charts/price_chart.dart';
 import 'package:futureetp/core/theme/up_down_color.dart';
 import 'package:futureetp/features/commodity/chart_tab.dart';
 import 'package:futureetp/features/commodity/curve/curve_tab.dart';
-import 'package:futureetp/l10n/app_localizations.dart';
 import 'package:material_ui/material_ui.dart' hide Curve;
 
 import '../../../helpers/fake_http.dart';
+import '../../../helpers/test_app.dart';
 
 /// 기준일 [baseDate]의 커브. 거래일은 10/14~10/21, D-1은 10/21.
 Curve _curve(String baseDate, {List<CurvePoint>? points}) {
@@ -122,10 +121,8 @@ Future<void> _pump(WidgetTester tester) async {
           ),
         ),
       ],
-      child: const MaterialApp(
-        localizationsDelegates: appLocalizationsDelegates,
-        supportedLocales: AppLocalizations.supportedLocales,
-        home: Scaffold(body: CurveTab(codeText: 'NG')),
+      child: testApp(
+        home: const Scaffold(body: CurveTab(codeText: 'NG')),
       ),
     ),
   );

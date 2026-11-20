@@ -4,13 +4,12 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:futureetp/app/app.dart';
 import 'package:futureetp/core/api/api_client.dart';
 import 'package:futureetp/features/commodity/etp/etp_list_tab.dart';
-import 'package:futureetp/l10n/app_localizations.dart';
 import 'package:material_ui/material_ui.dart';
 
 import '../../../helpers/fake_http.dart';
+import '../../../helpers/test_app.dart';
 
 Map<String, Object?> _list() =>
     jsonDecode(File('test/contract/fixtures/etpList.json').readAsStringSync())
@@ -38,9 +37,7 @@ Future<void> _pump(WidgetTester tester, Map<String, Object?> data) async {
           ),
         ),
       ],
-      child: MaterialApp(
-        localizationsDelegates: appLocalizationsDelegates,
-        supportedLocales: AppLocalizations.supportedLocales,
+      child: testApp(
         home: Scaffold(
           body: EtpListTab(codeText: 'GC', onOpenEtp: _opened.add),
         ),

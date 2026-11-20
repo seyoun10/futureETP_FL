@@ -4,7 +4,6 @@ import 'dart:io';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:futureetp/app/app.dart';
 import 'package:futureetp/core/api/app_error.dart';
 import 'package:futureetp/core/api/models/disparity_chart.dart';
 import 'package:futureetp/core/api/models/enums.dart';
@@ -15,8 +14,9 @@ import 'package:futureetp/core/theme/up_down_color.dart';
 import 'package:futureetp/features/commodity/chart_tab.dart';
 import 'package:futureetp/features/commodity/disparity_chart/disparity_chart_provider.dart';
 import 'package:futureetp/features/commodity/disparity_chart/disparity_chart_tab.dart';
-import 'package:futureetp/l10n/app_localizations.dart';
 import 'package:material_ui/material_ui.dart';
+
+import '../../../helpers/test_app.dart';
 
 /// fixture 봉 하나를 본으로 [n]개 봉을 만든다(날짜는 2025-01-01부터 하루씩, 종가는 조금씩 오른다).
 DisparityChart _chart({
@@ -101,10 +101,8 @@ Future<void> _pump(WidgetTester tester, DisparityChart chart) async {
         disparityChartProvider(CommodityCode.gc)
             .overrideWith(() => _fake = _FakeChart(CommodityCode.gc, chart)),
       ],
-      child: const MaterialApp(
-        localizationsDelegates: appLocalizationsDelegates,
-        supportedLocales: AppLocalizations.supportedLocales,
-        home: Scaffold(body: DisparityChartTab(codeText: 'GC')),
+      child: testApp(
+        home: const Scaffold(body: DisparityChartTab(codeText: 'GC')),
       ),
     ),
   );
@@ -280,11 +278,9 @@ void main() {
 
   testWidgets('모르는 코드면 NOT_FOUND 문구', (tester) async {
     await tester.pumpWidget(
-      const ProviderScope(
-        child: MaterialApp(
-          localizationsDelegates: appLocalizationsDelegates,
-          supportedLocales: AppLocalizations.supportedLocales,
-          home: Scaffold(body: DisparityChartTab(codeText: 'XX')),
+      ProviderScope(
+        child: testApp(
+          home: const Scaffold(body: DisparityChartTab(codeText: 'XX')),
         ),
       ),
     );
@@ -372,10 +368,8 @@ void main() {
           disparityChartProvider(CommodityCode.gc)
               .overrideWith(_PendingChart.new),
         ],
-        child: const MaterialApp(
-          localizationsDelegates: appLocalizationsDelegates,
-          supportedLocales: AppLocalizations.supportedLocales,
-          home: Scaffold(body: DisparityChartTab(codeText: 'GC')),
+        child: testApp(
+          home: const Scaffold(body: DisparityChartTab(codeText: 'GC')),
         ),
       ),
     );
