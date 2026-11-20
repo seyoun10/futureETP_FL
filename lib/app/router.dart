@@ -7,6 +7,7 @@ import 'package:futureetp/features/access_key/access_key_screen.dart';
 import 'package:futureetp/features/commodity/commodity_shell.dart';
 import 'package:futureetp/features/commodity/commodity_tab.dart';
 import 'package:futureetp/features/commodity/contract_chart/contract_chart_tab.dart';
+import 'package:futureetp/features/commodity/curve/curve_tab.dart';
 import 'package:futureetp/features/commodity/disparity_chart/disparity_chart_provider.dart';
 import 'package:futureetp/features/commodity/disparity_chart/disparity_chart_tab.dart';
 import 'package:futureetp/features/commodity/tab_placeholder.dart';
@@ -103,6 +104,7 @@ final _commodityRoute = StatefulShellRoute.indexedStack(
               return switch (tab) {
                 CommodityTab.disparity => DisparityChartTab(codeText: code),
                 CommodityTab.contracts => ContractChartTab(codeText: code),
+                CommodityTab.curve => CurveTab(codeText: code),
                 _ => const TabPlaceholder(),
               };
             },

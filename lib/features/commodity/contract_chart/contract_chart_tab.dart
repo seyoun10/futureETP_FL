@@ -62,13 +62,6 @@ class _ContractChartView extends ConsumerStatefulWidget {
   ConsumerState<_ContractChartView> createState() => _ContractChartViewState();
 }
 
-/// 범례·상세 글자.
-const _lineStyle = TextStyle(
-  color: AppColors.text,
-  fontSize: AppFontSize.caption,
-  fontFeatures: [FontFeature.tabularFigures()],
-);
-
 class _ContractChartViewState extends ConsumerState<_ContractChartView>
     with ChartTabState {
   // 기간 선택은 C-a와 따로 기억한다(이 탭 State, D-107)
@@ -208,31 +201,21 @@ class _ContractChartViewState extends ConsumerState<_ContractChartView>
     ContractModel model,
     double width,
   ) {
-    final scaler = MediaQuery.textScalerOf(context);
-    var rows = 1;
-    var rowWidth = 0.0;
-    var lineHeight = 0.0;
-    final available = width - AppSpacing.lg * 2;
-    for (final item in model.legend) {
-      final text = TextPainter(
-        text: TextSpan(
-          text: item.isFront ? '${item.label}$frontMark' : item.label,
-          style: _lineStyle,
+    final sizes = [
+      for (final item in model.legend)
+        measureInfoText(
+          context,
+          item.isFront ? '${item.label}$frontMark' : item.label,
         ),
-        textDirection: TextDirection.ltr,
-        textScaler: scaler,
-      )..layout();
-      final w = legendLineWidth + AppSpacing.xs + text.width;
-      lineHeight = text.height > lineHeight ? text.height : lineHeight;
-      text.dispose();
-      if (rowWidth > 0 && rowWidth + AppSpacing.md + w > available) {
-        rows++;
-        rowWidth = w;
-      } else {
-        rowWidth += (rowWidth > 0 ? AppSpacing.md : 0) + w;
-      }
-    }
-    return lineHeight * rows + AppSpacing.xs * 2;
+    ];
+    return wrappedInfoHeight(
+      itemWidths: [
+        for (final s in sizes) legendLineWidth + AppSpacing.xs + s.width,
+      ],
+      available: width - AppSpacing.lg * 2,
+      spacing: AppSpacing.md,
+      lineHeight: sizes.fold(0, (h, s) => s.height > h ? s.height : h),
+    );
   }
 }
 
@@ -271,7 +254,7 @@ class _Legend extends StatelessWidget {
                       ),
                   ],
                 ),
-                style: _lineStyle,
+                style: chartInfoStyle,
               ),
             ],
           ),

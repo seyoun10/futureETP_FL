@@ -320,4 +320,40 @@ class AppLocalizationsEn extends AppLocalizations {
   String chartPerYear(String pct) {
     return '$pct/yr';
   }
+
+  @override
+  String get curvePrev => 'Move base date 1 trading day earlier';
+
+  @override
+  String get curveNext => 'Move base date 1 trading day later';
+
+  @override
+  String get curveReset => 'Back to the latest base date';
+
+  @override
+  String curveRollYield(String value) {
+    return 'Roll yield $value';
+  }
+
+  @override
+  String get curveUnavailable => 'unavailable';
+
+  @override
+  String get curveTooltipChange => 'Change';
+
+  @override
+  String get curveNoData => 'No contracts to show.';
+
+  @override
+  String get curvePickTitle => 'Select base date';
+
+  @override
+  String curvePickRange(String min, String max) {
+    return 'Available: $min – $max';
+  }
+
+  @override
+  String curveMoved(String date, String weekday) {
+    return 'Market closed, moved to $date ($weekday)';
+  }
 }

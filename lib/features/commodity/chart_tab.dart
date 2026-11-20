@@ -252,3 +252,43 @@ class OlderIndicator extends StatelessWidget {
     ),
   );
 }
+
+/// 차트 위 정보 줄을 `Wrap`(가로 [spacing])으로 감쌌을 때의 높이(위·아래 여백 포함).
+/// 선·점은 이 높이만큼 비켜 그린다(D-117). [itemWidths]는 각 칸 너비, [available]은 줄 폭이다.
+double wrappedInfoHeight({
+  required List<double> itemWidths,
+  required double available,
+  required double spacing,
+  required double lineHeight,
+}) {
+  var rows = 1;
+  var rowWidth = 0.0;
+  for (final w in itemWidths) {
+    if (rowWidth > 0 && rowWidth + spacing + w > available) {
+      rows++;
+      rowWidth = w;
+    } else {
+      rowWidth += (rowWidth > 0 ? spacing : 0) + w;
+    }
+  }
+  return lineHeight * rows + AppSpacing.xs * 2;
+}
+
+/// 차트 위 정보 줄 글자(C-a·C-b·C-c).
+const chartInfoStyle = TextStyle(
+  color: AppColors.text,
+  fontSize: AppFontSize.caption,
+  fontFeatures: [FontFeature.tabularFigures()],
+);
+
+/// [chartInfoStyle] 글자 [text]의 크기(글자 크기 배율 반영).
+Size measureInfoText(BuildContext context, String text) {
+  final painter = TextPainter(
+    text: TextSpan(text: text, style: chartInfoStyle),
+    textDirection: TextDirection.ltr,
+    textScaler: MediaQuery.textScalerOf(context),
+  )..layout();
+  final size = painter.size;
+  painter.dispose();
+  return size;
+}

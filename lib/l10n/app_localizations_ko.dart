@@ -314,4 +314,40 @@ class AppLocalizationsKo extends AppLocalizations {
   String chartPerYear(String pct) {
     return '$pct/년';
   }
+
+  @override
+  String get curvePrev => '기준일을 1 거래일 앞으로';
+
+  @override
+  String get curveNext => '기준일을 1 거래일 뒤로';
+
+  @override
+  String get curveReset => '기준일을 최근 거래일로';
+
+  @override
+  String curveRollYield(String value) {
+    return '롤 수익률 $value';
+  }
+
+  @override
+  String get curveUnavailable => '산출 불가';
+
+  @override
+  String get curveTooltipChange => '변화율';
+
+  @override
+  String get curveNoData => '표시할 월물이 없습니다.';
+
+  @override
+  String get curvePickTitle => '기준일 선택';
+
+  @override
+  String curvePickRange(String min, String max) {
+    return '선택 가능: $min ~ $max';
+  }
+
+  @override
+  String curveMoved(String date, String weekday) {
+    return '휴장일이라 $date($weekday)로 옮겼습니다';
+  }
 }

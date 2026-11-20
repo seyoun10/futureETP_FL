@@ -319,9 +319,15 @@ List<MonthTick> _xTicks(ChartFrame f, ChartDecor decor) {
   );
 }
 
-/// 점선(선·빈칸 2px).
-void dashedLine(Canvas canvas, Offset a, Offset b, Paint paint) {
-  final (on, off) = guideDash;
+/// 점선. 기본은 가이드 점선(선·빈칸 2px).
+void dashedLine(
+  Canvas canvas,
+  Offset a,
+  Offset b,
+  Paint paint, {
+  (double, double) dash = guideDash,
+}) {
+  final (on, off) = dash;
   final d = b - a;
   final length = d.distance;
   if (length == 0) return;

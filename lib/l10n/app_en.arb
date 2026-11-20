@@ -79,5 +79,15 @@
   "contractsProvisional": "(provisional)",
   "contractsRollYield": "Roll yield",
   "contractsNoData": "No contracts to show.",
-  "chartPerYear": "{pct}/yr"
+  "chartPerYear": "{pct}/yr",
+  "curvePrev": "Move base date 1 trading day earlier",
+  "curveNext": "Move base date 1 trading day later",
+  "curveReset": "Back to the latest base date",
+  "curveRollYield": "Roll yield {value}",
+  "curveUnavailable": "unavailable",
+  "curveTooltipChange": "Change",
+  "curveNoData": "No contracts to show.",
+  "curvePickTitle": "Select base date",
+  "curvePickRange": "Available: {min} – {max}",
+  "curveMoved": "Market closed, moved to {date} ({weekday})"
 }

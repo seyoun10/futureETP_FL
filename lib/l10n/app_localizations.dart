@@ -577,6 +577,66 @@ abstract class AppLocalizations {
   /// In ko, this message translates to:
   /// **'{pct}/년'**
   String chartPerYear(String pct);
+
+  /// No description provided for @curvePrev.
+  ///
+  /// In ko, this message translates to:
+  /// **'기준일을 1 거래일 앞으로'**
+  String get curvePrev;
+
+  /// No description provided for @curveNext.
+  ///
+  /// In ko, this message translates to:
+  /// **'기준일을 1 거래일 뒤로'**
+  String get curveNext;
+
+  /// No description provided for @curveReset.
+  ///
+  /// In ko, this message translates to:
+  /// **'기준일을 최근 거래일로'**
+  String get curveReset;
+
+  /// No description provided for @curveRollYield.
+  ///
+  /// In ko, this message translates to:
+  /// **'롤 수익률 {value}'**
+  String curveRollYield(String value);
+
+  /// No description provided for @curveUnavailable.
+  ///
+  /// In ko, this message translates to:
+  /// **'산출 불가'**
+  String get curveUnavailable;
+
+  /// No description provided for @curveTooltipChange.
+  ///
+  /// In ko, this message translates to:
+  /// **'변화율'**
+  String get curveTooltipChange;
+
+  /// No description provided for @curveNoData.
+  ///
+  /// In ko, this message translates to:
+  /// **'표시할 월물이 없습니다.'**
+  String get curveNoData;
+
+  /// No description provided for @curvePickTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'기준일 선택'**
+  String get curvePickTitle;
+
+  /// No description provided for @curvePickRange.
+  ///
+  /// In ko, this message translates to:
+  /// **'선택 가능: {min} ~ {max}'**
+  String curvePickRange(String min, String max);
+
+  /// 휴장일을 골라 서버가 옮긴 기준일 안내(C-b)
+  ///
+  /// In ko, this message translates to:
+  /// **'휴장일이라 {date}({weekday})로 옮겼습니다'**
+  String curveMoved(String date, String weekday);
 }
 
 class _AppLocalizationsDelegate

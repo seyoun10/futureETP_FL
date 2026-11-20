@@ -246,5 +246,43 @@
         "type": "String"
       }
     }
+  },
+  "curvePrev": "기준일을 1 거래일 앞으로",
+  "curveNext": "기준일을 1 거래일 뒤로",
+  "curveReset": "기준일을 최근 거래일로",
+  "curveRollYield": "롤 수익률 {value}",
+  "@curveRollYield": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "curveUnavailable": "산출 불가",
+  "curveTooltipChange": "변화율",
+  "curveNoData": "표시할 월물이 없습니다.",
+  "curvePickTitle": "기준일 선택",
+  "curvePickRange": "선택 가능: {min} ~ {max}",
+  "@curvePickRange": {
+    "placeholders": {
+      "min": {
+        "type": "String"
+      },
+      "max": {
+        "type": "String"
+      }
+    }
+  },
+  "curveMoved": "휴장일이라 {date}({weekday})로 옮겼습니다",
+  "@curveMoved": {
+    "description": "휴장일을 골라 서버가 옮긴 기준일 안내(C-b)",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      },
+      "weekday": {
+        "type": "String"
+      }
+    }
   }
 }

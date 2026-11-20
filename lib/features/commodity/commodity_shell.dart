@@ -12,6 +12,7 @@ import 'package:futureetp/core/widgets/screen_header.dart';
 import 'package:futureetp/features/commodity/chart_busy.dart';
 import 'package:futureetp/features/commodity/commodity_tab.dart';
 import 'package:futureetp/features/commodity/contract_chart/contract_chart_provider.dart';
+import 'package:futureetp/features/commodity/curve/curve_provider.dart';
 import 'package:futureetp/features/commodity/disparity_chart/disparity_chart_provider.dart';
 import 'package:futureetp/l10n/app_localizations.dart';
 import 'package:go_router/go_router.dart';
@@ -70,6 +71,11 @@ class _CommodityShellState extends ConsumerState<CommodityShell> {
       ),
       CommodityTab.contracts => ref.watch(
         contractChartProvider(code).select((s) => s.value?.freshness),
+      ),
+      // 지난 기준일을 봐도 기준 시각 줄은 D 기준 그대로다(기본 기준일 조회의 값)
+      CommodityTab.curve => ref.watch(
+        curveProvider((code: code, baseDate: null))
+            .select((s) => s.value?.freshness),
       ),
       _ => null,
     };
