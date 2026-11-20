@@ -163,6 +163,11 @@ class _PermissionBanner extends ConsumerWidget {
               ),
             ),
             FilledButton(
+              // 테마의 최소 크기는 가로를 꽉 채운다(Size.fromHeight). Row 안에서는 가로가 무한대라
+              // 레이아웃이 깨지므로 가로 최소만 0으로 되돌린다.
+              style: FilledButton.styleFrom(
+                minimumSize: const Size(0, AppSize.touchTarget),
+              ),
               onPressed: () {
                 tapHaptic();
                 unawaited(ref.read(pushPermissionProvider.notifier).request());
