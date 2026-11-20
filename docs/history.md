@@ -55,3 +55,4 @@
 
 ## 6. 기기 설치·운영
 - [x] Android release 서명(RN과 같은 키), versionCode 10000 + 커밋 수(RN 앱 위 덮어 설치), arm64-v8a만(27.4MB), `tool/build_android_release.sh` (D-039, FL-034) (2026-11-20)
+- [x] 설치·업데이트 방식: Mac에서 adb 직접 설치, OTA 없음, `tool/install_android_release.sh`, 절차와 RN ↔ FL 바꿔 설치는 `docs/ops.md` (FL-035) (2026-11-20)

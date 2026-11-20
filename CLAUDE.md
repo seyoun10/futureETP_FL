@@ -35,6 +35,7 @@ Flutter로 만드는 futureETP 앱(Android·iOS). 기능·화면·동작은 RN �
 - `docs/tech-stack.md`: 스택 후보와 확정 결과(버전·출처 날짜)
 - `docs/architecture.md`: 디렉터리 구조, 레이어, RN 구조 대응, D-번호 적용표
 - `docs/decisions.md`: 이 저장소 결정 FL-xxx. D-xxx(공통)와 번호가 겹치지 않는다
+- `docs/ops.md`: 기기 설치·업데이트 절차(Android adb, RN 앱과 바꿔 설치)
 
 ## Domain Context
 
@@ -84,6 +85,7 @@ Flutter SDK는 `~/development/flutter`(stable, PATH는 `~/.zshrc`).
 - `cp env/dev.example.json env/dev.json`: 처음 한 번. 값이 비면 에뮬레이터 기본 주소(Android `http://10.0.2.2:3000`, iOS `http://localhost:3000`)
 - `flutter run --flavor dev --dart-define-from-file=env/dev.json`: dev 변형 실행. prod는 `--flavor prod`(env 파일 없이)
 - `./tool/build_android_release.sh`: prod release APK(RN과 같은 서명 키 `~/.config/futureetp/android-release.properties`, versionCode 10000 + 커밋 수, arm64-v8a만, FL-034). 결과 `build/app/outputs/flutter-apk/app-prod-release.apk`
+- `./tool/install_android_release.sh`: 그 APK를 연결된 기기에 `adb install -r`(커밋 안 한 앱 변경·오래된 APK면 멈춤, FL-035). 절차·RN과 바꿔 설치는 `docs/ops.md`
 - `flutter analyze`: 정적 분석(`analysis_options.yaml`, very_good_analysis)
 - `dart format lib test`: 포맷
 - `flutter test`: 전체 테스트(`test/architecture/`의 import 방향 검사 포함). 단일: `flutter test test/<파일> --name "<이름>"`
