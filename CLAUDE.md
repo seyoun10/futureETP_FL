@@ -89,7 +89,7 @@ Flutter SDK는 `~/development/flutter`(stable, PATH는 `~/.zshrc`).
 - `flutter analyze`: 정적 분석(`analysis_options.yaml`, very_good_analysis)
 - `dart format lib test`: 포맷
 - `flutter test`: 전체 테스트(`test/architecture/`의 import 방향 검사 포함). 단일: `flutter test test/<파일> --name "<이름>"`
-- `./tool/check.sh`: analyze(`--fatal-infos`) → format 확인 → test. 커밋 전 통과. CI(`.github/workflows/check.yml`)도 같은 스크립트를 돈다. Flutter를 올리면 워크플로의 `flutter-version`도 올린다
+- `./tool/check.sh`: 생성 코드 최신 확인(build_runner 전후 `*.g.dart`·`*.freezed.dart` 해시 비교) → analyze(`--fatal-infos`) → format 확인 → test. 커밋 전 통과. CI(`.github/workflows/check.yml`)도 같은 스크립트를 돈다. Flutter를 올리면 워크플로의 `flutter-version`도 올린다
 - `dart run build_runner build`: freezed·json_serializable 모델 생성(`lib/core/api/models/*.g.dart`·`*.freezed.dart`, 커밋한다)
 - `./tool/sync_contract.sh`: 원본 계약 스키마를 `test/contract/schemas/`로 복사(원본이 바뀌어 계약 테스트의 복사본 비교가 실패할 때, FL-017)
 - `dart fix --apply`: lint 자동 수정(Dart 3.14 생성자 표기 `const new(...)` 등)

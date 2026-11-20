@@ -119,6 +119,7 @@
 - 상태: 확정 (사용자 선택)
 - 결정: GitHub `seyoun10/futureETP_FL`(public, RN 저장소와 같음). `.github/workflows/check.yml`이 push(main)·PR마다 Ubuntu에서 Flutter 3.50.0으로 `./tool/check.sh`를 돌린다. 앱 빌드(Android·iOS)는 CI에서 하지 않는다.
 - 근거: 개인 앱이고 설치는 로컬 빌드(D-039 대응)라 빌드 산출물이 필요 없다. 검사만 돌리면 Linux 러너 하나로 충분하다.
+- 보충(2026-11-20): `check.sh`가 맨 앞에서 build_runner를 돌려 `lib`의 `*.g.dart`·`*.freezed.dart`가 바뀌면 멈춘다. 모델 소스만 바꾸고 생성 파일을 다시 만들지 않은 커밋(`disparity_chart.dart`의 `flutter/foundation` import로 freezed 결과가 바뀐 일)을 CI가 못 잡았다. `git diff --exit-code`가 아니라 전후 해시 비교라 커밋 전 로컬에서도 생성만 했으면 통과한다. l10n 생성 파일은 CI의 `flutter pub get`이 먼저 다시 만들어 이 방식으로는 못 잡는다.
 - 영향: 로컬 Flutter를 올리면 워크플로의 `flutter-version`도 함께 올린다. 커밋된 파일에 비밀값을 두지 않는다(env/dev.json·google-services.json·서명 파일은 .gitignore).
 
 ## FL-015: installation ID와 보안 저장소 옵션
