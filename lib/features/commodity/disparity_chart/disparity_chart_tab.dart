@@ -81,6 +81,7 @@ const _lineStyle = TextStyle(
 class _DisparityChartViewState extends ConsumerState<_DisparityChartView>
     with ChartTabState {
   late DisparityModel _model = DisparityModel.from(widget.data.chart);
+  var _hintOpen = false;
 
   @override
   int get barCount => _model.bars.length;
@@ -174,10 +175,10 @@ class _DisparityChartViewState extends ConsumerState<_DisparityChartView>
                   child: Column(
                     children: [
                       _TodayLine(
-                        code: widget.code,
                         chart: chart,
                         today: _model.bars.last,
-                        requestedBasis: widget.data.params.basis,
+                        onToggleHint: () =>
+                            setState(() => _hintOpen = !_hintOpen),
                       ),
                       // 보이는 봉이 바뀌면 저점대비·고점대비를 바로 갱신한다
                       IgnorePointer(
@@ -207,7 +208,19 @@ class _DisparityChartViewState extends ConsumerState<_DisparityChartView>
                   ),
                 ),
               ),
-              ...chartOverlays(yAxis: yAxis),
+              ...chartOverlays(),
+              if (_hintOpen)
+                Positioned(
+                  left: 0,
+                  right: 0,
+                  top: lineHeight,
+                  child: _BasisHint(
+                    code: widget.code,
+                    chart: chart,
+                    requestedBasis: widget.data.params.basis,
+                    onClose: () => setState(() => _hintOpen = false),
+                  ),
+                ),
             ],
           ),
         ),
@@ -217,32 +230,21 @@ class _DisparityChartViewState extends ConsumerState<_DisparityChartView>
   }
 }
 
-/// 상단 첫 줄: 기준값 · 오늘 시고저종. 기준값을 누르면 안내가 열린다.
-class _TodayLine extends StatefulWidget {
+/// 상단 첫 줄: 기준값 · 오늘 시고저종. 기준값을 누르면 안내([_BasisHint])를 여닫는다.
+class _TodayLine extends StatelessWidget {
   const new({
-    required this.code,
     required this.chart,
     required this.today,
-    required this.requestedBasis,
+    required this.onToggleHint,
   });
 
-  final CommodityCode code;
   final DisparityChart chart;
   final DisparityBar today;
-  final Basis requestedBasis;
-
-  @override
-  State<_TodayLine> createState() => _TodayLineState();
-}
-
-class _TodayLineState extends State<_TodayLine> {
-  var _hintOpen = false;
+  final VoidCallback onToggleHint;
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final chart = widget.chart;
-    final today = widget.today;
     final basisName = basisText(l10n, chart.basis);
     var basisLabel = chart.fallback
         ? l10n.disparityBasisFallback(basisName)
@@ -254,18 +256,6 @@ class _TodayLineState extends State<_TodayLine> {
     } else if (today.inRoll) {
       basisLabel = l10n.disparityBasisInRoll(basisName);
     }
-    final hints = [
-      if (chart.basis == Basis.front)
-        l10n.disparityHintFront
-      else
-        l10n.disparityHintAdjusted(basisName),
-      if (chart.fallback && widget.requestedBasis != Basis.front)
-        l10n.disparityHintFallback(basisText(l10n, widget.requestedBasis)),
-      // 금·은은 미국형과 한국형이 같은 지수다(D-014)
-      if (chart.basis == Basis.us &&
-          (widget.code == CommodityCode.gc || widget.code == CommodityCode.si))
-        l10n.disparityHintSameAsKr,
-    ];
     final d = chart.priceDecimals;
     final ohlc = [
       '${l10n.disparityOpen}${formatPrice(today.open!, d)}',
@@ -273,62 +263,89 @@ class _TodayLineState extends State<_TodayLine> {
       '${l10n.disparityLow}${formatPrice(today.low!, d)}',
       '${l10n.disparityClose}${formatPrice(today.close!, d)}',
     ].join(' ');
-    return Column(
-      children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(
-            horizontal: AppSpacing.lg,
-            vertical: AppSpacing.xs,
-          ),
-          child: Text.rich(
-            key: const Key('disparity-today'),
-            TextSpan(
-              children: [
-                WidgetSpan(
-                  alignment: PlaceholderAlignment.baseline,
-                  baseline: TextBaseline.alphabetic,
-                  child: GestureDetector(
-                    key: const Key('disparity-basis'),
-                    onTap: () => setState(() => _hintOpen = !_hintOpen),
-                    child: Text(
-                      basisLabel,
-                      style: _lineStyle.copyWith(
-                        fontWeight: FontWeight.w600,
-                        decoration: TextDecoration.underline,
-                      ),
-                    ),
+    return Padding(
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.lg,
+        vertical: AppSpacing.xs,
+      ),
+      child: Text.rich(
+        key: const Key('disparity-today'),
+        TextSpan(
+          children: [
+            WidgetSpan(
+              alignment: PlaceholderAlignment.baseline,
+              baseline: TextBaseline.alphabetic,
+              child: GestureDetector(
+                key: const Key('disparity-basis'),
+                onTap: onToggleHint,
+                child: Text(
+                  basisLabel,
+                  style: _lineStyle.copyWith(
+                    fontWeight: FontWeight.w600,
+                    decoration: TextDecoration.underline,
                   ),
                 ),
-                TextSpan(text: ' · $ohlc'),
-              ],
+              ),
             ),
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            textAlign: TextAlign.center,
-            style: _lineStyle,
-          ),
+            TextSpan(text: ' · $ohlc'),
+          ],
         ),
-        if (_hintOpen)
-          GestureDetector(
-            key: const Key('disparity-hint'),
-            onTap: () => setState(() => _hintOpen = false),
-            child: Container(
-              margin: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
-              padding: const EdgeInsets.all(AppSpacing.md),
-              decoration: BoxDecoration(
-                color: AppColors.surface,
-                borderRadius: BorderRadius.circular(AppSpacing.sm),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                spacing: AppSpacing.xs,
-                children: [
-                  for (final hint in hints) Text(hint, style: _lineStyle),
-                ],
-              ),
-            ),
-          ),
-      ],
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+        textAlign: TextAlign.center,
+        style: _lineStyle,
+      ),
+    );
+  }
+}
+
+/// 기준값 안내. 첫 줄 바로 아래, 둘째 줄 위에 띄운다(RN `position: absolute`).
+/// 줄 띠 안에 끼우면 둘째 줄이 밀려 봉과 겹친다. 누르면 닫힌다.
+class _BasisHint extends StatelessWidget {
+  const new({
+    required this.code,
+    required this.chart,
+    required this.requestedBasis,
+    required this.onClose,
+  });
+
+  final CommodityCode code;
+  final DisparityChart chart;
+  final Basis requestedBasis;
+  final VoidCallback onClose;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final basisName = basisText(l10n, chart.basis);
+    final hints = [
+      if (chart.basis == Basis.front)
+        l10n.disparityHintFront
+      else
+        l10n.disparityHintAdjusted(basisName),
+      if (chart.fallback && requestedBasis != Basis.front)
+        l10n.disparityHintFallback(basisText(l10n, requestedBasis)),
+      // 금·은은 미국형과 한국형이 같은 지수다(D-014)
+      if (chart.basis == Basis.us &&
+          (code == CommodityCode.gc || code == CommodityCode.si))
+        l10n.disparityHintSameAsKr,
+    ];
+    return GestureDetector(
+      key: const Key('disparity-hint'),
+      onTap: onClose,
+      child: Container(
+        margin: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
+        padding: const EdgeInsets.all(AppSpacing.md),
+        decoration: BoxDecoration(
+          color: AppColors.surface,
+          borderRadius: BorderRadius.circular(AppSpacing.sm),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          spacing: AppSpacing.xs,
+          children: [for (final hint in hints) Text(hint, style: _lineStyle)],
+        ),
+      ),
     );
   }
 }
@@ -352,11 +369,11 @@ class _StatsLine extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final today = bars.last;
-    // 가운데(꼬리)가 화면 안에 있는 봉만 센다
+    // 몸통이 화면에 걸친 봉까지 센다(y 맞춤과 같은 범위, RN `visibleRange`)
     final stats = visibleStats(
       bars,
-      viewport.start.ceil().clamp(0, bars.length - 1),
-      (viewport.end - 1).floor().clamp(0, bars.length - 1),
+      viewport.first.clamp(0, bars.length - 1),
+      viewport.last.clamp(0, bars.length - 1),
     );
     final tail = switch (chart.currentTail) {
       null => '',

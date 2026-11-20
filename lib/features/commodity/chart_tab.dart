@@ -157,8 +157,8 @@ mixin ChartTabState<W extends ConsumerStatefulWidget> on ConsumerState<W> {
       (a.span - b.span).abs() < 1e-6;
 
   /// 차트 Stack 위에 겹치는 공통 층: 이전 3년 로딩 표시(왼쪽 가운데), [↻](x축 라벨 바로 위 가운데).
-  /// [yAxis]는 우측 y축 라벨 자리 너비다.
-  List<Widget> chartOverlays({required double yAxis}) => [
+  /// [↻]는 C-b와 같은 자리에 오게 y축 라벨 자리를 빼지 않은 전체 폭 가운데다(D-117).
+  List<Widget> chartOverlays() => [
     if (_loadingOlder)
       const Positioned.fill(
         child: IgnorePointer(
@@ -174,7 +174,7 @@ mixin ChartTabState<W extends ConsumerStatefulWidget> on ConsumerState<W> {
     if (gesture != null)
       Positioned(
         left: 0,
-        right: yAxis,
+        right: 0,
         bottom: xLabelHeight + AppSpacing.sm,
         child: Center(child: ChartResetButton(onPressed: resetView)),
       ),

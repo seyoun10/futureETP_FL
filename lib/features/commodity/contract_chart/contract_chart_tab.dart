@@ -190,7 +190,7 @@ class _ContractChartViewState extends ConsumerState<_ContractChartView>
                 _CrosshairDetail(model: model, index: index),
           ),
         ),
-        ...chartOverlays(yAxis: yAxis),
+        ...chartOverlays(),
       ],
     );
   }

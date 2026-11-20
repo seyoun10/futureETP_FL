@@ -185,9 +185,21 @@ void main() {
 
   testWidgets('기준값을 누르면 안내가 열리고 다시 누르면 닫힌다', (tester) async {
     await _pump(tester, _chart());
+    final statsTop = tester.getTopLeft(
+      find.byKey(const Key('disparity-stats')),
+    );
     await tester.tap(find.byKey(const Key('disparity-basis')));
     await tester.pump();
     expect(find.byKey(const Key('disparity-hint')), findsOneWidget);
+    // 안내는 둘째 줄 위에 떠서 둘째 줄을 밀어내지 않는다
+    expect(
+      tester.getTopLeft(find.byKey(const Key('disparity-stats'))),
+      statsTop,
+    );
+    expect(
+      tester.getTopLeft(find.byKey(const Key('disparity-hint'))).dy,
+      lessThanOrEqualTo(statsTop.dy),
+    );
     await tester.tap(find.byKey(const Key('disparity-hint')));
     await tester.pump();
     expect(find.byKey(const Key('disparity-hint')), findsNothing);
@@ -208,6 +220,11 @@ void main() {
     expect(_candle(tester).viewport.value.span, lessThan(126));
     expect(_selected(tester, '6M'), isFalse);
     expect(find.byKey(const Key('chart-reset')), findsOneWidget);
+    // C-b와 같은 자리: y축 라벨 자리를 빼지 않은 전체 폭 가운데(D-117)
+    expect(
+      tester.getCenter(find.byKey(const Key('chart-reset'))).dx,
+      closeTo(tester.getCenter(find.byType(PriceChart)).dx, 0.5),
+    );
 
     await tester.tap(find.byKey(const Key('chart-reset')));
     await tester.pump();
@@ -235,6 +252,25 @@ void main() {
     await g.up();
     await tester.pumpAndSettle();
     expect(find.byKey(const Key('chart-reset')), findsNothing);
+  });
+
+  testWidgets('저점대비·고점대비는 화면에 걸친 봉까지 센다(y 맞춤과 같은 범위)', (tester) async {
+    await _pump(tester, _chart());
+    final center = tester.getCenter(find.byType(PriceChart));
+    final g = await tester.startGesture(center);
+    // 봉 폭의 반쯤만 끌어 첫 봉이 화면 왼쪽에 걸치게 한다
+    for (var i = 1; i <= 5; i++) {
+      await g.moveTo(center + Offset(i * 7.3, 0));
+      await tester.pump(const Duration(milliseconds: 16));
+    }
+    final v = _candle(tester).viewport.value;
+    expect(v.start, isNot(v.start.roundToDouble()));
+    // fixture 봉 저가는 99 + 순번이고 현재가 400이다
+    final lc = (400 / (99 + v.first) - 1) * 100;
+    final stats = tester.widget<Text>(find.byKey(const Key('disparity-stats')));
+    expect(stats.data, contains('LC +${lc.toStringAsFixed(2)}%'));
+    await g.up();
+    await tester.pumpAndSettle();
   });
 
   testWidgets('봉이 없으면 안내 문구', (tester) async {

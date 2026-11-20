@@ -115,7 +115,7 @@ void paintDecorUnder(Canvas canvas, ChartFrame f, ChartDecor decor) {
     canvas.drawRect(
       Rect.fromLTRB(
         f.x(start) - half,
-        f.plot.top,
+        f.full.top,
         f.x(end) + half,
         f.plot.bottom,
       ),
@@ -125,7 +125,7 @@ void paintDecorUnder(Canvas canvas, ChartFrame f, ChartDecor decor) {
   final grid = Paint()
     ..color = ChartColors.grid
     ..strokeWidth = 0;
-  for (final t in _yTicks(f)) {
+  for (final t in yTicks(f)) {
     final y = f.y(t);
     canvas.drawLine(Offset(0, y), Offset(f.plot.right, y), grid);
   }
@@ -216,12 +216,12 @@ void _yLabels(
     f.plot.bottom,
   );
   final specialYs = [for (final (_, y) in special) y];
-  final ticks = _yTicks(f);
+  final ticks = yTicks(f);
   final decimals = tickDecimals(ticks, decor.priceDecimals);
   for (final t in ticks) {
     final y = f.y(t);
     // 끝에 붙어 잘리는 눈금·특수 라벨과 겹치는 눈금은 글자를 숨긴다(격자선은 유지)
-    if (y != clampLabelY(y, height, f.plot.top, f.plot.bottom) ||
+    if (y != clampLabelY(y, height, f.full.top, f.plot.bottom) ||
         overlapsAny(y, specialYs, height)) {
       continue;
     }
@@ -301,9 +301,11 @@ void _extremeTags(
   }
 }
 
-/// y축 기본 눈금(6개 안팎, log·선형은 범위를 따른다). 봉 영역 위·아래 끝 가격 사이.
-List<double> _yTicks(ChartFrame f) =>
-    f.range.ticks(f.priceAt(f.plot.bottom), f.priceAt(f.plot.top), 6);
+/// y축 기본 눈금(6개 안팎, log·선형은 범위를 따른다). 차트 맨 위(정보 줄 뒤)~봉 영역 아래 끝 가격 사이.
+/// 격자·음영은 위쪽 정보 줄 뒤까지 이어진다(screens.md 공통 규칙, D-117).
+@visibleForTesting
+List<double> yTicks(ChartFrame f) =>
+    f.range.ticks(f.priceAt(f.plot.bottom), f.priceAt(f.full.top), 6);
 
 List<MonthTick> _xTicks(ChartFrame f, ChartDecor decor) {
   final v = f.viewport;
