@@ -333,3 +333,17 @@
   - 위 정보 줄(범례 + 롤 수익률) 높이는 `wrappedInfoHeight`로 Wrap과 같은 규칙으로 계산해 선·점을 비켜 그린다(C-c 범례와 공용).
 - 근거: RN 화면 결과와 같게, 확대·이동이 없는 커브는 `PriceChart`를 쓰지 않고 단순한 전용 painter로 둔다.
 - 영향: Android 에뮬레이터(API 37) dev 서버 데이터로 NG C-b(10/29 기준) 커브·변화율 라벨·십자선 상세·[−]·[↻]·날짜 시트·휴장일 옮김을 확인했다(2026-11-20). dev DB에 11/03 이후 정산가가 없어 D-1 커브는 빈 안내였다. D-091의 Android OS 다이얼로그와 다르다(원본 문서 반영은 사용자 판단).
+
+## FL-030: C-d ETP 목록과 C-d-a ETP 상세
+- 날짜: 2026-11-20
+- 상태: 확정 (Android 에뮬레이터 dev 서버 확인은 남김)
+- 맥락: TODO 4단계 C-d·C-d-a(screens.md C-d·C-d-a, D-017, D-047). RN은 `EtpListScreen`(FlatList + 머리 필터)·`EtpDetailScreen`(탭 밖 스택), 필터·정렬은 `etpListModel`, 조회는 react-query 기본값(자동 새로고침 없음, 앱 복귀 때 오래된 값 재조회, gcTime 5분)이다.
+- 결정:
+  - 조회: `etpListProvider(code)`·`etpDetailProvider(id)`는 `AutoRefreshNotifier`에 `nextUpdateAt` 없이 둔다(자동 새로고침 없음, 앱 복귀 재조회). 화면을 떠나도 5분 둔다(RN gcTime 기본값).
+  - 필터·정렬(`features/commodity/etp/etp_list_model.dart`)은 RN `etpListModel`을 그대로 옮긴다. 필터 `전체`는 null, 정렬은 `EtpSort`(`byDefault`·`aum`·`tradingValue`). 이름순은 RN `localeCompare`처럼 대소문자를 먼저 무시한다. 배수·총보수 숫자는 정수면 소수점 없이(`plainNumber`, JS 숫자 문자열과 같음).
+  - 필터·정렬 선택은 탭 State에만 두어 기억하지 않는다(D-017). 필터는 목록 첫 항목이라 함께 스크롤된다(RN `ListHeaderComponent`).
+  - 세그먼트 버튼은 B 설정에서도 쓰므로 `core/widgets/segmented_control.dart`(RN `SegmentedControl`)로 둔다. 같은 값을 다시 누르면 아무것도 하지 않고, 바꾸면 선택 햅틱이다.
+  - 수집 시각은 C 껍데기 기준 시각 줄에 `FreshnessLine.asOfOnly`로 쓴다(수집 전 null이면 빈 줄).
+  - C-d-a는 A 아래 `commodity/:code/etp/:id` 경로로 C 탭 shell 밖에 둔다. C-d에서 `push`하므로 [←]·Android 뒤로가 C-d로 돌아오고, C-d의 필터 상태도 남는다. 운용사 페이지는 `url_launcher`로 외부 브라우저에서 열고, http·https 주소만 버튼을 보인다(RN `isWebUrl`). 화면은 여는 함수를 받아(router가 `launchUrl`을 넘김) 테스트에서 바꾼다.
+- 근거: RN 화면 결과와 같게, 원본에 없는 동작은 넣지 않는다.
+- 영향: `url_launcher` 의존성 추가(tech-stack). 빈 C 탭 자리 `TabPlaceholder`는 지웠다.
