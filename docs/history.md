@@ -43,3 +43,4 @@
 - [x] A 원자재 목록 남은 것: 행을 누르면 선택 햅틱·C-a 이동·C-a 미리 조회(C 화면과 함께, D-085, D-109) (2026-11-19, FL-027)
 - [x] C-a 이격도차트: `GET /v1/commodities/:code/disparity`, 기간 버튼 6개(D-102), [⟲] 버튼(`lockLandscape`·ETP 탭·C 밖에서 `lockPortrait`, FL-024), 롤 음영, 십자선 상세, 가로 모드, 이전 3년 받기 중 화면 터치 차단·5초 시간 초과·실패 Alert (D-086, D-103, D-108, D-139). `lib/core/charts`(FL-025)를 이어 쓰고, 스파이크 화면은 지웠다 (2026-11-19, FL-027. Android 에뮬레이터 API 37 dev 서버로 확인, 실기기 손동작·성능은 남김)
 - [x] C-c 월물차트: `GET /v1/commodities/:code/contracts`, log y축(0 이하면 선형), 끝값 라벨, 범례, 십자선 상세 롤 수익률, 이전 3년 받기 (D-092, D-093, D-113, D-118). 차트 코어를 선만 그리기·선형 축으로 일반화하고 C-a와 탭 상태를 함께 쓴다 (2026-11-20, FL-028. Android 에뮬레이터 API 37 dev 서버로 확인, 실기기 손동작은 C-a 항목과 함께)
+- [x] C-b 월물커브: `GET /v1/commodities/:code/curve?baseDate`, 기준일 휠 시트, 이전·다음 기준일, [↻], 변화율 라벨 배치, 롤 수익률, 휴장일 옮김 안내 (D-090, D-091, D-114~D-123) (2026-11-20, FL-029. Android 에뮬레이터 API 37 dev 서버로 확인, Android도 휠 시트로 바꿈)

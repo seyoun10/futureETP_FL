@@ -515,20 +515,30 @@ Future<String?> showBaseDateSheet(BuildContext context, Curve curve) {
               ),
               style: chartInfoStyle.copyWith(color: AppColors.textSecondary),
             ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                TextButton(
-                  onPressed: () => Navigator.of(context).pop(),
-                  child: Text(l10n.cancel),
+            TextButtonTheme(
+              // 기본 강조색은 어두운 표면에서 잘 보이지 않는다(RN 시트 버튼도 본문 색)
+              data: TextButtonThemeData(
+                style: TextButton.styleFrom(
+                  foregroundColor: AppColors.text,
+                  minimumSize: const Size(96, AppSize.touchTarget),
+                  textStyle: const TextStyle(fontSize: AppFontSize.body),
                 ),
-                TextButton(
-                  key: const Key('base-date-confirm'),
-                  onPressed: () =>
-                      Navigator.of(context).pop(fromPickerDate(picked)),
-                  child: Text(l10n.confirm),
-                ),
-              ],
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  TextButton(
+                    onPressed: () => Navigator.of(context).pop(),
+                    child: Text(l10n.cancel),
+                  ),
+                  TextButton(
+                    key: const Key('base-date-confirm'),
+                    onPressed: () =>
+                        Navigator.of(context).pop(fromPickerDate(picked)),
+                    child: Text(l10n.confirm),
+                  ),
+                ],
+              ),
             ),
           ],
         ),

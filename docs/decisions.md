@@ -319,3 +319,17 @@
   - 상세 박스: 날짜(오늘 잠정이면 `(잠정)`), 그날 값이 있는 월물별 가격(선 색, `DetailRow.mark`로 회색 `●`), 양끝 월물 연환산 롤 수익률(`chartPerYear`, C-b도 쓴다).
 - 근거: 제스처·축·상세 배치를 두 벌로 두지 않는다. RN이 `LinesChart`를 따로 둔 이유(victory-native `CartesianChart` 입력 차이)는 `CustomPainter` 구조에 없다.
 - 영향: Android 에뮬레이터(API 37) dev 서버 데이터로 NG C-c 진입, 범례·끝값 라벨, 십자선 상세(롤 수익률), 이전 3년 연속 받기를 확인했다(2026-11-20). 위젯·단위 테스트로 범례, 끝값 라벨, 상세, 선형 축, 이어 받기, 병합을 고정했다. FL-025·FL-027의 `CandleChart` 등은 이 이름 변경 전 기록이다.
+
+## FL-029: C-b 월물커브
+- 날짜: 2026-11-20
+- 상태: 확정 (Android 날짜 선택 방식은 아래처럼 바꿈, 실기기 손동작은 C-a·C-c와 함께 기기 설치 때 확인)
+- 맥락: TODO 4단계 C-b(screens.md C-b, D-090, D-091, D-113~D-123). RN은 확대·이동이 없는 `CurveChart`를 Skia 캔버스에 직접 그리고, 기준일 선택은 iOS 바텀 시트(spinner)·Android OS 날짜 다이얼로그(spinner)다.
+- 결정:
+  - 차트(`core/charts/curve_chart.dart`): `CustomPainter` 하나로 격자·y 눈금(1·2·5 간격, `linearTicks`), 기준일 흰 실선·빈 점, 비교일 회색 점선(`curveDash` 3·2)·찬 점, x축 월 라벨(n개마다, 첫 1월 유지), 변화율 라벨, 십자선을 그린다. y는 값이 모두 양수면 log, 아니면 선형. 좌표는 `CurveGeometry`(크기·정보 줄 높이가 같으면 다시 계산하지 않음).
+  - 변화율 라벨 배치(`core/charts/curve_layout.dart`)는 RN `placePctLabels`·`segmentHitsBox`·`labelStride`·`nearestSlot`을 그대로 옮기고 RN 테스트 케이스도 옮겼다(D-122, D-123).
+  - 십자선: 십자선이 없으면 길게 누르기(300ms) 인식기, 있으면 끌기 인식기를 둔다. 가장 가까운 월물에 붙을 때마다 선택 햅틱, 누르면 지운다. 상세 박스는 점·선분·변화율 라벨을 marks로 `leastCoveredCorner`.
+  - 기준일은 탭 State(null = 서버 기본값 D-1). D-1로 오면 기본 조회와 같은 key를 쓴다. 새 기준일을 받는 동안 이전 커브를 보여 준다(RN `keepPreviousData`). 조회는 기준일마다 family(`curveProvider((code, baseDate))`), 1시간 캐시, `nextUpdateAt`까지 복귀 재조회 없음. 기준 시각 줄은 기본 기준일 조회의 freshness(D 기준)를 쓴다.
+  - 기준일 선택은 iOS·Android 모두 바텀 시트 안 `CupertinoDatePicker`(년·월·일 휠, 범위 문구, [취소]·[확인])다. Flutter에는 Android OS spinner 날짜 다이얼로그가 없고(Material `showDatePicker`는 달력·입력 모드), 휠 시트가 D-091이 고른 spinner 조작과 같다. 범위 밖 월·일은 휠에 회색으로 보이고 고르면 범위 끝으로 돌아간다(RN iOS 피커와 같다). 서버가 휴장일을 옮기면 `휴장일이라 10/16(금)로 옮겼습니다`를 3초 띄운다.
+  - 위 정보 줄(범례 + 롤 수익률) 높이는 `wrappedInfoHeight`로 Wrap과 같은 규칙으로 계산해 선·점을 비켜 그린다(C-c 범례와 공용).
+- 근거: RN 화면 결과와 같게, 확대·이동이 없는 커브는 `PriceChart`를 쓰지 않고 단순한 전용 painter로 둔다.
+- 영향: Android 에뮬레이터(API 37) dev 서버 데이터로 NG C-b(10/29 기준) 커브·변화율 라벨·십자선 상세·[−]·[↻]·날짜 시트·휴장일 옮김을 확인했다(2026-11-20). dev DB에 11/03 이후 정산가가 없어 D-1 커브는 빈 안내였다. D-091의 Android OS 다이얼로그와 다르다(원본 문서 반영은 사용자 판단).

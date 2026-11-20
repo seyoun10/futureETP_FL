@@ -1,7 +1,7 @@
 # Architecture
 
 > Flutter 앱의 구조. API 규약·화면 동작은 원본(`../futureETP/docs/architecture.md`·`wireframes/screens.md`)을 따르고, 여기에는 이 앱의 구조와 대응만 적는다.
-> 디렉터리는 계획 구조다. 현재 있는 것은 `app/`(app·router), `core/config`, `core/api`, `core/storage`, `core/settings`, `core/theme`, `core/util`, `core/widgets`, `core/query`, `core/charts`, `features/access_key`, `features/commodity_list`, `features/commodity`(C 껍데기·C-a·C-c, 두 차트 탭 공통 `chart_tab.dart`), `features/dev_health`(임시), `l10n`이다.
+> 디렉터리는 계획 구조다. 현재 있는 것은 `app/`(app·router), `core/config`, `core/api`, `core/storage`, `core/settings`, `core/theme`, `core/util`, `core/widgets`, `core/query`, `core/charts`, `features/access_key`, `features/commodity_list`, `features/commodity`(C 껍데기·C-a·C-b·C-c, 차트 탭 공통 `chart_tab.dart`), `features/dev_health`(임시), `l10n`이다.
 
 ## 디렉터리 구조
 
@@ -47,7 +47,7 @@ docs/                            tech-stack, architecture, decisions
 | repository | 조회 캐시(staleTime·gcTime), 무한 조회(`before`·`hasMore`), 낙관적 PATCH | 화면 문구 |
 | API client | 헤더, 타임아웃, 봉투 디코딩, `AppError`, 재시도 | 캐시 |
 
-- 캐시 규칙은 RN과 같다: C 차트 조회는 `staleTime`을 `nextUpdateAt`까지, `gcTime` 1시간. C-a·C-c는 3년(756거래일) 단위로 받고 가장 과거 봉이 보이면 이전 3년을 더 받는다(D-104). 커브는 캐시하지 않는다(D-046).
+- 캐시 규칙은 RN과 같다: C 차트 조회는 `staleTime`을 `nextUpdateAt`까지, `gcTime` 1시간. C-a·C-c는 3년(756거래일) 단위로 받고 가장 과거 봉이 보이면 이전 3년을 더 받는다(D-104). 커브는 서버가 저장·캐시하지 않고(D-046), 앱은 RN처럼 기준일마다 1시간 둔다.
 
 ## RN 구조 대응
 
