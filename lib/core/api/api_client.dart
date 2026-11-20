@@ -9,6 +9,7 @@ import 'package:futureetp/core/api/device_id.dart';
 import 'package:futureetp/core/api/health.dart';
 import 'package:futureetp/core/api/models/commodities.dart';
 import 'package:futureetp/core/api/models/contracts_chart.dart';
+import 'package:futureetp/core/api/models/curve.dart';
 import 'package:futureetp/core/api/models/disparity_chart.dart';
 import 'package:futureetp/core/api/models/enums.dart';
 import 'package:futureetp/core/api/models/settings.dart';
@@ -119,6 +120,19 @@ class ApiClient {
     '/commodities/${code.wire}/contracts',
     (data) => ContractsChart.fromJson(data! as Map<String, dynamic>),
     query: {'before': ?before},
+    cancelToken: cancelToken,
+  );
+
+  /// `GET /v1/commodities/:code/curve`(C-b, D-090). [baseDate]가 없으면 서버 기본값(D-1).
+  /// 휴장일이면 서버가 거래일로 맞춘다.
+  Future<Curve> getCurve(
+    CommodityCode code, {
+    String? baseDate,
+    CancelToken? cancelToken,
+  }) => request(
+    '/commodities/${code.wire}/curve',
+    (data) => Curve.fromJson(data! as Map<String, dynamic>),
+    query: {'baseDate': ?baseDate},
     cancelToken: cancelToken,
   );
 
