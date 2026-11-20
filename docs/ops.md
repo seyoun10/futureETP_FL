@@ -20,8 +20,8 @@
 ./tool/install_android_release.sh
 ```
 
-- 빌드: prod 변형 release APK, versionCode `10000 + 커밋 수`, arm64-v8a만. 결과 `build/app/outputs/flutter-apk/app-prod-release.apk`
-- 설치: `adb install -r`. 앱 경로(`lib`·`android`·`assets`·`pubspec.*`)에 커밋 안 한 변경이 있거나 APK가 마지막 앱 커밋보다 오래됐으면 멈춘다. 기기가 여럿이면 `ANDROID_SERIAL=<serial>`
+- 빌드: prod 변형 release APK, versionCode `10000 + 커밋 수`, arm64-v8a만. main 브랜치이고 앱 경로에 커밋 안 한 변경이 없을 때만 빌드한다. 결과 `build/app/outputs/flutter-apk/app-prod-release.apk`와 그 앱 커밋을 적은 `.apk.commit`
+- 설치: `adb install -r`. 앱 경로(`lib`·`android`·`assets`·`pubspec.*`·`l10n.yaml`·`build.yaml`)에 커밋 안 한 변경이 있거나, APK를 만든 앱 커밋(`.apk.commit`)이 지금 앱 경로의 마지막 커밋과 다르면 멈춘다. 기기가 여럿이면 `ANDROID_SERIAL=<serial>`
 - 이전 FL 빌드 위에 덮어 설치하면 접근 키·installation ID·기기 설정·표시 설정이 그대로 남는다
 - 앱을 지우는 일(데이터 삭제)은 스크립트가 하지 않는다. 서명이 다르다(`INSTALL_FAILED_UPDATE_INCOMPATIBLE`, 예: RN debug 빌드가 깔린 기기)거나 versionCode가 낮다(`INSTALL_FAILED_VERSION_DOWNGRADE`)는 실패는 안내를 보고 `adb uninstall io.github.seyoon.futureetp` 뒤 다시 설치한다
 

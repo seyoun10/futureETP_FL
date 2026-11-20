@@ -395,8 +395,8 @@
 - 상태: 확정 (기기 설치·RN 앱 위 덮어 설치는 기기 확인 때)
 - 맥락: TODO 6단계. 템플릿은 release를 debug 키로 서명한다. RN은 `~/.config/futureetp/android-release.jks`·`.properties`로 서명하고, `versionCode`는 커밋 수(`../futureETP`, 2026-11-20 502), 네이티브 라이브러리는 arm64-v8a만 넣는다(D-039 보충). 앱 ID가 같아(FL-002) 같은 키·더 큰 versionCode면 RN 앱 위에 덮어 설치된다(지우는 단계가 없다). 단 RN `expo-secure-store`·AsyncStorage와 Flutter `flutter_secure_storage`·`shared_preferences`는 저장 형식이 달라 접근 키·installation ID·표시 설정은 이어지지 않는다(FL-035).
 - 결정:
-  - `android/app/build.gradle.kts`의 `signingConfigs.release`가 RN과 같은 properties 파일(gradle 속성 `futureetp.signingProperties`로 바꿀 수 있음)을 읽는다. 파일이 없으면 release 작업에서 빌드를 멈춘다(RN과 같은 이유: debug 키 APK를 깔면 지우고 다시 깔아야 해서 접근 키가 사라진다).
-  - `versionCode`는 `tool/build_android_release.sh`가 `--build-number`로 `10000 + git rev-list --count HEAD`를 넘긴다. main에서만 빌드해 단조 증가하고 RN 값(수백)보다 항상 커서 RN 앱 위에 덮어 설치된다. 반대로 RN 앱으로 돌아가려면 versionCode가 낮아 지우고 설치해야 한다.
+  - `android/app/build.gradle.kts`의 `signingConfigs.release`가 RN과 같은 properties 파일(gradle 속성 `futureetp.signingProperties`로 바꿀 수 있음)을 읽는다. 파일이 없거나 필수 키(`storeFile`·`storePassword`·`keyAlias`·`keyPassword`)가 비면 release 작업에서 빌드를 멈춘다. `storeFile` 상대 경로는 properties 파일 위치 기준이다(RN과 같은 이유: debug 키 APK를 깔면 지우고 다시 깔아야 해서 접근 키가 사라진다).
+  - `versionCode`는 `tool/build_android_release.sh`가 `--build-number`로 `10000 + git rev-list --count HEAD`를 넘긴다. main에서만 빌드해 단조 증가하고(스크립트가 main·앱 경로 커밋됨을 확인한다) RN 값(수백)보다 항상 커서 RN 앱 위에 덮어 설치된다. 반대로 RN 앱으로 돌아가려면 versionCode가 낮아 지우고 설치해야 한다.
   - ABI는 release buildType의 `ndk.abiFilters`를 arm64-v8a만 두고, Flutter Gradle plugin이 `defaultConfig`에 넣는 3종(armeabi-v7a·arm64-v8a·x86_64)은 `android/gradle.properties`의 `disable-abi-filtering=true`로 끈다(둘이 합쳐져 plugin `.so`가 3종 다 들어갔다). 스크립트도 `--target-platform android-arm64`로 Dart AOT를 arm64만 만든다. APK 36.9MB → 27.4MB.
   - release lintVital은 끈다(`lint.checkReleaseBuilds = false`). 이 AGP의 lint가 JDK 21 API(`List.removeLast`)를 불러 `flutter config --jdk-dir`(Zulu 17)로는 plugin 모듈 분석 중 `NoSuchMethodError`로 멈춘다. 정적 검사는 `./tool/check.sh`가 맡는다. Flutter JDK를 21 이상으로 올리면 다시 켤 수 있다.
 - 근거: RN 앱과 같은 키·더 큰 versionCode라 RN → FL은 지우지 않고 바로 설치된다. 전역 JDK 설정을 바꾸지 않고 이 저장소 안에서 끝난다.
@@ -409,7 +409,7 @@
 - 선택지: adb 직접 설치 / Firebase App Distribution(RN과 같은 Firebase 앱)
 - 결정:
   - 사용자가 adb 직접 설치를 골랐다. `tool/install_android_release.sh`가 `adb install -r`로 prod release APK를 깐다. 업데이트도 다시 빌드·설치한다(OTA 없음).
-  - 설치본 = 커밋 하나: 앱 경로(`lib`·`android`·`assets`·`pubspec.*`)에 커밋 안 한 변경이 있거나 APK가 그 경로의 마지막 커밋보다 오래됐으면 멈춘다(RN `distribute-android.sh`의 APK 나이 확인과 같음). push·CI 확인(D-131 `release-guard`)은 하지 않는다. 기기에 바로 까는 일이라 외부로 나가는 배포가 아니다.
+  - 설치본 = 커밋 하나: 앱 경로(`lib`·`android`·`assets`·`pubspec.*`·`l10n.yaml`·`build.yaml`)에 커밋 안 한 변경이 있거나, 빌드 스크립트가 적은 APK의 앱 커밋(`.apk.commit`)이 지금 앱 경로의 마지막 커밋과 다르면 멈춘다. 처음에는 RN `distribute-android.sh`처럼 APK 나이(mtime)만 봤는데, 새 커밋에서 빌드한 뒤 예전 커밋으로 checkout하면 통과해서 커밋 비교로 바꿨다. push·CI 확인(D-131 `release-guard`)은 하지 않는다. 기기에 바로 까는 일이라 외부로 나가는 배포가 아니다.
   - 데이터를 지우는 `adb uninstall`은 스크립트가 하지 않고, 서명 불일치·versionCode 낮음 실패에서 안내만 한다.
   - RN ↔ FL 바꿔 설치는 저장 형식이 달라 접근 키·installation ID·표시 설정이 이어지지 않는다. 할 일은 `docs/ops.md`.
 - 근거: 개인 기기 하나에 Mac에서 바로 깔면 업로드·App Tester 단계가 없고 Firebase 쪽 설정도 필요 없다. 빌드 이력이 남지 않고 케이블이나 같은 망의 무선 디버깅이 필요한 것은 감수한다.

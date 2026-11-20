@@ -46,14 +46,22 @@ android {
     val isReleaseTask = gradle.startParameter.taskNames.any { it.lowercase().contains("release") }
     signingConfigs {
         create("release") {
-            if (signingFile.exists()) {
-                val props = Properties().apply { signingFile.inputStream().use { load(it) } }
-                storeFile = file(props.getProperty("storeFile"))
+            // 필수 키가 비거나 파일이 없으면 release 작업만 멈춘다(debug·profile 빌드는 이 서명을 쓰지 않는다)
+            val props = Properties()
+            if (signingFile.exists()) signingFile.inputStream().use { props.load(it) }
+            val keys = listOf("storeFile", "storePassword", "keyAlias", "keyPassword")
+            val missing = keys.filter { props.getProperty(it).isNullOrBlank() }
+            if (missing.isEmpty()) {
+                // 상대 경로는 properties 파일 위치 기준이다(android/app 기준이 아니다)
+                storeFile = signingFile.parentFile.resolve(props.getProperty("storeFile"))
                 storePassword = props.getProperty("storePassword")
                 keyAlias = props.getProperty("keyAlias")
                 keyPassword = props.getProperty("keyPassword")
             } else if (isReleaseTask) {
-                throw GradleException("release signing file not found: $signingFile")
+                throw GradleException(
+                    if (signingFile.exists()) "release signing file $signingFile is missing: ${missing.joinToString()}"
+                    else "release signing file not found: $signingFile",
+                )
             }
         }
     }
