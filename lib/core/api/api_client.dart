@@ -12,6 +12,7 @@ import 'package:futureetp/core/api/models/contracts_chart.dart';
 import 'package:futureetp/core/api/models/curve.dart';
 import 'package:futureetp/core/api/models/disparity_chart.dart';
 import 'package:futureetp/core/api/models/enums.dart';
+import 'package:futureetp/core/api/models/etp.dart';
 import 'package:futureetp/core/api/models/settings.dart';
 import 'package:futureetp/core/config/app_config.dart';
 
@@ -133,6 +134,21 @@ class ApiClient {
     '/commodities/${code.wire}/curve',
     (data) => Curve.fromJson(data! as Map<String, dynamic>),
     query: {'baseDate': ?baseDate},
+    cancelToken: cancelToken,
+  );
+
+  /// `GET /v1/commodities/:code/etps`(C-d). 필터·정렬은 앱에서 한다(D-017).
+  Future<EtpList> getEtps(CommodityCode code, {CancelToken? cancelToken}) =>
+      request(
+        '/commodities/${code.wire}/etps',
+        (data) => EtpList.fromJson(data! as Map<String, dynamic>),
+        cancelToken: cancelToken,
+      );
+
+  /// `GET /v1/etps/:id`(C-d-a).
+  Future<EtpDetail> getEtp(String id, {CancelToken? cancelToken}) => request(
+    '/etps/${Uri.encodeComponent(id)}',
+    (data) => EtpDetail.fromJson(data! as Map<String, dynamic>),
     cancelToken: cancelToken,
   );
 
