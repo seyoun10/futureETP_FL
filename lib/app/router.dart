@@ -10,11 +10,13 @@ import 'package:futureetp/features/commodity/contract_chart/contract_chart_tab.d
 import 'package:futureetp/features/commodity/curve/curve_tab.dart';
 import 'package:futureetp/features/commodity/disparity_chart/disparity_chart_provider.dart';
 import 'package:futureetp/features/commodity/disparity_chart/disparity_chart_tab.dart';
+import 'package:futureetp/features/commodity/etp/etp_detail_screen.dart';
 import 'package:futureetp/features/commodity/etp/etp_list_tab.dart';
 import 'package:futureetp/features/commodity_list/commodity_list_screen.dart';
 import 'package:futureetp/features/dev_health/health_screen.dart';
 import 'package:go_router/go_router.dart';
 import 'package:material_ui/material_ui.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 /// 경로(RN Expo Router와 같은 경로, D-074).
 abstract final class AppRoutes {
@@ -51,8 +53,20 @@ final routerProvider = Provider<GoRouter>((ref) {
             context.go(CommodityTab.disparity.location(code));
           },
         ),
-        // C는 A 아래 경로라 스택이 늘 A → C다(Android 뒤로·[←]가 A로 간다)
-        routes: [_commodityRoute],
+        // C는 A 아래 경로라 스택이 늘 A → C다(Android 뒤로·[←]가 A로 간다).
+        // C-d-a는 C 탭 밖에서 C 위에 쌓인다(D-047)
+        routes: [
+          _commodityRoute,
+          GoRoute(
+            path: 'commodity/:code/etp/:id',
+            builder: (context, state) => EtpDetailScreen(
+              id: state.pathParameters['id'] ?? '',
+              openUrl: (url) async {
+                await launchUrl(url, mode: LaunchMode.externalApplication);
+              },
+            ),
+          ),
+        ],
       ),
       // B 설정 자리. B 화면이 생기면 바꾼다(지금은 서버 연결 확인)
       GoRoute(

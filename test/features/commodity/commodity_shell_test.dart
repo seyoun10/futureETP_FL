@@ -14,6 +14,7 @@ import 'package:futureetp/core/config/app_config.dart';
 import 'package:futureetp/core/settings/device_settings.dart';
 import 'package:futureetp/core/settings/display_settings.dart';
 import 'package:futureetp/features/commodity/commodity_shell.dart';
+import 'package:futureetp/features/commodity/etp/etp_detail_screen.dart';
 import 'package:futureetp/features/commodity_list/commodity_list_screen.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -36,6 +37,10 @@ Future<ProviderContainer> _pump(WidgetTester tester) async {
   final adapter = FakeHttpAdapter(
     (req) => switch (req.path) {
       '/commodities' => FakeResponse.ok(_fixture('commodities')),
+      '/commodities/GC/etps' => FakeResponse.ok(_fixture('etpList')),
+      final p when p.startsWith('/etps/') => FakeResponse.ok(
+        _fixture('etpDetail'),
+      ),
       // NG가 알림 대상
       '/settings' => FakeResponse.ok({...settings, 'alertCommodity': 'NG'}),
       _ => FakeResponse.fail('NOT_FOUND', 404),
@@ -129,5 +134,35 @@ void main() {
     c.read(routerProvider).go('/commodity/XX');
     await tester.pumpAndSettle();
     expect(find.text('XX'), findsOneWidget);
+  });
+
+  testWidgets('ETP 탭은 수집 시각만 쓰고, 행을 누르면 C-d-a, [←]로 C-d에 돌아온다', (tester) async {
+    final c = await _pump(tester);
+    c.read(routerProvider).go('/commodity/GC/etps');
+    await tester.pumpAndSettle();
+    final footer = tester
+        .widgetList<Text>(find.textContaining('As of '))
+        .single
+        .data!;
+    expect(footer, isNot(contains('·')));
+
+    await tester.tap(find.text('KODEX 골드선물(H)'));
+    await tester.pumpAndSettle();
+    // push라 현재 위치(uri)는 C-d 그대로이고 C-d-a가 위에 쌓인다
+    expect(
+      find.byWidgetPredicate(
+        (w) =>
+            w is EtpDetailScreen &&
+            w.id == '19876645-bd78-4a16-9857-388d7c6c4f64',
+      ),
+      findsOneWidget,
+    );
+    expect(find.text('ProShares Ultra Gold'), findsOneWidget);
+
+    await tester.tap(find.bySemanticsLabel('Back'));
+    await tester.pumpAndSettle();
+    expect(_location(c), '/commodity/GC/etps');
+    expect(find.byType(EtpDetailScreen), findsNothing);
+    expect(find.text('KODEX 골드선물(H)'), findsOneWidget);
   });
 }
