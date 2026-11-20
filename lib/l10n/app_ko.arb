@@ -284,5 +284,92 @@
         "type": "String"
       }
     }
-  }
+  },
+  "etpMarket": "시장",
+  "etpType": "유형",
+  "etpLeverage": "배수",
+  "etpFxHedge": "환헤지",
+  "etpSort": "정렬",
+  "etpAll": "전체",
+  "etpLeverageValue": "{n}x",
+  "@etpLeverageValue": {
+    "placeholders": {
+      "n": {
+        "type": "String"
+      }
+    }
+  },
+  "etpFxHedged": "환헤지",
+  "etpFxUnhedged": "환노출",
+  "etpFxNa": "해당 없음",
+  "etpSortDefault": "기본",
+  "etpSortAum": "순자산",
+  "etpSortTradingValue": "거래대금",
+  "etpSortValue": "{label} {amount}",
+  "@etpSortValue": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      },
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "etpNoValue": "—",
+  "etpKrwScheme": "eok",
+  "@etpKrwScheme": {
+    "description": "원화 금액 줄임 방식(AmountScheme 이름 eok·si). 달러는 언어와 상관없이 si다"
+  },
+  "etpAmountKrx": "{n} 원",
+  "@etpAmountKrx": {
+    "placeholders": {
+      "n": {
+        "type": "String"
+      }
+    }
+  },
+  "etpAmountUs": "${n}",
+  "@etpAmountUs": {
+    "placeholders": {
+      "n": {
+        "type": "String"
+      }
+    }
+  },
+  "etpEmpty": "이 원자재의 ETP가 없습니다.",
+  "etpNoMatch": "조건에 맞는 상품이 없습니다.",
+  "etpDetailTitle": "ETP 상세",
+  "etpCommodity": "원자재",
+  "etpIssuer": "운용사",
+  "etpUnderlyingIndex": "기초지수",
+  "etpExpenseRatio": "총보수",
+  "etpExpenseRatioValue": "{n}%",
+  "@etpExpenseRatioValue": {
+    "placeholders": {
+      "n": {
+        "type": "String"
+      }
+    }
+  },
+  "etpListedDate": "상장일",
+  "etpTicker": "종목코드",
+  "etpSeriesCode": "{code} 시리즈",
+  "@etpSeriesCode": {
+    "placeholders": {
+      "code": {
+        "type": "String"
+      }
+    }
+  },
+  "etpMaturity": "만기 {date}",
+  "@etpMaturity": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "etpOpenIssuer": "운용사 페이지 열기 ↗",
+  "etpSourceNote": "자동 수집 정보 · 원문 언어로 표시"
 }

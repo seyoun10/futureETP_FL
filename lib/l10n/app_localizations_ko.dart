@@ -350,4 +350,114 @@ class AppLocalizationsKo extends AppLocalizations {
   String curveMoved(String date, String weekday) {
     return '휴장일이라 $date($weekday)로 옮겼습니다';
   }
+
+  @override
+  String get etpMarket => '시장';
+
+  @override
+  String get etpType => '유형';
+
+  @override
+  String get etpLeverage => '배수';
+
+  @override
+  String get etpFxHedge => '환헤지';
+
+  @override
+  String get etpSort => '정렬';
+
+  @override
+  String get etpAll => '전체';
+
+  @override
+  String etpLeverageValue(String n) {
+    return '${n}x';
+  }
+
+  @override
+  String get etpFxHedged => '환헤지';
+
+  @override
+  String get etpFxUnhedged => '환노출';
+
+  @override
+  String get etpFxNa => '해당 없음';
+
+  @override
+  String get etpSortDefault => '기본';
+
+  @override
+  String get etpSortAum => '순자산';
+
+  @override
+  String get etpSortTradingValue => '거래대금';
+
+  @override
+  String etpSortValue(String label, String amount) {
+    return '$label $amount';
+  }
+
+  @override
+  String get etpNoValue => '—';
+
+  @override
+  String get etpKrwScheme => 'eok';
+
+  @override
+  String etpAmountKrx(String n) {
+    return '$n 원';
+  }
+
+  @override
+  String etpAmountUs(String n) {
+    return '\$$n';
+  }
+
+  @override
+  String get etpEmpty => '이 원자재의 ETP가 없습니다.';
+
+  @override
+  String get etpNoMatch => '조건에 맞는 상품이 없습니다.';
+
+  @override
+  String get etpDetailTitle => 'ETP 상세';
+
+  @override
+  String get etpCommodity => '원자재';
+
+  @override
+  String get etpIssuer => '운용사';
+
+  @override
+  String get etpUnderlyingIndex => '기초지수';
+
+  @override
+  String get etpExpenseRatio => '총보수';
+
+  @override
+  String etpExpenseRatioValue(String n) {
+    return '$n%';
+  }
+
+  @override
+  String get etpListedDate => '상장일';
+
+  @override
+  String get etpTicker => '종목코드';
+
+  @override
+  String etpSeriesCode(String code) {
+    return '$code 시리즈';
+  }
+
+  @override
+  String etpMaturity(String date) {
+    return '만기 $date';
+  }
+
+  @override
+  String get etpOpenIssuer => '운용사 페이지 열기 ↗';
+
+  @override
+  String get etpSourceNote => '자동 수집 정보 · 원문 언어로 표시';
 }

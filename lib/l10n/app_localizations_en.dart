@@ -356,4 +356,115 @@ class AppLocalizationsEn extends AppLocalizations {
   String curveMoved(String date, String weekday) {
     return 'Market closed, moved to $date ($weekday)';
   }
+
+  @override
+  String get etpMarket => 'Market';
+
+  @override
+  String get etpType => 'Type';
+
+  @override
+  String get etpLeverage => 'Leverage';
+
+  @override
+  String get etpFxHedge => 'FX hedge';
+
+  @override
+  String get etpSort => 'Sort';
+
+  @override
+  String get etpAll => 'All';
+
+  @override
+  String etpLeverageValue(String n) {
+    return '${n}x';
+  }
+
+  @override
+  String get etpFxHedged => 'Hedged';
+
+  @override
+  String get etpFxUnhedged => 'Unhedged';
+
+  @override
+  String get etpFxNa => 'N/A';
+
+  @override
+  String get etpSortDefault => 'Default';
+
+  @override
+  String get etpSortAum => 'AUM';
+
+  @override
+  String get etpSortTradingValue => 'Volume';
+
+  @override
+  String etpSortValue(String label, String amount) {
+    return '$label $amount';
+  }
+
+  @override
+  String get etpNoValue => '—';
+
+  @override
+  String get etpKrwScheme => 'si';
+
+  @override
+  String etpAmountKrx(String n) {
+    return '₩$n';
+  }
+
+  @override
+  String etpAmountUs(String n) {
+    return '\$$n';
+  }
+
+  @override
+  String get etpEmpty => 'No ETPs for this commodity.';
+
+  @override
+  String get etpNoMatch => 'No products match the filters.';
+
+  @override
+  String get etpDetailTitle => 'ETP details';
+
+  @override
+  String get etpCommodity => 'Commodity';
+
+  @override
+  String get etpIssuer => 'Issuer';
+
+  @override
+  String get etpUnderlyingIndex => 'Index';
+
+  @override
+  String get etpExpenseRatio => 'Expense ratio';
+
+  @override
+  String etpExpenseRatioValue(String n) {
+    return '$n%';
+  }
+
+  @override
+  String get etpListedDate => 'Listed';
+
+  @override
+  String get etpTicker => 'Ticker';
+
+  @override
+  String etpSeriesCode(String code) {
+    return 'Series $code';
+  }
+
+  @override
+  String etpMaturity(String date) {
+    return 'Matures $date';
+  }
+
+  @override
+  String get etpOpenIssuer => 'Open issuer page ↗';
+
+  @override
+  String get etpSourceNote =>
+      'Collected automatically · shown in the original language';
 }

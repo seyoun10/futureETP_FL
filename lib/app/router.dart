@@ -10,7 +10,7 @@ import 'package:futureetp/features/commodity/contract_chart/contract_chart_tab.d
 import 'package:futureetp/features/commodity/curve/curve_tab.dart';
 import 'package:futureetp/features/commodity/disparity_chart/disparity_chart_provider.dart';
 import 'package:futureetp/features/commodity/disparity_chart/disparity_chart_tab.dart';
-import 'package:futureetp/features/commodity/tab_placeholder.dart';
+import 'package:futureetp/features/commodity/etp/etp_list_tab.dart';
 import 'package:futureetp/features/commodity_list/commodity_list_screen.dart';
 import 'package:futureetp/features/dev_health/health_screen.dart';
 import 'package:go_router/go_router.dart';
@@ -21,6 +21,9 @@ abstract final class AppRoutes {
   static const home = '/';
   static const settings = '/settings';
   static const accessKey = '/settings/access-key';
+
+  /// C-d-a ETP 상세. C 탭 밖 스택이라 [←]가 C-d로 돌아간다(D-047).
+  static String etp(String code, String id) => '/commodity/$code/etp/$id';
 }
 
 /// 앱 라우터.
@@ -105,7 +108,11 @@ final _commodityRoute = StatefulShellRoute.indexedStack(
                 CommodityTab.disparity => DisparityChartTab(codeText: code),
                 CommodityTab.contracts => ContractChartTab(codeText: code),
                 CommodityTab.curve => CurveTab(codeText: code),
-                _ => const TabPlaceholder(),
+                CommodityTab.etps => EtpListTab(
+                  codeText: code,
+                  onOpenEtp: (id) =>
+                      unawaited(context.push(AppRoutes.etp(code, id))),
+                ),
               };
             },
           ),

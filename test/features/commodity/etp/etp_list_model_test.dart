@@ -86,8 +86,8 @@ void main() {
   });
 
   test('배수 표기는 정수면 소수점이 없다', () {
-    expect(leverageNumber(2), '2');
-    expect(leverageNumber(-1), '-1');
-    expect(leverageNumber(1.5), '1.5');
+    expect(plainNumber(2), '2');
+    expect(plainNumber(-1), '-1');
+    expect(plainNumber(1.5), '1.5');
   });
 }

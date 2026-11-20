@@ -637,6 +637,198 @@ abstract class AppLocalizations {
   /// In ko, this message translates to:
   /// **'휴장일이라 {date}({weekday})로 옮겼습니다'**
   String curveMoved(String date, String weekday);
+
+  /// No description provided for @etpMarket.
+  ///
+  /// In ko, this message translates to:
+  /// **'시장'**
+  String get etpMarket;
+
+  /// No description provided for @etpType.
+  ///
+  /// In ko, this message translates to:
+  /// **'유형'**
+  String get etpType;
+
+  /// No description provided for @etpLeverage.
+  ///
+  /// In ko, this message translates to:
+  /// **'배수'**
+  String get etpLeverage;
+
+  /// No description provided for @etpFxHedge.
+  ///
+  /// In ko, this message translates to:
+  /// **'환헤지'**
+  String get etpFxHedge;
+
+  /// No description provided for @etpSort.
+  ///
+  /// In ko, this message translates to:
+  /// **'정렬'**
+  String get etpSort;
+
+  /// No description provided for @etpAll.
+  ///
+  /// In ko, this message translates to:
+  /// **'전체'**
+  String get etpAll;
+
+  /// No description provided for @etpLeverageValue.
+  ///
+  /// In ko, this message translates to:
+  /// **'{n}x'**
+  String etpLeverageValue(String n);
+
+  /// No description provided for @etpFxHedged.
+  ///
+  /// In ko, this message translates to:
+  /// **'환헤지'**
+  String get etpFxHedged;
+
+  /// No description provided for @etpFxUnhedged.
+  ///
+  /// In ko, this message translates to:
+  /// **'환노출'**
+  String get etpFxUnhedged;
+
+  /// No description provided for @etpFxNa.
+  ///
+  /// In ko, this message translates to:
+  /// **'해당 없음'**
+  String get etpFxNa;
+
+  /// No description provided for @etpSortDefault.
+  ///
+  /// In ko, this message translates to:
+  /// **'기본'**
+  String get etpSortDefault;
+
+  /// No description provided for @etpSortAum.
+  ///
+  /// In ko, this message translates to:
+  /// **'순자산'**
+  String get etpSortAum;
+
+  /// No description provided for @etpSortTradingValue.
+  ///
+  /// In ko, this message translates to:
+  /// **'거래대금'**
+  String get etpSortTradingValue;
+
+  /// No description provided for @etpSortValue.
+  ///
+  /// In ko, this message translates to:
+  /// **'{label} {amount}'**
+  String etpSortValue(String label, String amount);
+
+  /// No description provided for @etpNoValue.
+  ///
+  /// In ko, this message translates to:
+  /// **'—'**
+  String get etpNoValue;
+
+  /// 원화 금액 줄임 방식(AmountScheme 이름 eok·si). 달러는 언어와 상관없이 si다
+  ///
+  /// In ko, this message translates to:
+  /// **'eok'**
+  String get etpKrwScheme;
+
+  /// No description provided for @etpAmountKrx.
+  ///
+  /// In ko, this message translates to:
+  /// **'{n} 원'**
+  String etpAmountKrx(String n);
+
+  /// No description provided for @etpAmountUs.
+  ///
+  /// In ko, this message translates to:
+  /// **'\${n}'**
+  String etpAmountUs(String n);
+
+  /// No description provided for @etpEmpty.
+  ///
+  /// In ko, this message translates to:
+  /// **'이 원자재의 ETP가 없습니다.'**
+  String get etpEmpty;
+
+  /// No description provided for @etpNoMatch.
+  ///
+  /// In ko, this message translates to:
+  /// **'조건에 맞는 상품이 없습니다.'**
+  String get etpNoMatch;
+
+  /// No description provided for @etpDetailTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'ETP 상세'**
+  String get etpDetailTitle;
+
+  /// No description provided for @etpCommodity.
+  ///
+  /// In ko, this message translates to:
+  /// **'원자재'**
+  String get etpCommodity;
+
+  /// No description provided for @etpIssuer.
+  ///
+  /// In ko, this message translates to:
+  /// **'운용사'**
+  String get etpIssuer;
+
+  /// No description provided for @etpUnderlyingIndex.
+  ///
+  /// In ko, this message translates to:
+  /// **'기초지수'**
+  String get etpUnderlyingIndex;
+
+  /// No description provided for @etpExpenseRatio.
+  ///
+  /// In ko, this message translates to:
+  /// **'총보수'**
+  String get etpExpenseRatio;
+
+  /// No description provided for @etpExpenseRatioValue.
+  ///
+  /// In ko, this message translates to:
+  /// **'{n}%'**
+  String etpExpenseRatioValue(String n);
+
+  /// No description provided for @etpListedDate.
+  ///
+  /// In ko, this message translates to:
+  /// **'상장일'**
+  String get etpListedDate;
+
+  /// No description provided for @etpTicker.
+  ///
+  /// In ko, this message translates to:
+  /// **'종목코드'**
+  String get etpTicker;
+
+  /// No description provided for @etpSeriesCode.
+  ///
+  /// In ko, this message translates to:
+  /// **'{code} 시리즈'**
+  String etpSeriesCode(String code);
+
+  /// No description provided for @etpMaturity.
+  ///
+  /// In ko, this message translates to:
+  /// **'만기 {date}'**
+  String etpMaturity(String date);
+
+  /// No description provided for @etpOpenIssuer.
+  ///
+  /// In ko, this message translates to:
+  /// **'운용사 페이지 열기 ↗'**
+  String get etpOpenIssuer;
+
+  /// No description provided for @etpSourceNote.
+  ///
+  /// In ko, this message translates to:
+  /// **'자동 수집 정보 · 원문 언어로 표시'**
+  String get etpSourceNote;
 }
 
 class _AppLocalizationsDelegate

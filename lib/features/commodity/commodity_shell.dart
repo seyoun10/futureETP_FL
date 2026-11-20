@@ -14,6 +14,7 @@ import 'package:futureetp/features/commodity/commodity_tab.dart';
 import 'package:futureetp/features/commodity/contract_chart/contract_chart_provider.dart';
 import 'package:futureetp/features/commodity/curve/curve_provider.dart';
 import 'package:futureetp/features/commodity/disparity_chart/disparity_chart_provider.dart';
+import 'package:futureetp/features/commodity/etp/etp_provider.dart';
 import 'package:futureetp/l10n/app_localizations.dart';
 import 'package:go_router/go_router.dart';
 import 'package:material_ui/material_ui.dart';
@@ -62,9 +63,16 @@ class _CommodityShellState extends ConsumerState<CommodityShell> {
     super.dispose();
   }
 
-  /// 지금 탭의 기준 시각 줄. 값이 없으면(첫 조회 중·만들지 않은 탭) 빈 줄로 자리를 지킨다.
+  /// 지금 탭의 기준 시각 줄. 값이 없으면(첫 조회 중·ETP 수집 전) 빈 줄로 자리를 지킨다.
   Widget? _footer(CommodityCode? code) {
     if (code == null) return null;
+    if (_tab == CommodityTab.etps) {
+      // ETP는 수집 시각만 쓴다(거래일·장 상태 없음, screens.md C-d)
+      final asOf = ref.watch(
+        etpListProvider(code).select((s) => s.value?.asOf),
+      );
+      return asOf == null ? null : FreshnessLine.asOfOnly(asOf);
+    }
     final freshness = switch (_tab) {
       CommodityTab.disparity => ref.watch(
         disparityChartProvider(code).select((s) => s.value?.chart.freshness),
@@ -77,7 +85,7 @@ class _CommodityShellState extends ConsumerState<CommodityShell> {
         curveProvider((code: code, baseDate: null))
             .select((s) => s.value?.freshness),
       ),
-      _ => null,
+      CommodityTab.etps => null,
     };
     return freshness == null ? null : FreshnessLine(freshness);
   }

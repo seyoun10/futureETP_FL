@@ -89,8 +89,7 @@ List<EtpSummary> sortEtps(List<EtpSummary> etps, EtpSort sort) {
 List<double> leverageOptions(List<EtpSummary> etps) =>
     {for (final etp in etps) etp.leverage}.toList()..sort(compareLeverage);
 
-/// 배수 숫자 표기. 정수면 소수점을 붙이지 않는다(`2`, `-1`, `1.5`, RN 숫자 문자열과 같음).
-String leverageNumber(double leverage) =>
-    leverage == leverage.truncateToDouble()
-    ? leverage.toInt().toString()
-    : leverage.toString();
+/// 배수·총보수 숫자 표기. 정수면 소수점을 붙이지 않는다(`2`, `-1`, `1.5`, RN 숫자 문자열과 같음).
+String plainNumber(double value) => value == value.truncateToDouble()
+    ? value.toInt().toString()
+    : value.toString();
