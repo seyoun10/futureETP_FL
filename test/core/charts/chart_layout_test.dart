@@ -28,6 +28,14 @@ void main() {
       expect(tickDecimals([3.1, 3.2], 3), 1);
       expect(tickDecimals([3.1, 3.2], 0), 0);
     });
+
+    test('간격의 부동소수 오차로 자릿수가 늘지 않는다(RN과 같다)', () {
+      // 1.2 - 1.1 = 0.09999999999999987이라 보정 없이는 2자리(`1.10`)가 된다
+      expect(tickDecimals([1, 1.1, 1.2], 3), 1);
+      expect(tickDecimals([3.65, 3.66, 3.67, 3.68], 4), 2);
+      expect(tickDecimals([3.8, 3.801, 3.802, 3.803], 4), 3);
+      expect(tickDecimals([0.008, 0.009, 0.01], 4), 3);
+    });
   });
 
   group('특수 라벨 밀기', () {

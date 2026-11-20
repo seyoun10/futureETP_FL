@@ -91,13 +91,16 @@ List<double> logTicks(double lo, double hi, int count) {
 }
 
 /// 눈금 간격에 맞춘 소수 자릿수. 가격 자릿수 [max]를 넘지 않는다.
+/// 간격은 부동소수 오차(1.2 - 1.1 = 0.0999…)로 10ⁿ보다 살짝 작을 수 있어 1e-9만큼 올려 잰다
+/// (RN `curveLayout.ts` `tickDecimals`). 보정이 없으면 `1.1`이 `1.10`이 된다.
 int tickDecimals(List<double> ticks, int max) {
   var step = double.infinity;
   for (var i = 1; i < ticks.length; i++) {
     step = math.min(step, ticks[i] - ticks[i - 1]);
   }
   if (!step.isFinite || step <= 0) return max;
-  return math.min(max, math.max(0, -(math.log(step) / math.ln10).floor()));
+  final log10 = math.log(step) / math.ln10;
+  return math.min(max, math.max(0, -(log10 + 1e-9).floor()));
 }
 
 // ---- y축 특수 라벨 ----
