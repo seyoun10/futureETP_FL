@@ -10,7 +10,7 @@
 |---|---|---|
 | SDK / 언어 | Flutter 3.50.0 (stable, 2026-11-09) · Dart 3.14.0 | `~/development/flutter` git clone, `flutter --version` 2026-11-19 확인 |
 | iOS 의존성 | Swift Package Manager(기본), 미지원 플러그인만 CocoaPods 대체 | FL-003 |
-| Android 빌드 | Zulu JDK 17(`flutter config --jdk-dir`), Android SDK 37, AVD `Pixel_API_36` | RN과 공유 |
+| Android 빌드 | Zulu JDK 17(`flutter config --jdk-dir`), Android SDK 37(`compileSdk = 37`, FL-032), AVD `Pixel_API_36` | RN과 공유. `android/app/google-services.json`은 RN `apps/mobile`에서 복사(커밋 안 함) |
 | 상태 관리 | `flutter_riverpod` 3.5.0, 코드 생성 없음 | FL-004. `Notifier`·`AsyncNotifier`·family만 |
 | 내비게이션 | `go_router` 18.1.4 | FL-005. C 하단 탭은 `StatefulShellRoute.indexedStack` |
 | HTTP | `dio` 5.11.1 | FL-006. 재시도는 D-072대로 직접 구현 |
@@ -23,7 +23,7 @@
 | 실행 화면 | `flutter_native_splash` 2.4.8(dev) | 검정 배경 + RN `splash-icon.png` 76pt. `dart run flutter_native_splash:create`가 네이티브 파일을 만든다 |
 | QR | `mobile_scanner` 7.5.0 | FL-009. B-b 접근 키 QR(D-078) |
 | i18n | `flutter_localizations` + `intl` 0.20.3(SDK 고정) + gen-l10n | FL-009. ko 기준, en |
-| 푸시 | Android `firebase_messaging` 17.1.0 + `firebase_core` 5.2.0, iOS APNs 토큰 방식은 5단계 | FL-011(검토중) |
+| 푸시 | Android `firebase_messaging` 17.1.0 + `firebase_core` 5.2.0 + `flutter_local_notifications` 23.0.3(2026-11-20 pub.dev), Gradle `com.google.gms.google-services` 4.6.0·`desugar_jdk_libs` 2.1.5. iOS APNs 토큰 방식은 Apple 가입 뒤 | FL-011(iOS 검토중), FL-032 |
 | 외부 링크 | `url_launcher` 6.3.3(2026-11-20 `flutter pub add`) | C-d-a 운용사 페이지(https만 연다) |
 | 앱 버전 | `package_info_plus` 10.2.2(2026-11-20 `flutter pub add`) | B 맨 아래 앱 버전 줄, `PUT /v1/devices`의 `appVersion`(FL-031) |
 | 햅틱 | `HapticFeedback`(Flutter 기본) | D-109·D-138·D-139. `core/util/haptics.dart` |

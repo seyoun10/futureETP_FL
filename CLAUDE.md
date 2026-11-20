@@ -80,6 +80,7 @@ Flutter로 만드는 futureETP 앱(Android·iOS). 기능·화면·동작은 RN �
 Flutter SDK는 `~/development/flutter`(stable, PATH는 `~/.zshrc`).
 
 - `flutter pub get`: 의존성 설치(`generate: true`라 ARB 문구 코드 `lib/l10n/app_localizations*.dart`도 다시 만든다. 직접은 `flutter gen-l10n`)
+- `cp ../futureETP/apps/mobile/google-services.json android/app/`: Android 빌드 전 처음 한 번(FCM 설정, 커밋 안 함, FL-032)
 - `cp env/dev.example.json env/dev.json`: 처음 한 번. 값이 비면 에뮬레이터 기본 주소(Android `http://10.0.2.2:3000`, iOS `http://localhost:3000`)
 - `flutter run --flavor dev --dart-define-from-file=env/dev.json`: dev 변형 실행. prod는 `--flavor prod`(env 파일 없이)
 - `flutter analyze`: 정적 분석(`analysis_options.yaml`, very_good_analysis)

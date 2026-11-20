@@ -362,3 +362,18 @@
   - 묶음 제목 `SectionHeader`와 저장 실패 줄 `SaveErrorLine`은 B·B-a·데이터 출처가 함께 써서 `core/widgets/section_header.dart`에 둔다.
 - 근거: RN 화면 결과와 같게, 플랫폼에 없는 수단(EAS Update)만 바꾼다.
 - 영향: `package_info_plus` 의존성 추가(tech-stack). 위젯·단위 테스트로 낙관적 표시·직렬 PATCH·실패 되돌림, rare-level 검증·정렬·같은 값 미전송, [초기화], B-a 대상·거부 시간·시트, 데이터 출처를 고정했다. 에뮬레이터·실기기 확인은 하지 않았다.
+
+## FL-032: Android 푸시 등록·앱 사용 중 표시·알림 탭 이동
+- 날짜: 2026-11-20
+- 상태: 확정 (에뮬레이터·실기기 수신 확인은 기기 확인 때, iOS는 FL-011)
+- 맥락: TODO 5단계(D-037, D-045, D-120, screens.md X). RN은 `expo-notifications` 하나로 채널·권한·네이티브 토큰·앱 사용 중 표시(`setNotificationHandler`)·탭 응답을 다룬다. 서버는 notification 메시지에 `android.notification.channelId`(`alerts`·`ops`)를 넣어 FCM 등록 토큰(`token`)으로 보낸다(`apps/server/src/push/fcmSender.ts`).
+- 결정:
+  - 패키지: `firebase_core` 5.2.0 + `firebase_messaging` 17.1.0(토큰·탭·앱 사용 중 수신), `flutter_local_notifications` 23.0.3(채널 생성·앱 사용 중 표시. FCM은 앱을 보고 있을 때 표시하지 않는다). Firebase 설정은 Gradle `com.google.gms.google-services` 4.6.0이 `android/app/google-services.json`(RN `apps/mobile`과 같은 파일, dev·prod package가 함께 들어 있음, 커밋 안 함)에서 만든다. `flutterfire configure`·`firebase_options.dart`는 쓰지 않는다(API 키를 커밋하지 않음).
+  - `flutter_local_notifications` 23 때문에 Android `compileSdk = 37`(Flutter 기본 36)과 core library desugaring(`desugar_jdk_libs` 2.1.5)을 켠다.
+  - firebase_messaging 17은 `getToken`·`onTokenRefresh`를 deprecated로 두고 FID 등록(`register`·`onRegistered`)을 권하지만, 서버가 FCM 등록 토큰을 받으므로 등록 토큰 API를 그대로 쓴다(ignore 주석). 서버가 FID 발송으로 바뀌면 함께 바꾼다.
+  - 기기 쪽 경계 `PushService`(`core/push/push_service.dart`): Android는 `FirebasePushService`, 그 밖(Apple 가입 전 iOS)과 테스트 기본값은 `NoPushService`. `main`이 Android에서만 Firebase를 켜고, 실패해도 푸시 없이 뜬다.
+  - 등록 `pushRegistrationProvider`(`core/push/push_registration.dart`, RN `PushRegistration`): 키가 있을 때 앱 루트가 watch한다. 앱 언어로 채널 이름을 만들고(언어가 바뀌면 이름만 바꿈), 키마다 한 번 권한을 물은 뒤 `PUT /v1/devices`(`appVersion` `fl-<버전>`)로 등록한다. 빈 토큰은 null로 등록, 토큰 조회 실패는 등록하지 않음, 토큰 변경 이벤트는 마지막 토큰과 다를 때만 다시 등록한다. RN은 키를 지웠다 저장하면 컴포넌트가 다시 마운트되는데, 여기서는 client를 watch해 키가 바뀌면 다시 만들어진다.
+  - 탭 이동 `notificationTapsProvider`(`app/notification_taps.dart`): 라우터가 필요해 app 계층에 둔다. 실행한 알림(FCM `getInitialMessage`, 앱 사용 중 띄운 로컬 알림의 launch details)과 앱이 켜져 있을 때 누른 알림을 `notificationCommodity`(RN `notificationHref`)로 C-a 또는 A로 보낸다. C는 A 아래 경로라 [←]가 A로 간다.
+  - 앱 사용 중 표시는 서버가 지정한 채널(모르면 `alerts`)로 띄운다. 배지는 쓰지 않는다(채널 `showBadge: false`). 작은 아이콘은 앱 아이콘(`@mipmap/ic_launcher`)이다(RN도 아이콘을 따로 지정하지 않음).
+- 근거: RN 동작(등록 시점·토큰 규칙·탭 대상)을 그대로 따르고, 플랫폼 API 차이만 이 저장소에서 메운다.
+- 영향: dev debug APK 빌드로 Gradle 설정을 확인했다. 가짜 `PushService`로 등록·채널 이름·토큰 변경·키 변경·탭 이동을 테스트로 고정했다. 실제 FCM 수신·권한 창·알림 표시·탭은 에뮬레이터에서 확인하지 않았다. B-a 알림 권한 배너는 다음 항목이다.

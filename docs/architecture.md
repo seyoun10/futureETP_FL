@@ -22,7 +22,7 @@ lib/
 │  ├─ settings/                  기기 UI 설정 저장(언어·등락 색, FL-019), 서버 기기 설정 조회·직렬 PATCH(FL-031)
 │  ├─ storage/                   보안 저장소 인스턴스(FL-015)
 │  ├─ theme/                     테마 토큰(다크 전용), ThemeData, 등락 색(FL-020)
-│  ├─ push/                      토큰 등록, 알림 탭 이동
+│  ├─ push/                      기기 푸시 경계(PushService)·토큰 등록, 알림 data → 이동 원자재(FL-032). 탭 이동 자체는 app/notification_taps.dart
 │  └─ util/                      숫자·날짜 포맷, 햅틱, 실패 Alert
 └─ l10n/                         app_ko.arb, app_en.arb, 생성 코드 app_localizations*.dart
 test/                            lib와 같은 구조, architecture/(import 방향 검사), contract/(계약 스키마 복사본·dev 서버 응답 fixture)
