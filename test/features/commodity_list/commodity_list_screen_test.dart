@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
@@ -7,6 +8,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:futureetp/app/app.dart';
 import 'package:futureetp/core/api/api_client.dart';
+import 'package:futureetp/core/api/models/enums.dart';
+import 'package:futureetp/core/api/models/settings.dart';
+import 'package:futureetp/core/settings/device_settings.dart';
 import 'package:futureetp/core/theme/up_down_color.dart';
 import 'package:futureetp/features/commodity_list/commodity_list_screen.dart';
 import 'package:futureetp/l10n/app_localizations.dart';
@@ -186,6 +190,24 @@ void main() {
     _alertCommodity = null;
     await _pump(tester);
     expect(find.byKey(const Key('header-badge')), findsOneWidget);
+  });
+
+  testWidgets('알림 대상을 바꾸면 목록을 다시 받는다(D-124)', (tester) async {
+    await _pump(tester);
+    expect(_listCalls, 1);
+    final container = ProviderScope.containerOf(
+      tester.element(find.byType(CommodityListScreen)),
+    );
+    _alertCommodity = 'NG';
+    unawaited(
+      container
+          .read(deviceSettingsProvider.notifier)
+          .save(
+            const SettingsPatch(alertCommodity: PatchValue(CommodityCode.ng)),
+          ),
+    );
+    await tester.pumpAndSettle();
+    expect(_listCalls, 2);
   });
 
   testWidgets('당기면 햅틱, 끝날 때까지 터치를 막고 새 값으로 바꾼다', (tester) async {

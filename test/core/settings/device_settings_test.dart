@@ -1,5 +1,7 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -7,6 +9,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:futureetp/core/api/access_key.dart';
 import 'package:futureetp/core/api/api_client.dart';
 import 'package:futureetp/core/api/models/enums.dart';
+import 'package:futureetp/core/api/models/settings.dart';
 import 'package:futureetp/core/settings/device_settings.dart';
 import 'package:futureetp/core/settings/display_settings.dart';
 import 'package:material_ui/material_ui.dart';
@@ -160,4 +163,125 @@ void main() {
     await pumpEventQueue();
     expect(server.adapter.requests, hasLength(2));
   });
+
+  group('화면 저장(PATCH 순서·낙관적 표시)', () {
+    late _GateAdapter gate;
+    late ProviderContainer c;
+
+    setUp(() async {
+      gate = _GateAdapter();
+      final store = await openTestDisplayStore();
+      c = ProviderContainer(
+        overrides: [
+          displaySettingsStoreProvider.overrideWithValue(store),
+          storedAccessKeyProvider.overrideWithValue('stored-key'),
+          apiClientProvider.overrideWithValue(
+            ApiClient(
+              Dio(BaseOptions(baseUrl: 'http://test/v1'))
+                ..httpClientAdapter = gate,
+              accessToken: () async => 'stored-key',
+              deviceId: () async => '3f2c1a9e-8b7d-4c6e-9f1a-2b3c4d5e6f70',
+            ),
+          ),
+        ],
+      );
+      addTearDown(c.dispose);
+      c.listen(settingsViewProvider, (_, _) {});
+      await pumpEventQueue();
+      gate.respond(_fixture);
+      await pumpEventQueue();
+    });
+
+    test('끝나기 전에도 바꾼 값을 보이고, 보낸 순서대로 하나씩 보낸다', () async {
+      final notifier = c.read(deviceSettingsProvider.notifier);
+      final first = notifier.save(const SettingsPatch(basis: Basis.kr));
+      final second = notifier.save(
+        const SettingsPatch(maPeriod: MaPeriod.ma20),
+      );
+      await pumpEventQueue();
+      expect(c.read(settingsViewProvider).value?.basis, Basis.kr);
+      expect(c.read(settingsViewProvider).value?.maPeriod, MaPeriod.ma20);
+      // 둘째는 첫째가 끝나야 간다
+      expect(gate.bodies, [
+        {'basis': 'KR'},
+      ]);
+      gate.respond({..._fixture, 'basis': 'KR'});
+      expect(await first, isNull);
+      await pumpEventQueue();
+      expect(gate.bodies, hasLength(2));
+      gate.respond({..._fixture, 'basis': 'KR', 'maPeriod': 20});
+      expect(await second, isNull);
+      expect(c.read(pendingSettingsPatchesProvider), isEmpty);
+      expect(c.read(deviceSettingsProvider).value?.maPeriod, MaPeriod.ma20);
+    });
+
+    test('실패하면 그 변경만 빠지고 서버 값으로 돌아간다', () async {
+      final before = c.read(deviceSettingsProvider).value!.basis;
+      final notifier = c.read(deviceSettingsProvider.notifier);
+      final saving = notifier.save(const SettingsPatch(basis: Basis.us));
+      await pumpEventQueue();
+      expect(c.read(settingsViewProvider).value?.basis, Basis.us);
+      gate.fail('INTERNAL', 500);
+      // INTERNAL이어도 변경 요청은 다시 보내지 않는다(D-072)
+      expect(await saving, isA<Object>());
+      expect(gate.bodies, hasLength(1));
+      expect(c.read(settingsViewProvider).value?.basis, before);
+    });
+
+    test('알림 대상을 null로 지우는 변경을 얹는다', () async {
+      unawaited(
+        c
+            .read(deviceSettingsProvider.notifier)
+            .save(const SettingsPatch(alertCommodity: PatchValue(null))),
+      );
+      await pumpEventQueue();
+      expect(gate.bodies.last, {'alertCommodity': null});
+      expect(c.read(settingsViewProvider).value?.alertCommodity, isNull);
+    });
+  });
+}
+
+/// 요청을 붙잡아 두고 테스트가 [respond]·[fail]로 하나씩 답하는 어댑터.
+class _GateAdapter implements HttpClientAdapter {
+  final _waiting = <Completer<ResponseBody>>[];
+  final bodies = <Map<String, dynamic>>[];
+
+  @override
+  Future<ResponseBody> fetch(
+    RequestOptions options,
+    Stream<Uint8List>? requestStream,
+    Future<void>? cancelFuture,
+  ) async {
+    if (requestStream != null) {
+      final text = utf8.decode(await requestStream.expand((b) => b).toList());
+      bodies.add(jsonDecode(text) as Map<String, dynamic>);
+    }
+    final completer = Completer<ResponseBody>();
+    _waiting.add(completer);
+    return await completer.future;
+  }
+
+  void respond(Map<String, dynamic> data) => _waiting
+      .removeAt(0)
+      .complete(
+        ResponseBody.fromString(
+          jsonEncode({'success': true, 'data': data}),
+          200,
+        ),
+      );
+
+  void fail(String code, int status) => _waiting
+      .removeAt(0)
+      .complete(
+        ResponseBody.fromString(
+          jsonEncode({
+            'success': false,
+            'error': {'code': code, 'message': 'test'},
+          }),
+          status,
+        ),
+      );
+
+  @override
+  void close({bool force = false}) {}
 }

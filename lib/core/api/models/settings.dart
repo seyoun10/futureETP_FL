@@ -68,6 +68,24 @@ class SettingsPatch {
   final PatchValue<CommodityCode?>? alertCommodity;
   final PatchValue<QuietTime?>? quietTime;
 
+  /// [settings]에 이 변경을 얹은 값(낙관적 표시). rare 레벨 정렬은 서버가 하므로 화면이 정렬해 보낸다.
+  DeviceSettings applyTo(DeviceSettings settings) => settings.copyWith(
+    locale: locale ?? settings.locale,
+    timezone: timezone ?? settings.timezone,
+    basis: basis ?? settings.basis,
+    maPeriod: maPeriod ?? settings.maPeriod,
+    window: window ?? settings.window,
+    rareLevels: rareLevels ?? settings.rareLevels,
+    alertCommodity: switch (alertCommodity) {
+      PatchValue(:final value) => value,
+      null => settings.alertCommodity,
+    },
+    quietTime: switch (quietTime) {
+      PatchValue(:final value) => value,
+      null => settings.quietTime,
+    },
+  );
+
   Map<String, Object?> toJson() => {
     if (locale case final v?) 'locale': v.name,
     'timezone': ?timezone,

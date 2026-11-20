@@ -170,7 +170,7 @@ class SettingsHeaderButton extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
-    final settings = ref.watch(deviceSettingsProvider).value;
+    final settings = ref.watch(settingsViewProvider).value;
     final alertOff = settings != null && settings.alertCommodity == null;
     return HeaderIconButton(
       icon: Icons.settings_outlined,

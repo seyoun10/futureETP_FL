@@ -10,9 +10,13 @@ import 'package:futureetp/core/query/auto_refresh.dart';
 import 'package:futureetp/core/settings/display_settings.dart';
 import 'package:material_ui/material_ui.dart';
 
-/// 서버에 저장된 이 기기의 설정(`GET·PATCH /v1/settings`, D-120).
+/// 서버에 저장된 이 기기의 설정(`GET·PATCH /v1/settings`, D-120). 상태는 서버가 확인한 값만 둔다.
+/// 화면은 아직 끝나지 않은 변경을 얹은 [settingsViewProvider]를 읽는다(D-082, RN `useSettings`).
 /// 접근 키가 바뀌면 client가 바뀌어 다시 받는다. 앱이 앞으로 돌아오면 다시 받는다(D-030, D-084).
 class DeviceSettingsNotifier extends AsyncNotifier<DeviceSettings> {
+  /// 보낸 순서대로 하나씩 PATCH한다(RN mutation scope `settings`). 실패해도 다음은 간다.
+  Future<void> _queue = Future.value();
+
   @override
   Future<DeviceSettings> build() {
     ref.listen(appLifecycleProvider, (_, next) {
@@ -21,12 +25,34 @@ class DeviceSettingsNotifier extends AsyncNotifier<DeviceSettings> {
     return ref.watch(apiClientProvider).getSettings();
   }
 
-  /// 바꿀 필드만 보낸다. 변경 요청이라 자동 재시도하지 않고 실패는 그대로 던진다(D-072).
-  /// 성공하면 서버가 돌려준 설정으로 바꾼다.
-  Future<DeviceSettings> patch(SettingsPatch patch) async {
-    final settings = await ref.read(apiClientProvider).patchSettings(patch);
-    if (ref.mounted) state = AsyncData(settings);
-    return settings;
+  /// 바꿀 필드만 보낸다. 앞선 PATCH가 끝난 뒤 보내고, 끝날 때까지 [settingsViewProvider]에 얹어 보인다.
+  /// 변경 요청이라 자동 재시도하지 않고 실패는 그대로 던진다(D-072).
+  /// 성공하면 서버가 돌려준 설정(그 시점의 전체 값)으로 바꾼다.
+  Future<DeviceSettings> patch(SettingsPatch patch) {
+    final pending = ref.read(pendingSettingsPatchesProvider.notifier)
+      ..add(patch);
+    final client = ref.read(apiClientProvider);
+    final result = _queue.then((_) => client.patchSettings(patch)).then((
+      settings,
+    ) {
+      if (ref.mounted) state = AsyncData(settings);
+      return settings;
+    });
+    _queue = result.then<void>((_) {}, onError: (Object _) {});
+    return result.whenComplete(() => pending.remove(patch));
+  }
+
+  /// 화면의 저장. 실패하면 거절을 알리고(D-079) 그 에러를 돌려준다. 성공하면 null.
+  Future<Object?> save(SettingsPatch patch) async {
+    try {
+      await this.patch(patch);
+      return null;
+    } on Object catch (error) {
+      debugPrint('[settings] PATCH failed: $error');
+      // Provider 실패가 아니라 observer가 못 보므로 거절은 직접 알린다(D-079)
+      if (ref.mounted) ref.read(accessKeyProvider.notifier).reportError(error);
+      return error;
+    }
   }
 }
 
@@ -34,6 +60,33 @@ final deviceSettingsProvider =
     AsyncNotifierProvider<DeviceSettingsNotifier, DeviceSettings>(
       DeviceSettingsNotifier.new,
     );
+
+/// 보냈지만 아직 끝나지 않은 PATCH(보낸 순서).
+class PendingSettingsPatches extends Notifier<List<SettingsPatch>> {
+  @override
+  List<SettingsPatch> build() => const [];
+
+  void add(SettingsPatch patch) => state = [...state, patch];
+
+  void remove(SettingsPatch patch) => state = [
+    for (final p in state)
+      if (!identical(p, patch)) p,
+  ];
+}
+
+final pendingSettingsPatchesProvider =
+    NotifierProvider<PendingSettingsPatches, List<SettingsPatch>>(
+      PendingSettingsPatches.new,
+    );
+
+/// 화면에 보이는 설정: 서버 값 위에 끝나지 않은 변경을 보낸 순서대로 얹는다(낙관적 갱신, D-082).
+/// 서버 값에는 확인한 값만 두므로 일부가 실패해도 되돌릴 값을 따로 기억하지 않는다.
+final settingsViewProvider = Provider<AsyncValue<DeviceSettings>>((ref) {
+  final pending = ref.watch(pendingSettingsPatchesProvider);
+  return ref
+      .watch(deviceSettingsProvider)
+      .whenData((s) => pending.fold(s, (acc, patch) => patch.applyTo(acc)));
+});
 
 /// IANA 시간대 이름 모양(`Asia/Seoul`·`America/Argentina/Buenos_Aires`·`UTC`).
 /// 서버가 거절하면 같이 보낸 언어도 못 바꾸므로 모양이 다르면 보내지 않는다.
@@ -65,15 +118,8 @@ final deviceSettingsSyncProvider = Provider<void>((ref) {
   AppLanguage? sentLocale;
   String? sentTimeZone;
 
-  Future<void> send(SettingsPatch patch) async {
-    try {
-      await ref.read(deviceSettingsProvider.notifier).patch(patch);
-    } on Object catch (error) {
-      debugPrint('[device-settings-sync] PATCH failed: $error');
-      // Provider 실패가 아니라 observer가 못 보므로 거절은 직접 알린다(D-079)
-      if (ref.mounted) ref.read(accessKeyProvider.notifier).reportError(error);
-    }
-  }
+  Future<void> send(SettingsPatch patch) =>
+      ref.read(deviceSettingsProvider.notifier).save(patch);
 
   Future<void> check() async {
     final timeZone = await ref.read(deviceTimeZoneProvider)();
