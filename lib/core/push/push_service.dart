@@ -7,6 +7,7 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:futureetp/core/api/models/enums.dart';
 import 'package:material_ui/material_ui.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 /// 서버가 알림 `data`에 넣는 값(모두 문자열, FCM data 규칙).
 typedef PushData = Map<String, Object?>;
@@ -22,6 +23,10 @@ enum AndroidChannel {
   final Importance importance;
 }
 
+/// 알림 권한 상태(RN `usePushPermission`). `canAskAgain`이 false면 권한 창을 띄울 수 없어
+/// OS 설정으로 보낸다.
+typedef PushPermission = ({bool granted, bool canAskAgain});
+
 /// 푸시 기능의 기기 쪽 경계. 테스트는 가짜로 바꾼다.
 abstract interface class PushService {
   /// 이 기기의 서버 등록 플랫폼. 푸시를 못 쓰는 플랫폼이면 null(등록하지 않는다).
@@ -30,8 +35,14 @@ abstract interface class PushService {
   /// Android 채널을 만든다. 이미 있으면 이름만 바뀐다(중요도는 OS 설정이 우선).
   Future<void> setupChannels(Map<AndroidChannel, String> names);
 
-  /// 권한이 없고 다시 물을 수 있으면 권한 창을 띄운다. 거부돼도 토큰은 받는다.
-  Future<void> requestPermission();
+  /// 지금 알림 권한. 푸시를 못 쓰는 플랫폼이면 null(배너를 숨긴다).
+  Future<PushPermission?> getPermission();
+
+  /// 권한이 없고 다시 물을 수 있으면 권한 창을 띄우고 결과를 돌려준다. 거부돼도 토큰은 받는다.
+  Future<PushPermission?> requestPermission();
+
+  /// 이 앱의 OS 설정 화면을 연다.
+  Future<void> openSettings();
 
   /// 네이티브 푸시 토큰(Android FCM). 실패하면 던진다.
   Future<String?> getToken();
@@ -57,7 +68,13 @@ class NoPushService implements PushService {
   Future<void> setupChannels(Map<AndroidChannel, String> names) async {}
 
   @override
-  Future<void> requestPermission() async {}
+  Future<PushPermission?> getPermission() async => null;
+
+  @override
+  Future<PushPermission?> requestPermission() async => null;
+
+  @override
+  Future<void> openSettings() async {}
 
   @override
   Future<String?> getToken() async => null;
@@ -178,10 +195,29 @@ class FirebasePushService implements PushService {
     }
   }
 
+  /// 마지막 권한 요청에서 영구 거부가 나왔는지. Android는 상태 조회만으로 영구 거부를 알 수 없고
+  /// (권한을 묻지 않은 상태와 같게 보인다) 요청 결과로만 알 수 있어 기억해 둔다. 시작 때 푸시
+  /// 등록이 한 번 요청하므로 B-a를 열 때는 보통 알고 있다. 앱을 다시 켜면 처음부터 다시 센다.
+  var _permanentlyDenied = false;
+
+  PushPermission _permission(PermissionStatus status) {
+    if (status.isGranted) _permanentlyDenied = false;
+    if (status.isPermanentlyDenied) _permanentlyDenied = true;
+    return (granted: status.isGranted, canAskAgain: !_permanentlyDenied);
+  }
+
   @override
-  Future<void> requestPermission() async {
-    // Android 13+는 채널이 있어야 권한 창이 뜬다. 영구 거부면 창 없이 끝난다.
-    await _messaging.requestPermission();
+  Future<PushPermission?> getPermission() async =>
+      _permission(await Permission.notification.status);
+
+  @override
+  Future<PushPermission?> requestPermission() async =>
+      // Android 13+는 채널이 있어야 권한 창이 뜬다. 영구 거부면 창 없이 끝난다.
+      _permission(await Permission.notification.request());
+
+  @override
+  Future<void> openSettings() async {
+    await openAppSettings();
   }
 
   // firebase_messaging 17은 FID 등록(register·onRegistered)을 권하지만 서버는 FCM 등록 토큰을

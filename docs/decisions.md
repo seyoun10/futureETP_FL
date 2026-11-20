@@ -376,4 +376,16 @@
   - 탭 이동 `notificationTapsProvider`(`app/notification_taps.dart`): 라우터가 필요해 app 계층에 둔다. 실행한 알림(FCM `getInitialMessage`, 앱 사용 중 띄운 로컬 알림의 launch details)과 앱이 켜져 있을 때 누른 알림을 `notificationCommodity`(RN `notificationHref`)로 C-a 또는 A로 보낸다. C는 A 아래 경로라 [←]가 A로 간다.
   - 앱 사용 중 표시는 서버가 지정한 채널(모르면 `alerts`)로 띄운다. 배지는 쓰지 않는다(채널 `showBadge: false`). 작은 아이콘은 앱 아이콘(`@mipmap/ic_launcher`)이다(RN도 아이콘을 따로 지정하지 않음).
 - 근거: RN 동작(등록 시점·토큰 규칙·탭 대상)을 그대로 따르고, 플랫폼 API 차이만 이 저장소에서 메운다.
-- 영향: dev debug APK 빌드로 Gradle 설정을 확인했다. 가짜 `PushService`로 등록·채널 이름·토큰 변경·키 변경·탭 이동을 테스트로 고정했다. 실제 FCM 수신·권한 창·알림 표시·탭은 에뮬레이터에서 확인하지 않았다. B-a 알림 권한 배너는 다음 항목이다.
+- 영향: dev debug APK 빌드로 Gradle 설정을 확인했다. 가짜 `PushService`로 등록·채널 이름·토큰 변경·키 변경·탭 이동을 테스트로 고정했다. 실제 FCM 수신·권한 창·알림 표시·탭은 에뮬레이터에서 확인하지 않았다. B-a 알림 권한 배너는 FL-033.
+
+## FL-033: B-a 알림 권한 배너
+- 날짜: 2026-11-20
+- 상태: 확정 (권한 창·설정 열기·복귀 후 다시 읽기는 Android 푸시 기기 확인 때, iOS는 FL-011)
+- 맥락: TODO 5단계(screens.md B-a "권한 배너 버튼"). RN `usePushPermission`은 `expo-notifications`의 `granted`·`canAskAgain`을 읽고, 앱이 다시 활성화될 때마다 새로 읽으며, 다시 물을 수 있으면 권한 창, 아니면 `Linking.openSettings()`다. Flutter의 `firebase_messaging`은 "다시 물을 수 있는지"를 주지 않는다.
+- 결정:
+  - 패키지 `permission_handler` 13.0.2(2026-09-04 pub.dev)의 `Permission.notification`으로 상태 조회·요청, `openAppSettings()`로 앱 설정 화면을 연다. 시작 때 푸시 등록의 권한 요청도 같은 패키지로 바꿔 요청 결과를 한곳에서 본다.
+  - Android는 상태 조회만으로 영구 거부를 알 수 없다(묻지 않은 상태와 같게 보임, `permission_handler_android` `checkPermissionStatus` 주석). 그래서 `FirebasePushService`가 마지막 요청 결과(`permanentlyDenied`)를 앱 프로세스 동안 기억해 `canAskAgain`을 만든다. 시작 때 등록이 한 번 요청하므로 B-a를 열 때는 보통 알고 있다. 사용자가 OS 설정에서 "매번 묻기"로 되돌리면 앱을 다시 켤 때까지 [설정 열기]로 남는다(눌러도 설정 화면이 열릴 뿐이라 감수).
+  - `PushService`에 `getPermission`·`requestPermission`(결과 반환)·`openSettings`를 둔다. `NoPushService`(Apple 가입 전 iOS)는 null이라 배너를 숨긴다.
+  - 상태는 `pushPermissionProvider`(`core/push/push_permission.dart`, autoDispose)가 갖고, `AppLifecycleListener`로 resumed마다 다시 읽는다. B-a 맨 위 `_PermissionBanner`는 권한이 꺼졌을 때만 보이고 확인 전에는 숨긴다(RN과 같음).
+- 근거: RN 동작과 문구를 따르고, Android의 영구 거부 판정 한계만 요청 결과 기억으로 메운다.
+- 영향: dev debug APK 빌드로 네이티브 플러그인을 확인했다. 가짜 `PushService`로 숨김·[허용]·영구 거부 뒤 [설정 열기]·복귀 후 다시 읽기를 위젯 테스트로 고정했다. 실제 권한 창은 에뮬레이터에서 확인하지 않았다.

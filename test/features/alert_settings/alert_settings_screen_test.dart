@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:futureetp/app/app.dart';
+import 'package:futureetp/core/push/push_service.dart';
 import 'package:futureetp/core/theme/tokens.dart';
 import 'package:futureetp/features/alert_settings/alert_settings_screen.dart';
 import 'package:futureetp/features/data_sources/data_sources_screen.dart';
@@ -9,6 +10,7 @@ import 'package:material_ui/material_ui.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../helpers/display_store.dart';
+import '../../helpers/fake_push.dart';
 import '../../helpers/settings_server.dart';
 
 late SharedPreferencesWithCache _displayStore;
@@ -17,6 +19,7 @@ Future<SettingsServer> _pump(
   WidgetTester tester, {
   Map<String, Object?>? initial,
   Widget home = const AlertSettingsScreen(),
+  FakePushService? push,
 }) async {
   final server = SettingsServer(initial: initial);
   tester.view
@@ -26,7 +29,10 @@ Future<SettingsServer> _pump(
   await tester.pumpWidget(
     ProviderScope(
       retry: (_, _) => null,
-      overrides: server.overrides(_displayStore),
+      overrides: [
+        ...server.overrides(_displayStore),
+        if (push != null) pushServiceProvider.overrideWithValue(push),
+      ],
       child: MaterialApp(
         localizationsDelegates: appLocalizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
@@ -52,6 +58,64 @@ bool _selected(WidgetTester tester, String label) =>
 void main() {
   setUp(() async {
     _displayStore = await openTestDisplayStore();
+  });
+
+  group('알림 권한 배너', () {
+    const off = 'Notifications are turned off';
+
+    for (final (name, push) in [
+      ('권한이 있으면', FakePushService()),
+      ('푸시를 못 쓰는 플랫폼이면', FakePushService(permission: null)),
+    ]) {
+      testWidgets('$name 배너가 없다', (tester) async {
+        await _pump(tester, push: push);
+        expect(find.textContaining(off), findsNothing);
+      });
+    }
+
+    testWidgets('다시 물을 수 있으면 [허용]으로 권한 창을 띄우고, 허용되면 배너를 지운다', (tester) async {
+      final push = FakePushService(
+        permission: (granted: false, canAskAgain: true),
+        requestResult: (granted: true, canAskAgain: true),
+      );
+      await _pump(tester, push: push);
+      expect(find.textContaining(off), findsOneWidget);
+
+      await tester.tap(find.text('Allow'));
+      await tester.pumpAndSettle();
+      expect(push.permissionRequests, 1);
+      expect(find.textContaining(off), findsNothing);
+    });
+
+    testWidgets('요청에서 영구 거부가 나오면 [설정 열기]로 바뀐다', (tester) async {
+      final push = FakePushService(
+        permission: (granted: false, canAskAgain: true),
+        requestResult: (granted: false, canAskAgain: false),
+      );
+      await _pump(tester, push: push);
+
+      await tester.tap(find.text('Allow'));
+      await tester.pumpAndSettle();
+      expect(find.text('Open settings'), findsOneWidget);
+    });
+
+    testWidgets('영구 거부면 [설정 열기]로 앱 설정을 열고, 돌아오면 권한을 다시 읽는다', (tester) async {
+      final push = FakePushService(
+        permission: (granted: false, canAskAgain: false),
+      );
+      await _pump(tester, push: push);
+
+      await tester.tap(find.text('Open settings'));
+      await tester.pumpAndSettle();
+      expect(push.settingsOpens, 1);
+      expect(push.permissionRequests, 0);
+
+      push.permission = (granted: true, canAskAgain: true);
+      tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.inactive);
+      tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.resumed);
+      await tester.pumpAndSettle();
+      expect(find.textContaining(off), findsNothing);
+    });
   });
 
   testWidgets('대상이 없으면 없음, 적용 기준 요약을 그린다', (tester) async {

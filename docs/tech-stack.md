@@ -23,7 +23,7 @@
 | 실행 화면 | `flutter_native_splash` 2.4.8(dev) | 검정 배경 + RN `splash-icon.png` 76pt. `dart run flutter_native_splash:create`가 네이티브 파일을 만든다 |
 | QR | `mobile_scanner` 7.5.0 | FL-009. B-b 접근 키 QR(D-078) |
 | i18n | `flutter_localizations` + `intl` 0.20.3(SDK 고정) + gen-l10n | FL-009. ko 기준, en |
-| 푸시 | Android `firebase_messaging` 17.1.0 + `firebase_core` 5.2.0 + `flutter_local_notifications` 23.0.3(2026-11-20 pub.dev), Gradle `com.google.gms.google-services` 4.6.0·`desugar_jdk_libs` 2.1.5. iOS APNs 토큰 방식은 Apple 가입 뒤 | FL-011(iOS 검토중), FL-032 |
+| 푸시 | Android `firebase_messaging` 17.1.0 + `firebase_core` 5.2.0 + `flutter_local_notifications` 23.0.3(2026-11-20 pub.dev), Gradle `com.google.gms.google-services` 4.6.0·`desugar_jdk_libs` 2.1.5. 알림 권한 상태·설정 열기 `permission_handler` 13.0.2(2026-09-04 pub.dev). iOS APNs 토큰 방식은 Apple 가입 뒤 | FL-011(iOS 검토중), FL-032, FL-033 |
 | 외부 링크 | `url_launcher` 6.3.3(2026-11-20 `flutter pub add`) | C-d-a 운용사 페이지(https만 연다) |
 | 앱 버전 | `package_info_plus` 10.2.2(2026-11-20 `flutter pub add`) | B 맨 아래 앱 버전 줄, `PUT /v1/devices`의 `appVersion`(FL-031) |
 | 햅틱 | `HapticFeedback`(Flutter 기본) | D-109·D-138·D-139. `core/util/haptics.dart` |

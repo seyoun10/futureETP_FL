@@ -617,6 +617,15 @@ class AppLocalizationsKo extends AppLocalizations {
   String get alertSettingsTitle => '알림 설정';
 
   @override
+  String get alertSettingsPermissionOff => '⚠ 알림 권한이 꺼져 있습니다';
+
+  @override
+  String get alertSettingsPermissionAllow => '허용';
+
+  @override
+  String get alertSettingsPermissionOpenSettings => '설정 열기';
+
+  @override
   String get alertSettingsCommodity => '대상 원자재';
 
   @override

@@ -629,6 +629,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get alertSettingsTitle => 'Alert settings';
 
   @override
+  String get alertSettingsPermissionOff => '⚠ Notifications are turned off';
+
+  @override
+  String get alertSettingsPermissionAllow => 'Allow';
+
+  @override
+  String get alertSettingsPermissionOpenSettings => 'Open settings';
+
+  @override
   String get alertSettingsCommodity => 'Target commodity';
 
   @override

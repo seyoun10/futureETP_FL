@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:futureetp/core/api/error_text.dart';
 import 'package:futureetp/core/api/models/enums.dart';
 import 'package:futureetp/core/api/models/settings.dart';
+import 'package:futureetp/core/push/push_permission.dart';
 import 'package:futureetp/core/settings/device_settings.dart';
 import 'package:futureetp/core/theme/tokens.dart';
 import 'package:futureetp/core/util/haptics.dart';
@@ -30,7 +31,6 @@ String formatQuietMinute(int minute) =>
 /// B-a 알림 설정(screens.md B-a, RN `AlertSettingsScreen`).
 /// 바꾼 값은 바로 서버에 저장한다(D-082).
 /// 적용 기준은 B 이격도차트 설정을 그대로 쓰므로 여기서는 요약만 보여 준다.
-/// 알림 권한 배너는 푸시 등록(TODO 5단계)과 함께 붙인다.
 class AlertSettingsScreen extends ConsumerStatefulWidget {
   const new({super.key});
 
@@ -67,6 +67,7 @@ class _AlertSettingsScreenState extends ConsumerState<AlertSettingsScreen> {
                 bottom: MediaQuery.paddingOf(context).bottom,
               ),
               children: [
+                const _PermissionBanner(),
                 if (_saveError case final error?)
                   SaveErrorLine(
                     l10n.settingsSaveFailed(errorText(l10n, error)),
@@ -126,6 +127,54 @@ class _AlertSettingsScreenState extends ConsumerState<AlertSettingsScreen> {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+/// 알림 권한 배너. 권한이 꺼져 있을 때만 보이고 확인 전에는 숨긴다(screens.md B-a).
+/// 다시 물을 수 있으면 [허용](권한 창), 아니면 [설정 열기](OS 설정 화면)다.
+class _PermissionBanner extends ConsumerWidget {
+  const new();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final permission = ref.watch(pushPermissionProvider).value;
+    if (permission == null || permission.granted) return const SizedBox();
+    final l10n = AppLocalizations.of(context);
+    return Semantics(
+      liveRegion: true,
+      child: Container(
+        color: AppColors.surface,
+        padding: const EdgeInsets.symmetric(
+          horizontal: AppSpacing.lg,
+          vertical: AppSpacing.md,
+        ),
+        child: Row(
+          spacing: AppSpacing.md,
+          children: [
+            Expanded(
+              child: Text(
+                l10n.alertSettingsPermissionOff,
+                style: const TextStyle(
+                  color: AppColors.text,
+                  fontSize: AppFontSize.body,
+                ),
+              ),
+            ),
+            FilledButton(
+              onPressed: () {
+                tapHaptic();
+                unawaited(ref.read(pushPermissionProvider.notifier).request());
+              },
+              child: Text(
+                permission.canAskAgain
+                    ? l10n.alertSettingsPermissionAllow
+                    : l10n.alertSettingsPermissionOpenSettings,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

@@ -10,6 +10,8 @@ class FakePushService implements PushService {
     this.token = 'fcm-token',
     this.tokenError,
     this.initialTap,
+    this.permission = (granted: true, canAskAgain: true),
+    this.requestResult,
   });
 
   @override
@@ -20,7 +22,15 @@ class FakePushService implements PushService {
   PushData? initialTap;
 
   final channelNames = <Map<AndroidChannel, String>>[];
+
+  /// getPermission이 돌려줄 값. 테스트가 바꿔 OS 설정에서 바꾼 것처럼 만든다.
+  PushPermission? permission;
+
+  /// requestPermission 결과. null이면 [permission]을 그대로 돌려준다.
+  PushPermission? requestResult;
+
   int permissionRequests = 0;
+  int settingsOpens = 0;
   final tokenRefresh = StreamController<String>.broadcast();
   final taps = StreamController<PushData>.broadcast();
 
@@ -29,7 +39,17 @@ class FakePushService implements PushService {
       channelNames.add(names);
 
   @override
-  Future<void> requestPermission() async => permissionRequests++;
+  Future<PushPermission?> getPermission() async => permission;
+
+  @override
+  Future<PushPermission?> requestPermission() async {
+    permissionRequests++;
+    if (requestResult case final result?) permission = result;
+    return permission;
+  }
+
+  @override
+  Future<void> openSettings() async => settingsOpens++;
 
   @override
   Future<String?> getToken() async {

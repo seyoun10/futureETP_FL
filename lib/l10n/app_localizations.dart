@@ -1124,6 +1124,24 @@ abstract class AppLocalizations {
   /// **'알림 설정'**
   String get alertSettingsTitle;
 
+  /// No description provided for @alertSettingsPermissionOff.
+  ///
+  /// In ko, this message translates to:
+  /// **'⚠ 알림 권한이 꺼져 있습니다'**
+  String get alertSettingsPermissionOff;
+
+  /// No description provided for @alertSettingsPermissionAllow.
+  ///
+  /// In ko, this message translates to:
+  /// **'허용'**
+  String get alertSettingsPermissionAllow;
+
+  /// No description provided for @alertSettingsPermissionOpenSettings.
+  ///
+  /// In ko, this message translates to:
+  /// **'설정 열기'**
+  String get alertSettingsPermissionOpenSettings;
+
   /// No description provided for @alertSettingsCommodity.
   ///
   /// In ko, this message translates to:
