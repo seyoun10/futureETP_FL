@@ -415,3 +415,15 @@
   - RN ↔ FL 바꿔 설치는 저장 형식이 달라 접근 키·installation ID·표시 설정이 이어지지 않는다. 할 일은 `docs/ops.md`.
 - 근거: 개인 기기 하나에 Mac에서 바로 깔면 업로드·App Tester 단계가 없고 Firebase 쪽 설정도 필요 없다. 빌드 이력이 남지 않고 케이블이나 같은 망의 무선 디버깅이 필요한 것은 감수한다.
 - 영향: 커밋보다 오래된 APK·기기 없음에서 멈추는 것을 확인했다. 실제 설치와 RN 위 덮어 설치(FCM 토큰 중복으로 알림 두 번 오는지)는 확인하지 않았다.
+
+## FL-036: RN 교차 테스트 — RN 순수 함수 결과를 기준값으로 커밋
+- 날짜: 2026-11-20
+- 상태: 확정
+- 맥락: 숫자 표기·차트 눈금처럼 화면에 바로 보이는 순수 함수는 RN과 결과가 같아야 한다. 손으로 고른 예시 테스트는 부동소수 경계를 놓친다. 2026-11-20 임시 교차 테스트에서 C-b y축 자릿수 불일치(4,000개 중 174개, `1.1` → `1.10`)를 찾았고, 같은 원인의 RN C-a 버그도 드러나 양쪽을 고쳤다(`../futureETP` `62ecbd7`). CI는 이 저장소만 checkout해 RN 코드를 돌릴 수 없다(FL-017과 같은 사정).
+- 결정:
+  - `tool/rn_cross/generate.mts`가 고정 seed 난수 입력을 RN 함수(`formatNumber`·`formatAmount`·`chartPeriods`·`curveLayout`·`priceLabels`, d3 `scaleLinear`·`scaleLog` 눈금)에 넣어 결과를 `test/cross/fixtures/rn_outputs.json`(약 600KB)에 쓴다. `tool/sync_rn_cross.sh`가 RN 앱 폴더에서 RN의 tsx로 돌린다. 입력에는 반올림 경계(`1.005`, `x.5`)·부호·큰 수를 섞는다.
+  - `test/cross/rn_cross_test.dart`가 같은 입력을 Flutter 함수에 넣어 비교한다. 눈금 값은 마지막 자리 오차(1e-9 상대)까지 같다고 보고, 문자열·자릿수·정수 결과는 정확히 같아야 한다. 다르면 처음 5개를 RN·Flutter 값과 함께 보인다.
+  - fixture에 만든 때의 RN 원본 내용을 함께 넣는다. 옆에 RN 저장소가 있으면 지금 원본과 같은지 보고(다르면 실패 → 다시 만든다), CI는 그 검사만 건너뛴다. `crypto` 패키지를 늘리지 않으려고 해시 대신 내용을 넣었다(약 10KB).
+  - 대상은 Flutter 쪽에 같은 이름·인자의 순수 함수가 있는 것만이다. 위젯·Riverpod·i18n을 거치는 함수(`upDownColor`는 RN 저장소 상태를 import)와 ETP 이름 정렬(RN `localeCompare`는 기기 ICU에 따라 다르다)은 넣지 않았다.
+- 근거: 임시로 돌렸을 때 실제 불일치를 찾았고, `tickDecimals` 보정을 빼면 세 테스트가 35~36개 불일치로 실패하는 것을 확인했다. 기준값 커밋은 FL-017 계약 테스트와 같은 방식이라 CI에서 그대로 돈다.
+- 영향: RN 쪽 대상 파일이 바뀌면 로컬 `./tool/check.sh`가 실패한다. `./tool/sync_rn_cross.sh` → `flutter test test/cross` → 다르면 Flutter를 RN에 맞추거나 RN 쪽 버그면 RN을 고친다. 다시 만들 때마다 약 600KB가 저장소 기록에 쌓인다.

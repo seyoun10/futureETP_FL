@@ -25,8 +25,8 @@ lib/
 │  ├─ push/                      기기 푸시 경계(PushService)·토큰 등록·알림 권한 상태, 알림 data → 이동 원자재(FL-032, FL-033). 탭 이동 자체는 app/notification_taps.dart
 │  └─ util/                      숫자·날짜 포맷, 햅틱, 실패 Alert
 └─ l10n/                         app_ko.arb, app_en.arb, 생성 코드 app_localizations*.dart
-test/                            lib와 같은 구조, architecture/(import 방향 검사), contract/(계약 스키마 복사본·dev 서버 응답 fixture)
-tool/                            check.sh, ios_flavors.rb, sync_contract.sh
+test/                            lib와 같은 구조, architecture/(import 방향 검사), contract/(계약 스키마 복사본·dev 서버 응답 fixture), cross/(RN 순수 함수 결과와 비교, FL-036)
+tool/                            check.sh, ios_flavors.rb, sync_contract.sh, sync_rn_cross.sh(+ rn_cross/generate.mts, FL-036)
 env/                             dev.example.json(커밋), dev.json(커밋 안 함)
 docs/                            tech-stack, architecture, decisions
 ```

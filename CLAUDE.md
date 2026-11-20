@@ -92,6 +92,7 @@ Flutter SDK는 `~/development/flutter`(stable, PATH는 `~/.zshrc`).
 - `./tool/check.sh`: 생성 코드 최신 확인(build_runner 전후 `*.g.dart`·`*.freezed.dart` 해시 비교) → analyze(`--fatal-infos`) → format 확인 → test. 커밋 전 통과. CI(`.github/workflows/check.yml`)도 같은 스크립트를 돈다. Flutter를 올리면 워크플로의 `flutter-version`도 올린다
 - `dart run build_runner build`: freezed·json_serializable 모델 생성(`lib/core/api/models/*.g.dart`·`*.freezed.dart`, 커밋한다)
 - `./tool/sync_contract.sh`: 원본 계약 스키마를 `test/contract/schemas/`로 복사(원본이 바뀌어 계약 테스트의 복사본 비교가 실패할 때, FL-017)
+- `./tool/sync_rn_cross.sh`: RN 순수 함수(숫자 표기·차트 눈금·라벨 배치)로 교차 테스트 기준값 `test/cross/fixtures/rn_outputs.json`을 다시 만든다(RN 원본이 바뀌어 `test/cross/rn_cross_test.dart`의 원본 비교가 실패할 때, FL-036)
 - `dart fix --apply`: lint 자동 수정(Dart 3.14 생성자 표기 `const new(...)` 등)
 - `dart run flutter_launcher_icons`: 앱 아이콘 다시 만들기(`assets/icon`)
 - `dart run flutter_native_splash:create`: 실행 화면 다시 만들기(`assets/splash`, 설정은 `pubspec.yaml`)
