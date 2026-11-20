@@ -101,7 +101,7 @@ void main() {
     await tester.pumpWidget(_app(_server()));
     await tester.pumpAndSettle();
     expect(find.byType(AccessKeyScreen), findsOneWidget);
-    expect(find.byType(BackButton), findsNothing);
+    expect(find.bySemanticsLabel('Back'), findsNothing);
     // 비어 있으면 [확인]을 막는다
     expect(tester.widget<FilledButton>(_submit).onPressed, isNull);
   });
@@ -158,9 +158,9 @@ void main() {
 
     expect(find.byType(AccessKeyScreen), findsOneWidget);
     expect(find.text('The key was not accepted.'), findsOneWidget);
-    expect(find.byType(BackButton), findsOneWidget);
+    expect(find.bySemanticsLabel('Back'), findsOneWidget);
 
-    await tester.tap(find.byType(BackButton));
+    await tester.tap(find.bySemanticsLabel('Back'));
     await tester.pumpAndSettle();
     expect(find.byType(CommodityListScreen), findsOneWidget);
     final container = ProviderScope.containerOf(

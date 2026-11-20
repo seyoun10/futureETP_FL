@@ -10,29 +10,6 @@ class AppLocalizationsEn extends AppLocalizations {
   AppLocalizationsEn([String locale = 'en']) : super(locale);
 
   @override
-  String get devHealthTitle => 'Server connection';
-
-  @override
-  String devHealthVariant(String variant) {
-    return 'Variant: $variant';
-  }
-
-  @override
-  String devHealthServer(String url) {
-    return 'Server: $url';
-  }
-
-  @override
-  String devHealthOk(String status, String commit) {
-    return 'Connected (status $status, commit $commit)';
-  }
-
-  @override
-  String devHealthFailed(String error) {
-    return 'Connection failed: $error';
-  }
-
-  @override
   String get retry => 'Retry';
 
   @override
@@ -467,4 +444,233 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get etpSourceNote =>
       'Collected automatically · shown in the original language';
+
+  @override
+  String get done => 'Done';
+
+  @override
+  String get settingsReset => 'Reset';
+
+  @override
+  String get settingsResetTitle => 'Reset settings';
+
+  @override
+  String get settingsResetMessage =>
+      'Restore the display and disparity chart settings to their defaults? Alert settings and the access key stay as they are.';
+
+  @override
+  String get settingsAlerts => 'Alerts';
+
+  @override
+  String get settingsAccessKey => 'Access key';
+
+  @override
+  String get settingsAccessKeySaved => 'Set';
+
+  @override
+  String get settingsDataSources => 'Data sources';
+
+  @override
+  String get settingsLanguage => 'Language';
+
+  @override
+  String get settingsUpDownStyle => 'Up/down colors';
+
+  @override
+  String get settingsUpDownStyleKr => 'Korean';
+
+  @override
+  String get settingsUpDownStyleUs => 'US';
+
+  @override
+  String get settingsLanguageKo => '한국어';
+
+  @override
+  String get settingsLanguageEn => 'English';
+
+  @override
+  String get settingsSectionGeneral => 'General';
+
+  @override
+  String get settingsSectionDisparity => 'Disparity chart';
+
+  @override
+  String get settingsSectionOther => 'Other';
+
+  @override
+  String get settingsBasis => 'Chart basis';
+
+  @override
+  String get settingsMaPeriod => 'Moving average (days)';
+
+  @override
+  String get settingsWindow => 'Distribution period (years)';
+
+  @override
+  String get settingsWindowAll => 'All';
+
+  @override
+  String get settingsAlertOff => 'Off';
+
+  @override
+  String get settingsRareLevels => 'Rare levels (%)';
+
+  @override
+  String settingsRareLevelField(int index) {
+    return 'Rare level $index';
+  }
+
+  @override
+  String settingsRareLevelHint(String min, String max, int count) {
+    return '$min–$max, 1 decimal place, $count distinct values';
+  }
+
+  @override
+  String settingsRareLevelInvalid(String min, String max) {
+    return 'Enter a value from $min to $max with at most 1 decimal place.';
+  }
+
+  @override
+  String settingsRareLevelDuplicate(int count) {
+    return 'Enter $count distinct values.';
+  }
+
+  @override
+  String settingsSaveFailed(String reason) {
+    return 'Could not save. $reason';
+  }
+
+  @override
+  String get settingsLanguageDesc =>
+      'Language for screens and push notifications';
+
+  @override
+  String get settingsUpDownStyleDesc =>
+      'Korean: up red, down blue. US: up green, down red';
+
+  @override
+  String get settingsBasisDesc =>
+      'Contracts used for the chart and alerts. Front: the most traded contract. KR/US: roll rules of Korean/US ETPs';
+
+  @override
+  String get settingsMaPeriodDesc =>
+      'Moving average period that disparity is measured against';
+
+  @override
+  String get settingsWindowDesc =>
+      'Past period of disparity used to judge rarity';
+
+  @override
+  String get settingsRareLevelsDesc =>
+      'Bands at the top and bottom % of past disparity; you get an alert when price reaches one';
+
+  @override
+  String get settingsAlertsDesc =>
+      'Commodity for rare-level alerts and quiet hours';
+
+  @override
+  String get settingsAccessKeyDesc => 'Secret key for connecting to the server';
+
+  @override
+  String get settingsDataSourcesDesc => 'Where prices and data come from';
+
+  @override
+  String settingsAppVersion(String version, String build, String variant) {
+    return 'App version: $version (build $build) · $variant';
+  }
+
+  @override
+  String get dataSourcesFutures => 'Futures prices';
+
+  @override
+  String get dataSourcesEtp => 'ETP';
+
+  @override
+  String get dataSourcesExchangeLabel => 'Exchange';
+
+  @override
+  String get dataSourcesExchangeValue => 'CME Group (NYMEX·COMEX)';
+
+  @override
+  String get dataSourcesSettlementLabel => 'Settlement & volume';
+
+  @override
+  String get dataSourcesSettlementValue => 'Massive, after close';
+
+  @override
+  String get dataSourcesIntradayLabel => 'Intraday';
+
+  @override
+  String get dataSourcesIntradayValue => 'Yahoo Finance, ~10 min delayed';
+
+  @override
+  String get dataSourcesHistoryLabel => 'History';
+
+  @override
+  String get dataSourcesHistoryValue => 'Databento (since 2010-06)';
+
+  @override
+  String get dataSourcesEtpKrLabel => 'KR';
+
+  @override
+  String get dataSourcesEtpKrValue => 'Naver Finance, KRX';
+
+  @override
+  String get dataSourcesEtpUsLabel => 'US';
+
+  @override
+  String get dataSourcesEtpUsValue => 'Nasdaq, Yahoo Finance';
+
+  @override
+  String get dataSourcesNotice =>
+      'Roll-adjusted values are computed by this app from S&P GSCI and Bloomberg index methodologies. For personal reference only; accuracy not guaranteed; not investment advice.';
+
+  @override
+  String get alertSettingsTitle => 'Alert settings';
+
+  @override
+  String get alertSettingsCommodity => 'Target commodity';
+
+  @override
+  String get alertSettingsCommodityNone => 'None';
+
+  @override
+  String get alertSettingsCriteria => 'Current criteria';
+
+  @override
+  String alertSettingsCriteriaChart(String basis, int maPeriod, String window) {
+    return 'Basis $basis · $maPeriod-day MA · $window';
+  }
+
+  @override
+  String alertSettingsCriteriaWindowYears(String years) {
+    return '$years years';
+  }
+
+  @override
+  String alertSettingsCriteriaLevels(String levels) {
+    return 'Levels $levels% (above & below)';
+  }
+
+  @override
+  String get alertSettingsQuietTime => 'Quiet hours';
+
+  @override
+  String get alertSettingsQuietStart => 'Start';
+
+  @override
+  String get alertSettingsQuietEnd => 'End';
+
+  @override
+  String alertSettingsQuietNextDay(String time) {
+    return 'next day $time';
+  }
+
+  @override
+  String get alertSettingsQuietNote =>
+      'Alerts during quiet hours are sent at the end time, only the rarest one per direction.';
+
+  @override
+  String get alertSettingsGuide =>
+      'Checked every 15 minutes during trading hours; each level alerts at most once per CME trading day. You are alerted when today\'s candle wick touches a rare-level line on the chart (intraday touches, so alerts can fire more often than p%).';
 }

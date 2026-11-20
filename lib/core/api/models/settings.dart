@@ -4,6 +4,29 @@ import 'package:futureetp/core/api/models/enums.dart';
 part 'settings.freezed.dart';
 part 'settings.g.dart';
 
+/// rare 레벨 입력 범위(shared `RARE_LEVEL_*`). 소수 첫째 자리까지, 서로 다른 5개.
+const rareLevelCount = 5;
+const rareLevelMin = 0.1;
+const rareLevelMax = 49.9;
+
+/// 알림 거부 시간: 현지 자정 기준 분, 30분 단위(shared `QUIET_*`).
+const quietStepMin = 30;
+const int quietMaxMin = 24 * 60 - quietStepMin;
+
+/// 이격도차트 설정 기본값(shared `DISPARITY_SETTINGS_DEFAULTS`). B [초기화]가 이 값으로 PATCH한다.
+const SettingsPatch disparitySettingsDefaults = SettingsPatch(
+  basis: Basis.front,
+  maPeriod: MaPeriod.ma100,
+  window: DistributionWindow.y10,
+  rareLevels: [1, 2, 4, 8, 16],
+);
+
+/// shared `rareLevelSchema`: 범위 안이고 소수 첫째 자리까지(부동소수 오차는 허용).
+bool isValidRareLevel(double level) =>
+    level >= rareLevelMin &&
+    level <= rareLevelMax &&
+    (level * 10 - (level * 10).roundToDouble()).abs() < 1e-9;
+
 /// `GET·PATCH /v1/settings`: 헤더 기기의 설정(D-120).
 @freezed
 abstract class DeviceSettings with _$DeviceSettings {

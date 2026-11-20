@@ -6,6 +6,7 @@ import 'package:futureetp/core/api/api_client.dart';
 import 'package:futureetp/core/api/app_error.dart';
 import 'package:futureetp/core/api/error_text.dart';
 import 'package:futureetp/core/theme/tokens.dart';
+import 'package:futureetp/core/widgets/screen_header.dart';
 import 'package:futureetp/features/access_key/qr_scanner.dart';
 import 'package:futureetp/l10n/app_localizations.dart';
 import 'package:go_router/go_router.dart';
@@ -125,68 +126,76 @@ class _AccessKeyScreenState extends ConsumerState<AccessKeyScreen> {
     final canSubmit = !_pending && _input.text.trim().isNotEmpty;
 
     return Scaffold(
-      appBar: AppBar(title: Text(l10n.accessKeyTitle)),
-      body: ListView(
-        padding: const EdgeInsets.all(AppSpacing.xl),
+      backgroundColor: AppColors.background,
+      body: Column(
         children: [
-          Text(l10n.accessKeyGuide),
-          const SizedBox(height: AppSpacing.lg),
-          if (_scanning)
-            QrScanner(
-              onScanned: _onScanned,
-              onUnavailable: () => setState(() {
-                _scanning = false;
-                _notice = _Notice.cameraUnavailable;
-              }),
-              onCancel: () => setState(() => _scanning = false),
-            )
-          else
-            FilledButton.tonal(
-              onPressed: _pending
-                  ? null
-                  : () => setState(() {
-                      _notice = null;
-                      _saveError = null;
-                      _scanning = true;
+          // 키가 없어 처음 온 B-b는 스택의 처음이라 [←]가 없다(D-077)
+          ScreenHeader(title: l10n.accessKeyTitle, showBack: context.canPop()),
+          Expanded(
+            child: ListView(
+              padding: const EdgeInsets.all(AppSpacing.xl),
+              children: [
+                Text(l10n.accessKeyGuide),
+                const SizedBox(height: AppSpacing.lg),
+                if (_scanning)
+                  QrScanner(
+                    onScanned: _onScanned,
+                    onUnavailable: () => setState(() {
+                      _scanning = false;
+                      _notice = _Notice.cameraUnavailable;
                     }),
-              child: Text(l10n.accessKeyScanQr),
-            ),
-          const SizedBox(height: AppSpacing.lg),
-          TextField(
-            key: const Key('access-key-input'),
-            controller: _input,
-            enabled: !_pending,
-            // 키 값은 화면에 보여 주지 않는다(screens.md B-b)
-            obscureText: true,
-            autocorrect: false,
-            enableSuggestions: false,
-            decoration: InputDecoration(
-              hintText: l10n.accessKeyPastePlaceholder,
-            ),
-            onSubmitted: (_) => canSubmit ? _submit() : null,
-          ),
-          const SizedBox(height: AppSpacing.lg),
-          FilledButton.tonal(
-            onPressed: canSubmit ? _submit : null,
-            child: _pending
-                ? SizedBox.square(
-                    dimension: 20,
-                    child: CircularProgressIndicator(
-                      strokeWidth: 2,
-                      semanticsLabel: l10n.accessKeyVerifying,
-                    ),
+                    onCancel: () => setState(() => _scanning = false),
                   )
-                : Text(l10n.accessKeySubmit),
-          ),
-          if (error != null) ...[
-            const SizedBox(height: AppSpacing.lg),
-            Text(
-              error,
-              key: const Key('access-key-error'),
-              textAlign: TextAlign.center,
-              style: TextStyle(color: Theme.of(context).colorScheme.error),
+                else
+                  FilledButton.tonal(
+                    onPressed: _pending
+                        ? null
+                        : () => setState(() {
+                            _notice = null;
+                            _saveError = null;
+                            _scanning = true;
+                          }),
+                    child: Text(l10n.accessKeyScanQr),
+                  ),
+                const SizedBox(height: AppSpacing.lg),
+                TextField(
+                  key: const Key('access-key-input'),
+                  controller: _input,
+                  enabled: !_pending,
+                  // 키 값은 화면에 보여 주지 않는다(screens.md B-b)
+                  obscureText: true,
+                  autocorrect: false,
+                  enableSuggestions: false,
+                  decoration: InputDecoration(
+                    hintText: l10n.accessKeyPastePlaceholder,
+                  ),
+                  onSubmitted: (_) => canSubmit ? _submit() : null,
+                ),
+                const SizedBox(height: AppSpacing.lg),
+                FilledButton.tonal(
+                  onPressed: canSubmit ? _submit : null,
+                  child: _pending
+                      ? SizedBox.square(
+                          dimension: 20,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            semanticsLabel: l10n.accessKeyVerifying,
+                          ),
+                        )
+                      : Text(l10n.accessKeySubmit),
+                ),
+                if (error != null) ...[
+                  const SizedBox(height: AppSpacing.lg),
+                  Text(
+                    error,
+                    key: const Key('access-key-error'),
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(color: AppColors.error),
+                  ),
+                ],
+              ],
             ),
-          ],
+          ),
         ],
       ),
     );

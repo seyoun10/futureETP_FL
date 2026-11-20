@@ -10,29 +10,6 @@ class AppLocalizationsKo extends AppLocalizations {
   AppLocalizationsKo([String locale = 'ko']) : super(locale);
 
   @override
-  String get devHealthTitle => '서버 연결 확인';
-
-  @override
-  String devHealthVariant(String variant) {
-    return '변형: $variant';
-  }
-
-  @override
-  String devHealthServer(String url) {
-    return '서버: $url';
-  }
-
-  @override
-  String devHealthOk(String status, String commit) {
-    return '연결됨 (status $status, commit $commit)';
-  }
-
-  @override
-  String devHealthFailed(String error) {
-    return '연결 실패: $error';
-  }
-
-  @override
   String get retry => '다시 시도';
 
   @override
@@ -460,4 +437,228 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get etpSourceNote => '자동 수집 정보 · 원문 언어로 표시';
+
+  @override
+  String get done => '완료';
+
+  @override
+  String get settingsReset => '초기화';
+
+  @override
+  String get settingsResetTitle => '설정 초기화';
+
+  @override
+  String get settingsResetMessage =>
+      '표시·이격도차트 설정을 기본값으로 되돌릴까요? 알림 설정과 접근 키는 그대로입니다.';
+
+  @override
+  String get settingsAlerts => '알림';
+
+  @override
+  String get settingsAccessKey => '접근 키';
+
+  @override
+  String get settingsAccessKeySaved => '설정됨';
+
+  @override
+  String get settingsDataSources => '데이터 출처';
+
+  @override
+  String get settingsLanguage => '언어';
+
+  @override
+  String get settingsUpDownStyle => '등락 색';
+
+  @override
+  String get settingsUpDownStyleKr => '한국식';
+
+  @override
+  String get settingsUpDownStyleUs => '미국식';
+
+  @override
+  String get settingsLanguageKo => '한국어';
+
+  @override
+  String get settingsLanguageEn => 'English';
+
+  @override
+  String get settingsSectionGeneral => '일반';
+
+  @override
+  String get settingsSectionDisparity => '이격도차트';
+
+  @override
+  String get settingsSectionOther => '기타';
+
+  @override
+  String get settingsBasis => '차트 기준값';
+
+  @override
+  String get settingsMaPeriod => '기준 이평선(일)';
+
+  @override
+  String get settingsWindow => '분포 기간(년)';
+
+  @override
+  String get settingsWindowAll => '전체';
+
+  @override
+  String get settingsAlertOff => '끔';
+
+  @override
+  String get settingsRareLevels => 'rare-level(%)';
+
+  @override
+  String settingsRareLevelField(int index) {
+    return 'rare-level $index';
+  }
+
+  @override
+  String settingsRareLevelHint(String min, String max, int count) {
+    return '$min~$max, 소수 첫째 자리, 서로 다른 $count개';
+  }
+
+  @override
+  String settingsRareLevelInvalid(String min, String max) {
+    return '$min~$max 사이 값을 소수 첫째 자리까지 입력해 주세요.';
+  }
+
+  @override
+  String settingsRareLevelDuplicate(int count) {
+    return '서로 다른 값 $count개를 입력해 주세요.';
+  }
+
+  @override
+  String settingsSaveFailed(String reason) {
+    return '저장하지 못했습니다. $reason';
+  }
+
+  @override
+  String get settingsLanguageDesc => '화면과 푸시 알림 문구의 언어';
+
+  @override
+  String get settingsUpDownStyleDesc => '한국식은 상승 빨강·하락 파랑, 미국식은 상승 초록·하락 빨강';
+
+  @override
+  String get settingsBasisDesc =>
+      '차트와 알림에 쓰는 월물. 대표월물은 거래량이 가장 많은 월물, 한국형·미국형은 국내·미국 ETP의 롤 규칙';
+
+  @override
+  String get settingsMaPeriodDesc => '이격도를 재는 기준 이동평균 기간';
+
+  @override
+  String get settingsWindowDesc => '드문 정도를 판단할 과거 이격도 기간';
+
+  @override
+  String get settingsRareLevelsDesc =>
+      '과거 이격도의 위·아래 끝 몇 %를 차트 밴드로 그리고, 닿으면 알림을 보냅니다';
+
+  @override
+  String get settingsAlertsDesc => 'rare-level 도달 알림을 받을 원자재와 알림 거부 시간';
+
+  @override
+  String get settingsAccessKeyDesc => '서버에 접속하는 비밀 키';
+
+  @override
+  String get settingsDataSourcesDesc => '시세와 데이터를 가져오는 곳';
+
+  @override
+  String settingsAppVersion(String version, String build, String variant) {
+    return '앱 버전: $version (빌드 $build) · $variant';
+  }
+
+  @override
+  String get dataSourcesFutures => '선물 시세';
+
+  @override
+  String get dataSourcesEtp => 'ETP';
+
+  @override
+  String get dataSourcesExchangeLabel => '거래소';
+
+  @override
+  String get dataSourcesExchangeValue => 'CME Group (NYMEX·COMEX)';
+
+  @override
+  String get dataSourcesSettlementLabel => '정산가·거래량';
+
+  @override
+  String get dataSourcesSettlementValue => 'Massive · 장 마감 후 반영';
+
+  @override
+  String get dataSourcesIntradayLabel => '장중 시세';
+
+  @override
+  String get dataSourcesIntradayValue => 'Yahoo Finance · 약 10분 지연';
+
+  @override
+  String get dataSourcesHistoryLabel => '과거 일봉';
+
+  @override
+  String get dataSourcesHistoryValue => 'Databento (2010-06~)';
+
+  @override
+  String get dataSourcesEtpKrLabel => '국내';
+
+  @override
+  String get dataSourcesEtpKrValue => '네이버 증권, KRX';
+
+  @override
+  String get dataSourcesEtpUsLabel => '미국';
+
+  @override
+  String get dataSourcesEtpUsValue => 'Nasdaq, Yahoo Finance';
+
+  @override
+  String get dataSourcesNotice =>
+      '롤 규칙: S&P GSCI·Bloomberg 지수 방법론을 따라 앱이 계산한 값입니다. 개인 참고용이며 정확성을 보장하지 않고, 투자 권유가 아닙니다.';
+
+  @override
+  String get alertSettingsTitle => '알림 설정';
+
+  @override
+  String get alertSettingsCommodity => '대상 원자재';
+
+  @override
+  String get alertSettingsCommodityNone => '없음';
+
+  @override
+  String get alertSettingsCriteria => '현재 적용 기준';
+
+  @override
+  String alertSettingsCriteriaChart(String basis, int maPeriod, String window) {
+    return '기준값 $basis · $maPeriod일선 · $window';
+  }
+
+  @override
+  String alertSettingsCriteriaWindowYears(String years) {
+    return '$years년';
+  }
+
+  @override
+  String alertSettingsCriteriaLevels(String levels) {
+    return '레벨 $levels% (위·아래)';
+  }
+
+  @override
+  String get alertSettingsQuietTime => '알림 거부 시간';
+
+  @override
+  String get alertSettingsQuietStart => '시작';
+
+  @override
+  String get alertSettingsQuietEnd => '종료';
+
+  @override
+  String alertSettingsQuietNextDay(String time) {
+    return '다음 날 $time';
+  }
+
+  @override
+  String get alertSettingsQuietNote =>
+      '이 시간에 생긴 알림은 종료 시각에 방향별로 가장 드문 1건만 보냅니다.';
+
+  @override
+  String get alertSettingsGuide =>
+      '장중 15분마다 확인하며 레벨별로 CME 거래일당 1회 알려 드립니다. 차트의 rare-level 선에 오늘 봉의 꼬리가 닿으면 알립니다(장중 터치 기준이라 p%보다 자주 울릴 수 있음).';
 }

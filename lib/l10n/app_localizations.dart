@@ -98,36 +98,6 @@ abstract class AppLocalizations {
     Locale('ko'),
   ];
 
-  /// 2단계 임시 dev 화면 제목. 3단계 B-b·A 화면이 생기면 지운다
-  ///
-  /// In ko, this message translates to:
-  /// **'서버 연결 확인'**
-  String get devHealthTitle;
-
-  /// No description provided for @devHealthVariant.
-  ///
-  /// In ko, this message translates to:
-  /// **'변형: {variant}'**
-  String devHealthVariant(String variant);
-
-  /// No description provided for @devHealthServer.
-  ///
-  /// In ko, this message translates to:
-  /// **'서버: {url}'**
-  String devHealthServer(String url);
-
-  /// No description provided for @devHealthOk.
-  ///
-  /// In ko, this message translates to:
-  /// **'연결됨 (status {status}, commit {commit})'**
-  String devHealthOk(String status, String commit);
-
-  /// No description provided for @devHealthFailed.
-  ///
-  /// In ko, this message translates to:
-  /// **'연결 실패: {error}'**
-  String devHealthFailed(String error);
-
   /// No description provided for @retry.
   ///
   /// In ko, this message translates to:
@@ -829,6 +799,402 @@ abstract class AppLocalizations {
   /// In ko, this message translates to:
   /// **'자동 수집 정보 · 원문 언어로 표시'**
   String get etpSourceNote;
+
+  /// No description provided for @done.
+  ///
+  /// In ko, this message translates to:
+  /// **'완료'**
+  String get done;
+
+  /// No description provided for @settingsReset.
+  ///
+  /// In ko, this message translates to:
+  /// **'초기화'**
+  String get settingsReset;
+
+  /// No description provided for @settingsResetTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'설정 초기화'**
+  String get settingsResetTitle;
+
+  /// No description provided for @settingsResetMessage.
+  ///
+  /// In ko, this message translates to:
+  /// **'표시·이격도차트 설정을 기본값으로 되돌릴까요? 알림 설정과 접근 키는 그대로입니다.'**
+  String get settingsResetMessage;
+
+  /// No description provided for @settingsAlerts.
+  ///
+  /// In ko, this message translates to:
+  /// **'알림'**
+  String get settingsAlerts;
+
+  /// No description provided for @settingsAccessKey.
+  ///
+  /// In ko, this message translates to:
+  /// **'접근 키'**
+  String get settingsAccessKey;
+
+  /// No description provided for @settingsAccessKeySaved.
+  ///
+  /// In ko, this message translates to:
+  /// **'설정됨'**
+  String get settingsAccessKeySaved;
+
+  /// No description provided for @settingsDataSources.
+  ///
+  /// In ko, this message translates to:
+  /// **'데이터 출처'**
+  String get settingsDataSources;
+
+  /// No description provided for @settingsLanguage.
+  ///
+  /// In ko, this message translates to:
+  /// **'언어'**
+  String get settingsLanguage;
+
+  /// No description provided for @settingsUpDownStyle.
+  ///
+  /// In ko, this message translates to:
+  /// **'등락 색'**
+  String get settingsUpDownStyle;
+
+  /// No description provided for @settingsUpDownStyleKr.
+  ///
+  /// In ko, this message translates to:
+  /// **'한국식'**
+  String get settingsUpDownStyleKr;
+
+  /// No description provided for @settingsUpDownStyleUs.
+  ///
+  /// In ko, this message translates to:
+  /// **'미국식'**
+  String get settingsUpDownStyleUs;
+
+  /// 언어 이름은 그 언어로 쓴다
+  ///
+  /// In ko, this message translates to:
+  /// **'한국어'**
+  String get settingsLanguageKo;
+
+  /// 언어 이름은 그 언어로 쓴다
+  ///
+  /// In ko, this message translates to:
+  /// **'English'**
+  String get settingsLanguageEn;
+
+  /// No description provided for @settingsSectionGeneral.
+  ///
+  /// In ko, this message translates to:
+  /// **'일반'**
+  String get settingsSectionGeneral;
+
+  /// No description provided for @settingsSectionDisparity.
+  ///
+  /// In ko, this message translates to:
+  /// **'이격도차트'**
+  String get settingsSectionDisparity;
+
+  /// No description provided for @settingsSectionOther.
+  ///
+  /// In ko, this message translates to:
+  /// **'기타'**
+  String get settingsSectionOther;
+
+  /// No description provided for @settingsBasis.
+  ///
+  /// In ko, this message translates to:
+  /// **'차트 기준값'**
+  String get settingsBasis;
+
+  /// No description provided for @settingsMaPeriod.
+  ///
+  /// In ko, this message translates to:
+  /// **'기준 이평선(일)'**
+  String get settingsMaPeriod;
+
+  /// No description provided for @settingsWindow.
+  ///
+  /// In ko, this message translates to:
+  /// **'분포 기간(년)'**
+  String get settingsWindow;
+
+  /// No description provided for @settingsWindowAll.
+  ///
+  /// In ko, this message translates to:
+  /// **'전체'**
+  String get settingsWindowAll;
+
+  /// No description provided for @settingsAlertOff.
+  ///
+  /// In ko, this message translates to:
+  /// **'끔'**
+  String get settingsAlertOff;
+
+  /// No description provided for @settingsRareLevels.
+  ///
+  /// In ko, this message translates to:
+  /// **'rare-level(%)'**
+  String get settingsRareLevels;
+
+  /// No description provided for @settingsRareLevelField.
+  ///
+  /// In ko, this message translates to:
+  /// **'rare-level {index}'**
+  String settingsRareLevelField(int index);
+
+  /// No description provided for @settingsRareLevelHint.
+  ///
+  /// In ko, this message translates to:
+  /// **'{min}~{max}, 소수 첫째 자리, 서로 다른 {count}개'**
+  String settingsRareLevelHint(String min, String max, int count);
+
+  /// No description provided for @settingsRareLevelInvalid.
+  ///
+  /// In ko, this message translates to:
+  /// **'{min}~{max} 사이 값을 소수 첫째 자리까지 입력해 주세요.'**
+  String settingsRareLevelInvalid(String min, String max);
+
+  /// No description provided for @settingsRareLevelDuplicate.
+  ///
+  /// In ko, this message translates to:
+  /// **'서로 다른 값 {count}개를 입력해 주세요.'**
+  String settingsRareLevelDuplicate(int count);
+
+  /// No description provided for @settingsSaveFailed.
+  ///
+  /// In ko, this message translates to:
+  /// **'저장하지 못했습니다. {reason}'**
+  String settingsSaveFailed(String reason);
+
+  /// No description provided for @settingsLanguageDesc.
+  ///
+  /// In ko, this message translates to:
+  /// **'화면과 푸시 알림 문구의 언어'**
+  String get settingsLanguageDesc;
+
+  /// No description provided for @settingsUpDownStyleDesc.
+  ///
+  /// In ko, this message translates to:
+  /// **'한국식은 상승 빨강·하락 파랑, 미국식은 상승 초록·하락 빨강'**
+  String get settingsUpDownStyleDesc;
+
+  /// No description provided for @settingsBasisDesc.
+  ///
+  /// In ko, this message translates to:
+  /// **'차트와 알림에 쓰는 월물. 대표월물은 거래량이 가장 많은 월물, 한국형·미국형은 국내·미국 ETP의 롤 규칙'**
+  String get settingsBasisDesc;
+
+  /// No description provided for @settingsMaPeriodDesc.
+  ///
+  /// In ko, this message translates to:
+  /// **'이격도를 재는 기준 이동평균 기간'**
+  String get settingsMaPeriodDesc;
+
+  /// No description provided for @settingsWindowDesc.
+  ///
+  /// In ko, this message translates to:
+  /// **'드문 정도를 판단할 과거 이격도 기간'**
+  String get settingsWindowDesc;
+
+  /// No description provided for @settingsRareLevelsDesc.
+  ///
+  /// In ko, this message translates to:
+  /// **'과거 이격도의 위·아래 끝 몇 %를 차트 밴드로 그리고, 닿으면 알림을 보냅니다'**
+  String get settingsRareLevelsDesc;
+
+  /// No description provided for @settingsAlertsDesc.
+  ///
+  /// In ko, this message translates to:
+  /// **'rare-level 도달 알림을 받을 원자재와 알림 거부 시간'**
+  String get settingsAlertsDesc;
+
+  /// No description provided for @settingsAccessKeyDesc.
+  ///
+  /// In ko, this message translates to:
+  /// **'서버에 접속하는 비밀 키'**
+  String get settingsAccessKeyDesc;
+
+  /// No description provided for @settingsDataSourcesDesc.
+  ///
+  /// In ko, this message translates to:
+  /// **'시세와 데이터를 가져오는 곳'**
+  String get settingsDataSourcesDesc;
+
+  /// B 최하단 줄. OTA가 없어 RN 앱 번들 줄 대신 설치한 빌드를 보인다(FL-031)
+  ///
+  /// In ko, this message translates to:
+  /// **'앱 버전: {version} (빌드 {build}) · {variant}'**
+  String settingsAppVersion(String version, String build, String variant);
+
+  /// No description provided for @dataSourcesFutures.
+  ///
+  /// In ko, this message translates to:
+  /// **'선물 시세'**
+  String get dataSourcesFutures;
+
+  /// No description provided for @dataSourcesEtp.
+  ///
+  /// In ko, this message translates to:
+  /// **'ETP'**
+  String get dataSourcesEtp;
+
+  /// No description provided for @dataSourcesExchangeLabel.
+  ///
+  /// In ko, this message translates to:
+  /// **'거래소'**
+  String get dataSourcesExchangeLabel;
+
+  /// No description provided for @dataSourcesExchangeValue.
+  ///
+  /// In ko, this message translates to:
+  /// **'CME Group (NYMEX·COMEX)'**
+  String get dataSourcesExchangeValue;
+
+  /// No description provided for @dataSourcesSettlementLabel.
+  ///
+  /// In ko, this message translates to:
+  /// **'정산가·거래량'**
+  String get dataSourcesSettlementLabel;
+
+  /// No description provided for @dataSourcesSettlementValue.
+  ///
+  /// In ko, this message translates to:
+  /// **'Massive · 장 마감 후 반영'**
+  String get dataSourcesSettlementValue;
+
+  /// No description provided for @dataSourcesIntradayLabel.
+  ///
+  /// In ko, this message translates to:
+  /// **'장중 시세'**
+  String get dataSourcesIntradayLabel;
+
+  /// No description provided for @dataSourcesIntradayValue.
+  ///
+  /// In ko, this message translates to:
+  /// **'Yahoo Finance · 약 10분 지연'**
+  String get dataSourcesIntradayValue;
+
+  /// No description provided for @dataSourcesHistoryLabel.
+  ///
+  /// In ko, this message translates to:
+  /// **'과거 일봉'**
+  String get dataSourcesHistoryLabel;
+
+  /// No description provided for @dataSourcesHistoryValue.
+  ///
+  /// In ko, this message translates to:
+  /// **'Databento (2010-06~)'**
+  String get dataSourcesHistoryValue;
+
+  /// No description provided for @dataSourcesEtpKrLabel.
+  ///
+  /// In ko, this message translates to:
+  /// **'국내'**
+  String get dataSourcesEtpKrLabel;
+
+  /// No description provided for @dataSourcesEtpKrValue.
+  ///
+  /// In ko, this message translates to:
+  /// **'네이버 증권, KRX'**
+  String get dataSourcesEtpKrValue;
+
+  /// No description provided for @dataSourcesEtpUsLabel.
+  ///
+  /// In ko, this message translates to:
+  /// **'미국'**
+  String get dataSourcesEtpUsLabel;
+
+  /// No description provided for @dataSourcesEtpUsValue.
+  ///
+  /// In ko, this message translates to:
+  /// **'Nasdaq, Yahoo Finance'**
+  String get dataSourcesEtpUsValue;
+
+  /// No description provided for @dataSourcesNotice.
+  ///
+  /// In ko, this message translates to:
+  /// **'롤 규칙: S&P GSCI·Bloomberg 지수 방법론을 따라 앱이 계산한 값입니다. 개인 참고용이며 정확성을 보장하지 않고, 투자 권유가 아닙니다.'**
+  String get dataSourcesNotice;
+
+  /// No description provided for @alertSettingsTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'알림 설정'**
+  String get alertSettingsTitle;
+
+  /// No description provided for @alertSettingsCommodity.
+  ///
+  /// In ko, this message translates to:
+  /// **'대상 원자재'**
+  String get alertSettingsCommodity;
+
+  /// No description provided for @alertSettingsCommodityNone.
+  ///
+  /// In ko, this message translates to:
+  /// **'없음'**
+  String get alertSettingsCommodityNone;
+
+  /// No description provided for @alertSettingsCriteria.
+  ///
+  /// In ko, this message translates to:
+  /// **'현재 적용 기준'**
+  String get alertSettingsCriteria;
+
+  /// No description provided for @alertSettingsCriteriaChart.
+  ///
+  /// In ko, this message translates to:
+  /// **'기준값 {basis} · {maPeriod}일선 · {window}'**
+  String alertSettingsCriteriaChart(String basis, int maPeriod, String window);
+
+  /// No description provided for @alertSettingsCriteriaWindowYears.
+  ///
+  /// In ko, this message translates to:
+  /// **'{years}년'**
+  String alertSettingsCriteriaWindowYears(String years);
+
+  /// No description provided for @alertSettingsCriteriaLevels.
+  ///
+  /// In ko, this message translates to:
+  /// **'레벨 {levels}% (위·아래)'**
+  String alertSettingsCriteriaLevels(String levels);
+
+  /// No description provided for @alertSettingsQuietTime.
+  ///
+  /// In ko, this message translates to:
+  /// **'알림 거부 시간'**
+  String get alertSettingsQuietTime;
+
+  /// No description provided for @alertSettingsQuietStart.
+  ///
+  /// In ko, this message translates to:
+  /// **'시작'**
+  String get alertSettingsQuietStart;
+
+  /// No description provided for @alertSettingsQuietEnd.
+  ///
+  /// In ko, this message translates to:
+  /// **'종료'**
+  String get alertSettingsQuietEnd;
+
+  /// No description provided for @alertSettingsQuietNextDay.
+  ///
+  /// In ko, this message translates to:
+  /// **'다음 날 {time}'**
+  String alertSettingsQuietNextDay(String time);
+
+  /// No description provided for @alertSettingsQuietNote.
+  ///
+  /// In ko, this message translates to:
+  /// **'이 시간에 생긴 알림은 종료 시각에 방향별로 가장 드문 1건만 보냅니다.'**
+  String get alertSettingsQuietNote;
+
+  /// No description provided for @alertSettingsGuide.
+  ///
+  /// In ko, this message translates to:
+  /// **'장중 15분마다 확인하며 레벨별로 CME 거래일당 1회 알려 드립니다. 차트의 rare-level 선에 오늘 봉의 꼬리가 닿으면 알립니다(장중 터치 기준이라 p%보다 자주 울릴 수 있음).'**
+  String get alertSettingsGuide;
 }
 
 class _AppLocalizationsDelegate

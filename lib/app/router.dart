@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:futureetp/core/api/access_key.dart';
 import 'package:futureetp/core/api/models/enums.dart';
 import 'package:futureetp/features/access_key/access_key_screen.dart';
+import 'package:futureetp/features/alert_settings/alert_settings_screen.dart';
 import 'package:futureetp/features/commodity/commodity_shell.dart';
 import 'package:futureetp/features/commodity/commodity_tab.dart';
 import 'package:futureetp/features/commodity/contract_chart/contract_chart_tab.dart';
@@ -13,7 +14,8 @@ import 'package:futureetp/features/commodity/disparity_chart/disparity_chart_tab
 import 'package:futureetp/features/commodity/etp/etp_detail_screen.dart';
 import 'package:futureetp/features/commodity/etp/etp_list_tab.dart';
 import 'package:futureetp/features/commodity_list/commodity_list_screen.dart';
-import 'package:futureetp/features/dev_health/health_screen.dart';
+import 'package:futureetp/features/data_sources/data_sources_screen.dart';
+import 'package:futureetp/features/settings/settings_screen.dart';
 import 'package:go_router/go_router.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -23,6 +25,8 @@ abstract final class AppRoutes {
   static const home = '/';
   static const settings = '/settings';
   static const accessKey = '/settings/access-key';
+  static const alerts = '/settings/alerts';
+  static const dataSources = '/settings/data-sources';
 
   /// C-d-a ETP 상세. C 탭 밖 스택이라 [←]가 C-d로 돌아간다(D-047).
   static String etp(String code, String id) => '/commodity/$code/etp/$id';
@@ -68,10 +72,22 @@ final routerProvider = Provider<GoRouter>((ref) {
           ),
         ],
       ),
-      // B 설정 자리. B 화면이 생기면 바꾼다(지금은 서버 연결 확인)
       GoRoute(
         path: AppRoutes.settings,
-        builder: (context, state) => const HealthScreen(),
+        builder: (context, state) => SettingsScreen(
+          onOpenAlerts: () => unawaited(context.push(AppRoutes.alerts)),
+          onOpenAccessKey: () => unawaited(context.push(AppRoutes.accessKey)),
+          onOpenDataSources: () =>
+              unawaited(context.push(AppRoutes.dataSources)),
+        ),
+      ),
+      GoRoute(
+        path: AppRoutes.alerts,
+        builder: (context, state) => const AlertSettingsScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.dataSources,
+        builder: (context, state) => const DataSourcesScreen(),
       ),
       GoRoute(
         path: AppRoutes.accessKey,
