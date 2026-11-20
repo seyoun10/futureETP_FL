@@ -304,3 +304,18 @@
   - 첫 기간 맞춤: 보이는 범위를 첫 프레임 전에 기간으로 정해 RN처럼 차트를 감출 동안이 없다. 첫 조회 중에는 `ChartSkeleton`(격자·칩 자리 + 가운데 스피너)이다.
 - 근거: RN과 같은 화면 결과를 Flutter 구조에 맞게 낸다. 행렬 대신 봉 순번 범위(FL-025)라 이어 붙이기·상세 배치·축 계산이 단순하다.
 - 영향: Android 에뮬레이터(API 37) dev 서버 데이터로 C-a 진입, 기간 칩, 십자선 상세, 이전 3년 연속 받기(2018년까지), 가로 모드를 확인했다(2026-11-19). 위젯 테스트로 기간·[↻]·핀치·끌기·이어 받기·시간 초과·실패·스켈레톤을 고정했다. C-b·C-c는 `lib/core/charts`의 축·상세·스켈레톤을 함께 쓴다.
+
+## FL-028: C-c 월물차트와 차트 코어 일반화
+- 날짜: 2026-11-20
+- 상태: 확정 (실기기 손동작·성능은 C-a와 함께 기기 설치 때 확인)
+- 맥락: TODO 4단계 C-c(screens.md C-c, D-092, D-093, D-104, D-107, D-113, D-117, D-118). FL-027의 `lib/core/charts`는 봉차트 전용(log 축 고정)이었다. RN은 선만 그리는 `LinesChart`를 따로 두고 `useChartViewport`를 함께 쓴다.
+- 결정:
+  - 차트 코어를 따로 두지 않고 일반화한다. `CandleSeries`·`CandleChart`·`CandlePainter`를 `ChartSeries`·`PriceChart`·`PricePainter`로 바꾸고 봉(`Candles`)을 선택으로 둔다. 선만 시리즈의 envelope는 선 값으로만 정하고, 십자선 가로선은 `crosshairPrices`(봉=종가, 선만=그날 값이 있는 첫 선=만기가 가장 가까운 월물)를 따라간다. 값이 없는 날은 가로선이 없다.
+  - y 범위는 `PriceRange`(`LogPriceRange`·`LinearPriceRange`)다. 봉차트는 늘 log, 선만은 전체 값에 0 이하가 있으면 선형이다(D-113, RN `axisOptions`). 눈금도 범위가 낸다(log는 d3 log `ticks`, 선형은 d3 `ticks`).
+  - `ChartDecor.labelsIn(first, last)`: C-a는 보이는 마지막 봉 값, C-c는 보이는 범위에서 선마다 마지막 값(D-093)을 선 색으로 준다. 현재가 점선과 고가·저가 꼬리표는 봉이 있을 때만 그린다(`extremeText` 선택).
+  - C-a·C-c 탭의 기간·[↻]·이전 3년 받기 흐름은 `features/commodity/chart_tab.dart`의 `ChartTabState` mixin으로 옮겨 함께 쓴다. 기간은 각 탭 State라 C-a와 따로 기억한다(D-107). 차트 캐시 1시간은 `core/query/keep_alive.dart`의 `keepAliveFor`.
+  - C-c 조회(`ContractChartNotifier`, family by 원자재): 설정과 상관없이 최근 3년, `loadOlder`로 `before` 이전 3년. 병합은 RN `mergeContractPages`와 같게 월물 목록은 최근 응답을 따르고 이전 응답에 없는 월물은 null로 채운다. 새로고침은 최근 3년만 받고 과거 날짜를 이어 붙인다(C-a와 같은 방식).
+  - 범례(선 견본 `LegendLine` + 월물명, 대표월물 `●`은 `textSecondary`)는 차트 위 반투명 줄이다. 좁으면 Wrap으로 여러 줄이 되고, 선은 Wrap과 같은 규칙으로 센 줄 수만큼 비켜 그린다(D-117). 우측 y축 자리는 선마다 글자가 가장 긴 값으로 정해 이동해도 바뀌지 않는다.
+  - 상세 박스: 날짜(오늘 잠정이면 `(잠정)`), 그날 값이 있는 월물별 가격(선 색, `DetailRow.mark`로 회색 `●`), 양끝 월물 연환산 롤 수익률(`chartPerYear`, C-b도 쓴다).
+- 근거: 제스처·축·상세 배치를 두 벌로 두지 않는다. RN이 `LinesChart`를 따로 둔 이유(victory-native `CartesianChart` 입력 차이)는 `CustomPainter` 구조에 없다.
+- 영향: Android 에뮬레이터(API 37) dev 서버 데이터로 NG C-c 진입, 범례·끝값 라벨, 십자선 상세(롤 수익률), 이전 3년 연속 받기를 확인했다(2026-11-20). 위젯·단위 테스트로 범례, 끝값 라벨, 상세, 선형 축, 이어 받기, 병합을 고정했다. FL-025·FL-027의 `CandleChart` 등은 이 이름 변경 전 기록이다.
