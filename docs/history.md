@@ -47,3 +47,4 @@
 - [x] C-b 월물커브: `GET /v1/commodities/:code/curve?baseDate`, 기준일 휠 시트, 이전·다음 기준일, [↻], 변화율 라벨 배치, 롤 수익률, 휴장일 옮김 안내 (D-090, D-091, D-114~D-123) (2026-11-20, FL-029. Android 에뮬레이터 API 37 dev 서버로 확인, Android도 휠 시트로 바꿈)
 - [x] C-d ETP 목록(필터·정렬은 앱에서)·C-d-a 상세: `GET /v1/commodities/:code/etps`·`GET /v1/etps/:id`, 세그먼트 필터·정렬 값, 수집 시각 줄, 시리즈 줄, 운용사 페이지 열기 (D-017, D-047) (2026-11-20, FL-030. 위젯 테스트로 확인, 기기 확인은 TODO에 남김)
 - [x] B 설정·B-a 알림 설정·데이터 출처: 직렬·낙관적 PATCH, rare-level 입력 검증·정렬 저장, [초기화], 알림 대상·거부 시간 시트, 알림 대상이 바뀌면 A 목록 다시 받기, B-b title-bar `ScreenHeader`, 앱 버전 줄 (D-081~D-083, D-124) (2026-11-20, FL-031. 위젯 테스트로 확인, 기기 확인·권한 배너는 TODO에 남김)
+- [x] 화면별 세부 동작을 `../futureETP/docs/wireframes/screens.md`와 대조(A·B·B-a·B-b·C·C-a~C-d-a·공통 규칙, X 푸시는 5단계). 고친 차이: C-a·C-c 가로 격자·y 눈금·롤 음영을 위 정보 줄 뒤까지, C-a·C-c [↻]를 C-b와 같은 전체 폭 가운데로, C-a 기준값 안내를 둘째 줄 위에 띄움, C-a 저점대비·고점대비를 화면에 걸친 봉까지 셈(RN `visibleRange`) (D-117) (2026-11-20)

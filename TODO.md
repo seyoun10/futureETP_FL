@@ -14,7 +14,6 @@
   - [ ] C-d·C-d-a Android 에뮬레이터 dev 서버 확인: 필터·정렬·수집 시각 줄·상세·운용사 페이지 열기(`url_launcher` 네이티브 빌드 포함, FL-030)
   - [ ] C-a·C-b·C-c 실기기 확인: 핀치·드래그·십자선 손동작, 햅틱 촉감, 성능, 기준일 휠 시트(FL-025·FL-027~FL-029, 기기 설치 때)
   - [ ] B·B-a 기기 확인: rare-level 키패드(iOS [완료] 줄·Android 완료 키·뒤로 버튼·끌어서 닫기), 저장·오류 줄, 거부 시간 시트, 앱 버전 줄(FL-031)
-- [ ] 화면별 세부 동작은 `../futureETP/docs/wireframes/screens.md`와 하나씩 대조
 
 ## 5. 푸시
 - [ ] Android FCM 토큰 등록·알림 권한·채널(RN과 같은 채널 ID)
