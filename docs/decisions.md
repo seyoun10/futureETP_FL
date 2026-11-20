@@ -336,7 +336,7 @@
 
 ## FL-030: C-d ETP 목록과 C-d-a ETP 상세
 - 날짜: 2026-11-20
-- 상태: 확정 (Android 에뮬레이터 dev 서버 확인은 남김)
+- 상태: 확정
 - 맥락: TODO 4단계 C-d·C-d-a(screens.md C-d·C-d-a, D-017, D-047). RN은 `EtpListScreen`(FlatList + 머리 필터)·`EtpDetailScreen`(탭 밖 스택), 필터·정렬은 `etpListModel`, 조회는 react-query 기본값(자동 새로고침 없음, 앱 복귀 때 오래된 값 재조회, gcTime 5분)이다.
 - 결정:
   - 조회: `etpListProvider(code)`·`etpDetailProvider(id)`는 `AutoRefreshNotifier`에 `nextUpdateAt` 없이 둔다(자동 새로고침 없음, 앱 복귀 재조회). 화면을 떠나도 5분 둔다(RN gcTime 기본값).
@@ -346,7 +346,7 @@
   - 수집 시각은 C 껍데기 기준 시각 줄에 `FreshnessLine.asOfOnly`로 쓴다(수집 전 null이면 빈 줄).
   - C-d-a는 A 아래 `commodity/:code/etp/:id` 경로로 C 탭 shell 밖에 둔다. C-d에서 `push`하므로 [←]·Android 뒤로가 C-d로 돌아오고, C-d의 필터 상태도 남는다. 운용사 페이지는 `url_launcher`로 외부 브라우저에서 열고, http·https 주소만 버튼을 보인다(RN `isWebUrl`). 화면은 여는 함수를 받아(router가 `launchUrl`을 넘김) 테스트에서 바꾼다.
 - 근거: RN 화면 결과와 같게, 원본에 없는 동작은 넣지 않는다.
-- 영향: `url_launcher` 의존성 추가(tech-stack). 빈 C 탭 자리 `TabPlaceholder`는 지웠다.
+- 영향: `url_launcher` 의존성 추가(tech-stack). 빈 C 탭 자리 `TabPlaceholder`는 지웠다. Android 에뮬레이터(API 37, dev 서버, 2026-11-20)에서 CL C-d 기본 정렬·수집 시각 줄, 시장·유형·배수·환헤지 필터와 빈 결과 안내, 순자산·거래대금 정렬(시장 안, 값 붙임), C-d-a 상세·ETN 시리즈 두 줄, [운용사 페이지 열기]로 Chrome이 열리는 것을 확인했다.
 
 ## FL-031: B 설정·B-a 알림 설정·데이터 출처
 - 날짜: 2026-11-20
@@ -365,7 +365,7 @@
 
 ## FL-032: Android 푸시 등록·앱 사용 중 표시·알림 탭 이동
 - 날짜: 2026-11-20
-- 상태: 확정 (에뮬레이터·실기기 수신 확인은 기기 확인 때, iOS는 FL-011)
+- 상태: 확정 (실기기 수신 확인은 기기 설치 때, iOS는 FL-011)
 - 맥락: TODO 5단계(D-037, D-045, D-120, screens.md X). RN은 `expo-notifications` 하나로 채널·권한·네이티브 토큰·앱 사용 중 표시(`setNotificationHandler`)·탭 응답을 다룬다. 서버는 notification 메시지에 `android.notification.channelId`(`alerts`·`ops`)를 넣어 FCM 등록 토큰(`token`)으로 보낸다(`apps/server/src/push/fcmSender.ts`).
 - 결정:
   - 패키지: `firebase_core` 5.2.0 + `firebase_messaging` 17.1.0(토큰·탭·앱 사용 중 수신), `flutter_local_notifications` 23.0.3(채널 생성·앱 사용 중 표시. FCM은 앱을 보고 있을 때 표시하지 않는다). Firebase 설정은 Gradle `com.google.gms.google-services` 4.6.0이 `android/app/google-services.json`(RN `apps/mobile`과 같은 파일, dev·prod package가 함께 들어 있음, 커밋 안 함)에서 만든다. `flutterfire configure`·`firebase_options.dart`는 쓰지 않는다(API 키를 커밋하지 않음).
@@ -376,11 +376,11 @@
   - 탭 이동 `notificationTapsProvider`(`app/notification_taps.dart`): 라우터가 필요해 app 계층에 둔다. 실행한 알림(FCM `getInitialMessage`, 앱 사용 중 띄운 로컬 알림의 launch details)과 앱이 켜져 있을 때 누른 알림을 `notificationCommodity`(RN `notificationHref`)로 C-a 또는 A로 보낸다. C는 A 아래 경로라 [←]가 A로 간다.
   - 앱 사용 중 표시는 서버가 지정한 채널(모르면 `alerts`)로 띄운다. 배지는 쓰지 않는다(채널 `showBadge: false`). 작은 아이콘은 앱 아이콘(`@mipmap/ic_launcher`)이다(RN도 아이콘을 따로 지정하지 않음).
 - 근거: RN 동작(등록 시점·토큰 규칙·탭 대상)을 그대로 따르고, 플랫폼 API 차이만 이 저장소에서 메운다.
-- 영향: dev debug APK 빌드로 Gradle 설정을 확인했다. 가짜 `PushService`로 등록·채널 이름·토큰 변경·키 변경·탭 이동을 테스트로 고정했다. 실제 FCM 수신·권한 창·알림 표시·탭은 에뮬레이터에서 확인하지 않았다. B-a 알림 권한 배너는 FL-033.
+- 영향: dev debug APK 빌드로 Gradle 설정을 확인했다. 가짜 `PushService`로 등록·채널 이름·토큰 변경·키 변경·탭 이동을 테스트로 고정했다. Android 에뮬레이터(API 37, dev 서버, 서버 `createFcmSender`로 직접 발송, 2026-11-20): 시작 때 권한 창, 거부해도 토큰 등록(`fl-1.0.0`), 앱 사용 중 `alerts` 알림(중요도 높음) 표시, 배경 `ops` 알림(중요도 기본, RN과 같음) 표시, 알림 탭으로 앱 사용 중·배경은 GC C-a·A, 프로세스 종료 상태는 NG C-a로 열리고 [←]로 A를 확인했다. B-a 알림 권한 배너는 FL-033.
 
 ## FL-033: B-a 알림 권한 배너
 - 날짜: 2026-11-20
-- 상태: 확정 (권한 창·설정 열기·복귀 후 다시 읽기는 Android 푸시 기기 확인 때, iOS는 FL-011)
+- 상태: 확정 (iOS는 FL-011)
 - 맥락: TODO 5단계(screens.md B-a "권한 배너 버튼"). RN `usePushPermission`은 `expo-notifications`의 `granted`·`canAskAgain`을 읽고, 앱이 다시 활성화될 때마다 새로 읽으며, 다시 물을 수 있으면 권한 창, 아니면 `Linking.openSettings()`다. Flutter의 `firebase_messaging`은 "다시 물을 수 있는지"를 주지 않는다.
 - 결정:
   - 패키지 `permission_handler` 13.0.2(2026-09-04 pub.dev)의 `Permission.notification`으로 상태 조회·요청, `openAppSettings()`로 앱 설정 화면을 연다. 시작 때 푸시 등록의 권한 요청도 같은 패키지로 바꿔 요청 결과를 한곳에서 본다.
@@ -388,7 +388,7 @@
   - `PushService`에 `getPermission`·`requestPermission`(결과 반환)·`openSettings`를 둔다. `NoPushService`(Apple 가입 전 iOS)는 null이라 배너를 숨긴다.
   - 상태는 `pushPermissionProvider`(`core/push/push_permission.dart`, autoDispose)가 갖고, `AppLifecycleListener`로 resumed마다 다시 읽는다. B-a 맨 위 `_PermissionBanner`는 권한이 꺼졌을 때만 보이고 확인 전에는 숨긴다(RN과 같음).
 - 근거: RN 동작과 문구를 따르고, Android의 영구 거부 판정 한계만 요청 결과 기억으로 메운다.
-- 영향: dev debug APK 빌드로 네이티브 플러그인을 확인했다. 가짜 `PushService`로 숨김·[허용]·영구 거부 뒤 [설정 열기]·복귀 후 다시 읽기를 위젯 테스트로 고정했다. 실제 권한 창은 에뮬레이터에서 확인하지 않았다.
+- 영향: dev debug APK 빌드로 네이티브 플러그인을 확인했다. 가짜 `PushService`로 숨김·[허용]·영구 거부 뒤 [설정 열기]·복귀 후 다시 읽기를 위젯 테스트로 고정했다. Android 에뮬레이터(API 37, 2026-11-20)에서 한 번 거부 뒤 [허용] → 권한 창 → 허용하면 배너가 사라짐, 두 번 거부 뒤 [설정 열기] → OS 앱 설정, 켜고 돌아오면 사라짐을 확인했다. 이때 앱 테마의 `FilledButton` 최소 크기(`Size.fromHeight`, 가로 무한대)가 배너 `Row`에서 레이아웃 예외를 내 배너가 그려지지 않던 것을 찾아, 배너 버튼만 가로 최소 0으로 고쳤다. 위젯 테스트가 앱 테마 없이 돌아 놓쳤으므로 B-a 테스트는 `buildAppTheme()`을 쓴다.
 
 ## FL-034: Android release 빌드 — RN과 같은 서명 키, versionCode 10000 + 커밋 수, arm64-v8a만
 - 날짜: 2026-11-20
