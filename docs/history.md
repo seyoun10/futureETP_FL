@@ -52,3 +52,6 @@
 ## 5. 푸시
 - [x] Android FCM 토큰 등록·알림 권한·채널(`alerts`·`ops`), `PUT /v1/devices`(`appVersion` `fl-<버전>`), 앱 사용 중 알림 표시, 알림 탭으로 C-a·A 이동. 에뮬레이터 수신 확인은 4단계 기기 확인으로 (D-037, D-045, D-120, FL-032) (2026-11-20)
 - [x] B-a 알림 권한 배너: 꺼져 있을 때만, 다시 물을 수 있으면 [허용] 아니면 [설정 열기], 앱 복귀 때 다시 읽음(`permission_handler`). 기기 확인은 4단계로 (screens.md B-a, FL-033) (2026-11-20)
+
+## 6. 기기 설치·운영
+- [x] Android release 서명(RN과 같은 키), versionCode 10000 + 커밋 수(RN 앱 위 덮어 설치), arm64-v8a만(27.4MB), `tool/build_android_release.sh` (D-039, FL-034) (2026-11-20)

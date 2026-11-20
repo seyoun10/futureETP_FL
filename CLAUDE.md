@@ -83,6 +83,7 @@ Flutter SDK는 `~/development/flutter`(stable, PATH는 `~/.zshrc`).
 - `cp ../futureETP/apps/mobile/google-services.json android/app/`: Android 빌드 전 처음 한 번(FCM 설정, 커밋 안 함, FL-032)
 - `cp env/dev.example.json env/dev.json`: 처음 한 번. 값이 비면 에뮬레이터 기본 주소(Android `http://10.0.2.2:3000`, iOS `http://localhost:3000`)
 - `flutter run --flavor dev --dart-define-from-file=env/dev.json`: dev 변형 실행. prod는 `--flavor prod`(env 파일 없이)
+- `./tool/build_android_release.sh`: prod release APK(RN과 같은 서명 키 `~/.config/futureetp/android-release.properties`, versionCode 10000 + 커밋 수, arm64-v8a만, FL-034). 결과 `build/app/outputs/flutter-apk/app-prod-release.apk`
 - `flutter analyze`: 정적 분석(`analysis_options.yaml`, very_good_analysis)
 - `dart format lib test`: 포맷
 - `flutter test`: 전체 테스트(`test/architecture/`의 import 방향 검사 포함). 단일: `flutter test test/<파일> --name "<이름>"`

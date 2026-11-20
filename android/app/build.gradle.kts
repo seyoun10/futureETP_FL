@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     id("com.android.application")
     // FCM(D-037). android/app/google-services.json이 있어야 빌드된다(RN apps/mobile과 같은 파일, FL-032)
@@ -34,6 +36,28 @@ android {
         versionName = flutter.versionName
     }
 
+    // release 서명 키는 RN과 같은 저장소 밖 키다(D-039). 같은 키라 RN 앱 위에 덮어 설치된다(FL-034).
+    // 경로는 gradle 속성 futureetp.signingProperties로 바꿀 수 있다. 파일이 없으면 release 빌드를 멈춘다:
+    // debug 키로 서명된 APK를 깔면 나중에 지우고 다시 깔아야 해서 접근 키가 사라진다.
+    val signingFile = file(
+        findProperty("futureetp.signingProperties")
+            ?: "${System.getProperty("user.home")}/.config/futureetp/android-release.properties",
+    )
+    val isReleaseTask = gradle.startParameter.taskNames.any { it.lowercase().contains("release") }
+    signingConfigs {
+        create("release") {
+            if (signingFile.exists()) {
+                val props = Properties().apply { signingFile.inputStream().use { load(it) } }
+                storeFile = file(props.getProperty("storeFile"))
+                storePassword = props.getProperty("storePassword")
+                keyAlias = props.getProperty("keyAlias")
+                keyPassword = props.getProperty("keyPassword")
+            } else if (isReleaseTask) {
+                throw GradleException("release signing file not found: $signingFile")
+            }
+        }
+    }
+
     // 변형(D-043, FL-002). 실행: flutter run --flavor dev --dart-define-from-file=env/dev.json
     flavorDimensions += "variant"
     productFlavors {
@@ -48,11 +72,17 @@ android {
         }
     }
 
+    // release lintVital은 끈다. 이 AGP의 lint가 JDK 21 API(List.removeLast)를 불러
+    // flutter jdk-dir(JDK 17)로는 plugin 모듈 분석에서 NoSuchMethodError로 멈춘다(FL-034)
+    lint {
+        checkReleaseBuilds = false
+    }
+
     buildTypes {
         release {
-            // TODO: Add your own signing config for the release build.
-            // Signing with the debug keys for now, so `flutter run --release` works.
-            signingConfig = signingConfigs.getByName("debug")
+            signingConfig = signingConfigs.getByName("release")
+            // 실기기·Apple Silicon 에뮬레이터가 모두 arm64라 arm64-v8a만 넣는다(D-039 보충과 같음)
+            ndk { abiFilters += "arm64-v8a" }
         }
     }
 }

@@ -21,6 +21,5 @@
 
 ## 6. 기기 설치·운영
 - [ ] prod 변형 release 빌드를 개인 기기에 설치하는 절차를 `docs/ops.md`(새로 만든다)에 기록
-- [ ] RN 앱과 같은 앱 ID라 바꿔 설치할 때 할 일(기존 앱 삭제, 접근 키 다시 입력, 기기 설정 다시 맞춤) 기록
+- [ ] RN 앱과 같은 앱 ID라 바꿔 설치할 때 할 일 기록(RN → FL은 같은 키·더 큰 versionCode라 덮어 설치, FL → RN은 삭제 뒤 설치·접근 키 다시 입력, FL-034)
 - [ ] 업데이트 배포 방식(OTA 없음, 재설치) 결정
-- [ ] Android release 서명(RN과 같은 키 `~/.config/futureetp/android-release.properties`면 RN 앱 위에 덮어 설치 가능, D-039)·`versionCode`(RN은 커밋 수)·arm64-v8a만 넣기

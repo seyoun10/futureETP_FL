@@ -389,3 +389,15 @@
   - 상태는 `pushPermissionProvider`(`core/push/push_permission.dart`, autoDispose)가 갖고, `AppLifecycleListener`로 resumed마다 다시 읽는다. B-a 맨 위 `_PermissionBanner`는 권한이 꺼졌을 때만 보이고 확인 전에는 숨긴다(RN과 같음).
 - 근거: RN 동작과 문구를 따르고, Android의 영구 거부 판정 한계만 요청 결과 기억으로 메운다.
 - 영향: dev debug APK 빌드로 네이티브 플러그인을 확인했다. 가짜 `PushService`로 숨김·[허용]·영구 거부 뒤 [설정 열기]·복귀 후 다시 읽기를 위젯 테스트로 고정했다. 실제 권한 창은 에뮬레이터에서 확인하지 않았다.
+
+## FL-034: Android release 빌드 — RN과 같은 서명 키, versionCode 10000 + 커밋 수, arm64-v8a만
+- 날짜: 2026-11-20
+- 상태: 확정 (기기 설치·RN 앱 위 덮어 설치는 기기 확인 때)
+- 맥락: TODO 6단계. 템플릿은 release를 debug 키로 서명한다. RN은 `~/.config/futureetp/android-release.jks`·`.properties`로 서명하고, `versionCode`는 커밋 수(`../futureETP`, 2026-11-20 502), 네이티브 라이브러리는 arm64-v8a만 넣는다(D-039 보충). 앱 ID가 같아(FL-002) 같은 키·더 큰 versionCode면 RN 앱 위에 덮어 설치되고 secure storage(접근 키)가 남는다.
+- 결정:
+  - `android/app/build.gradle.kts`의 `signingConfigs.release`가 RN과 같은 properties 파일(gradle 속성 `futureetp.signingProperties`로 바꿀 수 있음)을 읽는다. 파일이 없으면 release 작업에서 빌드를 멈춘다(RN과 같은 이유: debug 키 APK를 깔면 지우고 다시 깔아야 해서 접근 키가 사라진다).
+  - `versionCode`는 `tool/build_android_release.sh`가 `--build-number`로 `10000 + git rev-list --count HEAD`를 넘긴다. main에서만 빌드해 단조 증가하고 RN 값(수백)보다 항상 커서 RN 앱 위에 덮어 설치된다. 반대로 RN 앱으로 돌아가려면 versionCode가 낮아 지우고 설치해야 한다(접근 키 다시 입력).
+  - ABI는 release buildType의 `ndk.abiFilters`를 arm64-v8a만 두고, Flutter Gradle plugin이 `defaultConfig`에 넣는 3종(armeabi-v7a·arm64-v8a·x86_64)은 `android/gradle.properties`의 `disable-abi-filtering=true`로 끈다(둘이 합쳐져 plugin `.so`가 3종 다 들어갔다). 스크립트도 `--target-platform android-arm64`로 Dart AOT를 arm64만 만든다. APK 36.9MB → 27.4MB.
+  - release lintVital은 끈다(`lint.checkReleaseBuilds = false`). 이 AGP의 lint가 JDK 21 API(`List.removeLast`)를 불러 `flutter config --jdk-dir`(Zulu 17)로는 plugin 모듈 분석 중 `NoSuchMethodError`로 멈춘다. 정적 검사는 `./tool/check.sh`가 맡는다. Flutter JDK를 21 이상으로 올리면 다시 켤 수 있다.
+- 근거: RN 앱과 같은 키·더 큰 versionCode라 바꿔 설치할 때 데이터가 남는다. 전역 JDK 설정을 바꾸지 않고 이 저장소 안에서 끝난다.
+- 영향: `apksigner`로 인증서 `CN=futureETP`(SHA-256 `794211c6…`), `aapt2`로 versionCode 10062·`native-code: arm64-v8a`, 없는 서명 파일 경로로 빌드 실패를 확인했다.

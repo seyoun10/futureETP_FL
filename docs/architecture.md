@@ -68,6 +68,6 @@ docs/                            tech-stack, architecture, decisions
 공통 결정은 `../futureETP/docs/decisions.md`. 이 앱에 어떻게 적용하는지만 나눈다.
 
 - 그대로 적용: 제품·화면·API·UX 결정. 예) D-001~D-026(제품), D-036·D-042·D-044·D-048·D-072(API·에러·접근 키·자동 새로고침), D-075~D-086, D-090~D-093, D-102~D-125, D-137~D-139(화면 동작)
-- 플랫폼 수단으로 바꿔 적용: D-030(상태·패칭), D-031(스타일·테마), D-033(i18n), D-041(레이어), D-043·D-052(변형), D-073(표시 설정 저장), D-087(차트 부품), D-128(deprecated API 금지 → 이 언어의 deprecated 경고를 오류로)
+- 플랫폼 수단으로 바꿔 적용: D-030(상태·패칭), D-031(스타일·테마), D-033(i18n), D-041(레이어), D-043·D-052(변형), D-073(표시 설정 저장), D-087(차트 부품), D-128(deprecated API 금지 → 이 언어의 deprecated 경고를 오류로), D-039의 Android release 서명·ABI(FL-034)
 - 적용 안 함(RN·Expo 전용): D-027·D-029·D-032·D-050(Expo·Router·Victory·스캐폴딩), D-039의 EAS Update, D-054·D-140(jest-expo·Jest 캐시)
 - 판단이 애매하면 해당 D 항목을 읽고 `decisions.md`에 FL-xxx로 적용 방식을 적는다.
