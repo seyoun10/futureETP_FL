@@ -1,24 +1,25 @@
 import 'dart:math' as math;
 
-import 'package:futureetp/core/charts/candle_series.dart';
 import 'package:futureetp/core/charts/chart_layout.dart';
+import 'package:futureetp/core/charts/chart_series.dart';
 import 'package:futureetp/core/charts/chart_viewport.dart';
 import 'package:futureetp/core/theme/tokens.dart';
 import 'package:futureetp/core/util/format_number.dart';
 import 'package:material_ui/material_ui.dart';
 
-/// y축 특수 라벨(현재가·이평선·rare-level). 선 색으로 쓴다.
+/// y축 특수 라벨(현재가·이평선·rare-level·C-c 끝값). 선 색으로 쓴다.
 typedef PriceLabel = ({double price, Color color});
 
-/// 봉차트 둘레 표시(RN `YAxisLayer`·`XAxisLayer`·`ExtremeTagsLayer`·`RollLayer`).
+/// 차트 둘레 표시(RN `YAxisLayer`·`XAxisLayer`·`ExtremeTagsLayer`·`RollLayer`).
+/// 현재가 점선·고가·저가 꼬리표는 봉이 있을 때만 그린다.
 @immutable
 class ChartDecor {
   const new({
     required this.dates,
     required this.priceDecimals,
     required this.monthLabel,
-    required this.labelsAt,
-    required this.extremeText,
+    required this.labelsIn,
+    this.extremeText,
     this.rollShading = const [],
     this.switches = const [],
   });
@@ -30,11 +31,12 @@ class ChartDecor {
   /// x축 월 라벨: 1월은 연도, 나머지는 월 이름(D-121).
   final String Function(int year, int month) monthLabel;
 
-  /// 보이는 마지막 봉 순번 기준 특수 라벨(현재가 제외).
-  final List<PriceLabel> Function(int index) labelsAt;
+  /// 가운데가 화면 안에 있는 봉 `first`~`last` 기준 특수 라벨(현재가 제외).
+  /// C-a는 보이는 마지막 봉 값(이평선·rare-level), C-c는 범위 안 선마다 마지막 값이다(D-093).
+  final List<PriceLabel> Function(int first, int last) labelsIn;
 
-  /// 꼬리표 글자(화살표 제외). 인자는 종류와 그 봉 순번.
-  final String Function(ExtremeKind kind, int index) extremeText;
+  /// 봉차트 고가·저가 꼬리표 글자(화살표 제외). 인자는 종류와 그 봉 순번. 없으면 꼬리표가 없다.
+  final String Function(ExtremeKind kind, int index)? extremeText;
 
   /// 롤 기간 음영 [시작, 끝] 봉 순번(한국형·미국형).
   final List<(int, int)> rollShading;
@@ -52,7 +54,7 @@ class ChartFrame {
   final Rect full;
   final Rect plot;
   final ChartViewport viewport;
-  final LogPriceRange range;
+  final PriceRange range;
 
   double x(int i) => plot.left + viewport.xOf(i, plot.width);
   double y(double price) => plot.top + range.yOf(price, plot.height);
@@ -138,13 +140,12 @@ void paintDecorOver(
   Canvas canvas,
   ChartFrame f,
   ChartDecor decor,
-  CandleSeries series,
+  ChartSeries series,
 ) {
   final v = f.viewport;
   final lastIndex = v.count - 1;
+  final shownFirst = f.centerFirst.clamp(0, lastIndex);
   final shownLast = f.centerLast.clamp(0, lastIndex);
-  final lastClose = series.closes[lastIndex];
-  final shownClose = series.closes[shownLast];
 
   // 대표월물 전환일 세로 점선(차트 위아래 전체)
   final switchPaint = Paint()
@@ -160,6 +161,15 @@ void paintDecorOver(
       switchPaint,
     );
   }
+
+  final candles = series.candles;
+  if (candles == null) {
+    _yLabels(canvas, f, decor, decor.labelsIn(shownFirst, shownLast));
+    _xLabels(canvas, f, decor);
+    return;
+  }
+  final lastClose = candles.closes[lastIndex];
+  final shownClose = candles.closes[shownLast];
 
   // 보이는 마지막 봉 종가(회색) 위에 마지막 봉 종가(흰색). 같은 봉이면 흰색만
   final guides = [
@@ -183,10 +193,12 @@ void paintDecorOver(
     (price: lastClose, color: ChartColors.lastPrice),
     if (shownLast != lastIndex)
       (price: shownClose, color: ChartColors.currentPrice),
-    ...decor.labelsAt(shownLast),
+    ...decor.labelsIn(shownFirst, shownLast),
   ]);
   _xLabels(canvas, f, decor);
-  _extremeTags(canvas, f, decor, series, shownClose);
+  if (decor.extremeText case final text?) {
+    _extremeTags(canvas, f, text, candles, shownClose);
+  }
 }
 
 void _yLabels(
@@ -242,8 +254,8 @@ const _tagGap = 3.0;
 void _extremeTags(
   Canvas canvas,
   ChartFrame f,
-  ChartDecor decor,
-  CandleSeries series,
+  String Function(ExtremeKind kind, int index) extremeText,
+  Candles series,
   double guidePrice,
 ) {
   final i0 = f.centerFirst;
@@ -257,7 +269,7 @@ void _extremeTags(
   }
   final lineY = f.y(guidePrice);
   for (final (kind, index) in [(ExtremeKind.high, hi), (ExtremeKind.low, lo)]) {
-    final text = decor.extremeText(kind, index);
+    final text = extremeText(kind, index);
     final arrow = kind == ExtremeKind.high ? '↓' : '↑';
     final arrowWidth = chartText(arrow, ChartColors.extremeTag).width;
     final width = chartText('$arrow$text', ChartColors.extremeTag).width;
@@ -289,9 +301,9 @@ void _extremeTags(
   }
 }
 
-/// y축 기본 눈금(log, 6개 안팎). 봉 영역 위·아래 끝 가격 사이.
+/// y축 기본 눈금(6개 안팎, log·선형은 범위를 따른다). 봉 영역 위·아래 끝 가격 사이.
 List<double> _yTicks(ChartFrame f) =>
-    logTicks(f.priceAt(f.plot.bottom), f.priceAt(f.plot.top), 6);
+    f.range.ticks(f.priceAt(f.plot.bottom), f.priceAt(f.plot.top), 6);
 
 List<MonthTick> _xTicks(ChartFrame f, ChartDecor decor) {
   final v = f.viewport;

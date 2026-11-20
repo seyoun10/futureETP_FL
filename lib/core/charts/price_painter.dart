@@ -1,16 +1,16 @@
 import 'dart:ui' as ui;
 
 import 'package:flutter/foundation.dart';
-import 'package:futureetp/core/charts/candle_series.dart';
 import 'package:futureetp/core/charts/chart_decor.dart';
+import 'package:futureetp/core/charts/chart_series.dart';
 import 'package:futureetp/core/charts/chart_viewport.dart';
 import 'package:futureetp/core/charts/line_sampling.dart';
 import 'package:futureetp/core/theme/tokens.dart';
 import 'package:futureetp/core/theme/up_down_color.dart';
 import 'package:material_ui/material_ui.dart';
 
-/// 봉·선·격자를 그린다. [viewport]가 바뀌면 위젯 다시 만들기 없이 다시 그린다.
-class CandlePainter extends CustomPainter {
+/// 봉(있으면)·선·격자를 그린다. [viewport]가 바뀌면 위젯 다시 만들기 없이 다시 그린다.
+class PricePainter extends CustomPainter {
   new({
     required this.series,
     required this.viewport,
@@ -19,7 +19,7 @@ class CandlePainter extends CustomPainter {
     this.decor,
   }) : super(repaint: viewport);
 
-  final CandleSeries series;
+  final ChartSeries series;
   final ValueListenable<ChartViewport> viewport;
   final UpDownPalette palette;
 
@@ -39,7 +39,7 @@ class CandlePainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     final v = viewport.value;
     if (v.count == 0) return;
-    final range = LogPriceRange.fit(v, series.envelopeHigh, series.envelopeLow);
+    final range = PriceRange.fit(v, series);
     final plot = padding.deflateRect(Offset.zero & size);
     final decor = this.decor;
     final frame = ChartFrame(size, padding, v, range);
@@ -52,7 +52,9 @@ class CandlePainter extends CustomPainter {
       paintDecorUnder(canvas, frame, decor);
     }
     canvas.translate(plot.left, plot.top);
-    _candles(canvas, plot.size, v, range);
+    if (series.candles case final candles?) {
+      _candles(canvas, plot.size, v, range, candles);
+    }
     for (final line in series.lines) {
       _line(canvas, plot.size, v, range, line);
     }
@@ -76,7 +78,13 @@ class CandlePainter extends CustomPainter {
     }
   }
 
-  void _candles(Canvas canvas, Size size, ChartViewport v, LogPriceRange r) {
+  void _candles(
+    Canvas canvas,
+    Size size,
+    ChartViewport v,
+    PriceRange r,
+    Candles candles,
+  ) {
     final w = size.width;
     final h = size.height;
     final n = v.last - v.first + 1;
@@ -91,16 +99,16 @@ class CandlePainter extends CustomPainter {
     var d = 0;
     for (var i = v.first; i <= v.last; i++) {
       final x = v.xOf(i, w);
-      final o = series.opens[i];
-      final c = series.closes[i];
+      final o = candles.opens[i];
+      final c = candles.closes[i];
       final up = c >= o;
       final wick = up ? upWick : downWick;
       final j = up ? u : d;
       wick
         ..[j] = x
-        ..[j + 1] = r.yOf(series.highs[i], h)
+        ..[j + 1] = r.yOf(candles.highs[i], h)
         ..[j + 2] = x
-        ..[j + 3] = r.yOf(series.lows[i], h);
+        ..[j + 3] = r.yOf(candles.lows[i], h);
       if (withBody) {
         final body = up ? upBody : downBody;
         final yo = r.yOf(o, h);
@@ -154,7 +162,7 @@ class CandlePainter extends CustomPainter {
     Canvas canvas,
     Size size,
     ChartViewport v,
-    LogPriceRange r,
+    PriceRange r,
     ChartLine line,
   ) {
     final sample = lineSample(v, size.width);
@@ -169,6 +177,10 @@ class CandlePainter extends CustomPainter {
       }
       final x = v.xOf(i, size.width);
       final y = r.yOf(value, size.height);
+      if (y.isNaN) {
+        open = false;
+        continue;
+      }
       if (open) {
         path.lineTo(x, y);
       } else {
@@ -186,7 +198,7 @@ class CandlePainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(CandlePainter old) =>
+  bool shouldRepaint(PricePainter old) =>
       old.series != series ||
       old.palette != palette ||
       old.viewport != viewport ||

@@ -8,8 +8,8 @@ import 'package:futureetp/app/app.dart';
 import 'package:futureetp/core/api/app_error.dart';
 import 'package:futureetp/core/api/models/disparity_chart.dart';
 import 'package:futureetp/core/api/models/enums.dart';
-import 'package:futureetp/core/charts/candle_chart.dart';
 import 'package:futureetp/core/charts/chart_skeleton.dart';
+import 'package:futureetp/core/charts/price_chart.dart';
 import 'package:futureetp/core/theme/tokens.dart';
 import 'package:futureetp/core/theme/up_down_color.dart';
 import 'package:futureetp/features/commodity/disparity_chart/disparity_chart_provider.dart';
@@ -110,15 +110,15 @@ Future<void> _pump(WidgetTester tester, DisparityChart chart) async {
   await tester.pumpAndSettle();
 }
 
-CandleChart _candle(WidgetTester tester) =>
-    tester.widget<CandleChart>(find.byType(CandleChart));
+PriceChart _candle(WidgetTester tester) =>
+    tester.widget<PriceChart>(find.byType(PriceChart));
 
 bool _selected(WidgetTester tester, String period) =>
     tester.widget<Material>(find.byKey(Key('period-$period'))).color ==
     AppColors.surfaceSelected;
 
 Future<void> _pinchOut(WidgetTester tester) async {
-  final center = tester.getCenter(find.byType(CandleChart));
+  final center = tester.getCenter(find.byType(PriceChart));
   final a = await tester.startGesture(
     center - const Offset(30, 0),
     pointer: 10,
@@ -140,7 +140,7 @@ Future<void> _pinchOut(WidgetTester tester) async {
 /// 한 번에 가장 과거까지 끈다(손가락은 떼지 않는다).
 Future<TestGesture> _dragToOldest(WidgetTester tester) async {
   final g = await tester.startGesture(
-    tester.getCenter(find.byType(CandleChart)),
+    tester.getCenter(find.byType(PriceChart)),
   );
   for (var i = 0; i < 10; i++) {
     await g.moveBy(const Offset(300, 0));
@@ -218,7 +218,7 @@ void main() {
 
   testWidgets('끌기는 선택 표시를 남기고, 끌어서 돌아오면 [↻]가 사라진다', (tester) async {
     await _pump(tester, _chart());
-    final center = tester.getCenter(find.byType(CandleChart));
+    final center = tester.getCenter(find.byType(PriceChart));
     final g = await tester.startGesture(center);
     for (var i = 1; i <= 5; i++) {
       await g.moveTo(center + Offset(i * 20.0, 0));
@@ -256,7 +256,7 @@ void main() {
 
   testWidgets('길게 누르면 상세 박스: 날짜·시고저종·전일 대비·이격도·선 값', (tester) async {
     await _pump(tester, _chart());
-    final center = tester.getCenter(find.byType(CandleChart));
+    final center = tester.getCenter(find.byType(PriceChart));
     final g = await tester.startGesture(center);
     await tester.pump(crosshairLongPress + const Duration(milliseconds: 50));
     await g.up();
@@ -344,7 +344,7 @@ void main() {
     );
     await tester.pump();
     expect(find.byType(ChartSkeleton), findsOneWidget);
-    expect(find.byType(CandleChart), findsNothing);
+    expect(find.byType(PriceChart), findsNothing);
   });
 }
 

@@ -1,5 +1,5 @@
-import 'package:futureetp/core/charts/candle_series.dart';
 import 'package:futureetp/core/charts/chart_layout.dart';
+import 'package:futureetp/core/charts/chart_series.dart';
 import 'package:futureetp/core/charts/chart_viewport.dart';
 import 'package:futureetp/core/theme/tokens.dart';
 import 'package:material_ui/material_ui.dart';
@@ -18,11 +18,11 @@ class ChartDetailOverlay extends StatelessWidget {
     required this.builder,
   });
 
-  final CandleSeries series;
+  final ChartSeries series;
   final ValueNotifier<ChartViewport> viewport;
   final ValueNotifier<int?> crosshair;
 
-  /// 차트의 봉 영역 여백(CandleChart와 같다).
+  /// 차트의 봉 영역 여백(PriceChart와 같다).
   final EdgeInsets padding;
   final Widget Function(BuildContext context, int index) builder;
 
@@ -57,7 +57,7 @@ class _DetailLayout extends SingleChildLayoutDelegate {
     required this.padding,
   });
 
-  final CandleSeries series;
+  final ChartSeries series;
   final ChartViewport viewport;
   final int index;
   final EdgeInsets padding;
@@ -70,7 +70,7 @@ class _DetailLayout extends SingleChildLayoutDelegate {
   Offset getPositionForChild(Size size, Size childSize) {
     final plot = padding.deflateRect(Offset.zero & size);
     final v = viewport;
-    final range = LogPriceRange.fit(v, series.envelopeHigh, series.envelopeLow);
+    final range = PriceRange.fit(v, series);
     double x(int i) => plot.left + v.xOf(i, plot.width);
     double y(double price) => plot.top + range.yOf(price, plot.height);
     final area = (
@@ -89,11 +89,14 @@ class _DetailLayout extends SingleChildLayoutDelegate {
         final i0 = (v.start + (x0 - plot.left) / bw - 0.5).ceil();
         final i1 = (v.start + (x1 - plot.left) / bw - 0.5).floor();
         for (var i = i0 < 0 ? 0 : i0; i <= i1 && i < series.length; i++) {
-          yield (y(series.highs[i]), y(series.lows[i]));
+          if (series.candles case final c?) {
+            yield (y(c.highs[i]), y(c.lows[i]));
+          }
           for (final line in series.lines) {
             final p = line.values[i];
-            if (p.isNaN || p <= 0) continue;
+            if (p.isNaN) continue;
             final ly = y(p);
+            if (ly.isNaN) continue;
             yield (ly - line.width / 2, ly + line.width / 2);
           }
         }
@@ -143,11 +146,15 @@ class DetailRow extends StatelessWidget {
     required this.label,
     this.value,
     this.color = AppColors.text,
+    this.mark,
   });
 
   final String label;
   final String? value;
   final Color color;
+
+  /// 이름 뒤 표식(C-c 대표월물 `●`). 선 색이 아니라 A 목록과 같은 `textSecondary`다(D-118).
+  final String? mark;
 
   @override
   Widget build(BuildContext context) {
@@ -160,7 +167,19 @@ class DetailRow extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       spacing: AppSpacing.md,
       children: [
-        Text(label, style: style),
+        Text.rich(
+          TextSpan(
+            text: label,
+            children: [
+              if (mark case final m?)
+                TextSpan(
+                  text: m,
+                  style: style.copyWith(color: AppColors.textSecondary),
+                ),
+            ],
+          ),
+          style: style,
+        ),
         if (value case final v?) Text(v, style: style),
       ],
     );

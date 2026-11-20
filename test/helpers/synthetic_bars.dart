@@ -1,7 +1,7 @@
 import 'dart:math' as math;
 import 'dart:typed_data';
 
-import 'package:futureetp/core/charts/candle_series.dart';
+import 'package:futureetp/core/charts/chart_series.dart';
 import 'package:futureetp/core/theme/tokens.dart';
 
 /// 테스트용 합성 일봉(시드 고정, FL-025 스파이크에서 옮김). 4,000봉을 만들어 두고 뒤에서부터 잘라 쓴다.
@@ -48,7 +48,7 @@ class SyntheticBars {
   late final Float64List _ma;
 
   /// 마지막 [count]개 봉(이전 받기면 더 길게 잘라 앞이 늘어난다).
-  CandleSeries latest(int count) {
+  ChartSeries latest(int count) {
     final from = math.max(0, total - count);
     Float64List cut(Float64List a) => Float64List.sublistView(a, from);
     final ma = cut(_ma);
@@ -56,11 +56,13 @@ class SyntheticBars {
       Float64List.fromList([for (final m in ma) m * (1 + pct / 100)]),
       color: ChartColors.rareLevels[rank],
     );
-    return CandleSeries(
-      opens: cut(_o),
-      highs: cut(_h),
-      lows: cut(_l),
-      closes: cut(_c),
+    return ChartSeries(
+      candles: Candles(
+        opens: cut(_o),
+        highs: cut(_h),
+        lows: cut(_l),
+        closes: cut(_c),
+      ),
       lines: [
         for (var r = 0; r < 5; r++) band(upperLevels[r], r),
         for (var r = 0; r < 5; r++) band(lowerLevels[r], r),

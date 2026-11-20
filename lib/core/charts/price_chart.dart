@@ -2,10 +2,10 @@ import 'dart:math' as math;
 
 import 'package:flutter/gestures.dart';
 import 'package:flutter/services.dart';
-import 'package:futureetp/core/charts/candle_painter.dart';
-import 'package:futureetp/core/charts/candle_series.dart';
 import 'package:futureetp/core/charts/chart_decor.dart';
+import 'package:futureetp/core/charts/chart_series.dart';
 import 'package:futureetp/core/charts/chart_viewport.dart';
+import 'package:futureetp/core/charts/price_painter.dart';
 import 'package:futureetp/core/theme/tokens.dart';
 import 'package:futureetp/core/theme/up_down_color.dart';
 import 'package:material_ui/material_ui.dart';
@@ -23,7 +23,7 @@ enum ChartGesture { pan, zoom }
 /// - 십자선이 있을 때 누르기: 십자선을 지운다.
 ///
 /// [viewport]·[crosshair]는 부모가 갖는다(기간 버튼·상세 박스). 바뀌어도 위젯은 다시 만들지 않고 다시 그리기만 한다.
-class CandleChart extends StatefulWidget {
+class PriceChart extends StatefulWidget {
   const new({
     super.key,
     required this.series,
@@ -38,7 +38,7 @@ class CandleChart extends StatefulWidget {
     this.locked = false,
   });
 
-  final CandleSeries series;
+  final ChartSeries series;
   final ValueNotifier<ChartViewport> viewport;
 
   /// 십자선이 붙은 봉 순번. null이면 없다.
@@ -64,10 +64,10 @@ class CandleChart extends StatefulWidget {
   final bool locked;
 
   @override
-  State<CandleChart> createState() => _CandleChartState();
+  State<PriceChart> createState() => _PriceChartState();
 }
 
-class _CandleChartState extends State<CandleChart> {
+class _PriceChartState extends State<PriceChart> {
   var _width = 1.0;
 
   // 이동·핀치 시작 상태. 손가락 수가 바뀌면 지금 상태에서 다시 시작한다
@@ -188,7 +188,7 @@ class _CandleChartState extends State<CandleChart> {
               children: [
                 RepaintBoundary(
                   child: CustomPaint(
-                    painter: CandlePainter(
+                    painter: PricePainter(
                       series: widget.series,
                       viewport: _viewport,
                       palette: widget.palette,
@@ -220,7 +220,8 @@ class _CandleChartState extends State<CandleChart> {
   }
 }
 
-/// 십자선: 붙은 봉 가운데 세로선, 그 봉 종가 가로선과 가격 라벨(RN `CrosshairLayer`).
+/// 십자선: 붙은 봉 가운데 세로선, 그날 [ChartSeries.crosshairPrices] 가로선과 가격 라벨
+/// (RN `CrosshairLayer`). 그날 값이 없으면 가로선은 없다.
 class _CrosshairPainter extends CustomPainter {
   new({
     required this.series,
@@ -231,7 +232,7 @@ class _CrosshairPainter extends CustomPainter {
     this.dates,
   }) : super(repaint: Listenable.merge([viewport, crosshair]));
 
-  final CandleSeries series;
+  final ChartSeries series;
   final ValueNotifier<ChartViewport> viewport;
   final ValueNotifier<int?> crosshair;
   final EdgeInsets padding;
@@ -245,38 +246,16 @@ class _CrosshairPainter extends CustomPainter {
     final i = crosshair.value;
     final v = viewport.value;
     if (i == null || i >= v.count) return;
-    final range = LogPriceRange.fit(v, series.envelopeHigh, series.envelopeLow);
+    final range = PriceRange.fit(v, series);
     final plot = padding.deflateRect(Offset.zero & size);
     final x = plot.left + v.xOf(i, plot.width);
-    final close = series.closes[i];
-    final y = plot.top + range.yOf(close, plot.height);
     final line = Paint()
       ..color = ChartColors.crosshairLine
       ..strokeWidth = 1;
-    canvas
-      ..drawLine(Offset(x, 0), Offset(x, size.height), line)
-      ..drawLine(Offset(0, y), Offset(plot.right, y), line);
-    final text = TextPainter(
-      text: TextSpan(
-        text: formatPrice(close),
-        style: const TextStyle(
-          color: ChartColors.crosshairText,
-          fontSize: AppFontSize.caption,
-        ),
-      ),
-      textDirection: TextDirection.ltr,
-    )..layout();
-    // 우측 y축 자리 전체 너비
-    final box = Rect.fromLTRB(
-      math.min(plot.right, size.width - text.width - AppSpacing.sm),
-      y - text.height / 2 - 2,
-      size.width,
-      y + text.height / 2 + 2,
-    );
-    canvas.drawRect(box, Paint()..color = ChartColors.crosshair);
-    text
-      ..paint(canvas, box.topLeft + const Offset(AppSpacing.xs, 2))
-      ..dispose();
+    canvas.drawLine(Offset(x, 0), Offset(x, size.height), line);
+    final price = series.crosshairPrices[i];
+    final y = plot.top + range.yOf(price, plot.height);
+    if (!y.isNaN) _priceLabel(canvas, size, plot, y, price, line);
     final dates = this.dates;
     if (dates != null && i < dates.length) {
       final date = TextPainter(
@@ -297,6 +276,38 @@ class _CrosshairPainter extends CustomPainter {
         ..paint(canvas, dateBox.topLeft + const Offset(AppSpacing.xs, 2))
         ..dispose();
     }
+  }
+
+  /// 가로선과 우측 y축 자리 전체 너비의 가격 라벨.
+  void _priceLabel(
+    Canvas canvas,
+    Size size,
+    Rect plot,
+    double y,
+    double price,
+    Paint line,
+  ) {
+    canvas.drawLine(Offset(0, y), Offset(plot.right, y), line);
+    final text = TextPainter(
+      text: TextSpan(
+        text: formatPrice(price),
+        style: const TextStyle(
+          color: ChartColors.crosshairText,
+          fontSize: AppFontSize.caption,
+        ),
+      ),
+      textDirection: TextDirection.ltr,
+    )..layout();
+    final box = Rect.fromLTRB(
+      math.min(plot.right, size.width - text.width - AppSpacing.sm),
+      y - text.height / 2 - 2,
+      size.width,
+      y + text.height / 2 + 2,
+    );
+    canvas.drawRect(box, Paint()..color = ChartColors.crosshair);
+    text
+      ..paint(canvas, box.topLeft + const Offset(AppSpacing.xs, 2))
+      ..dispose();
   }
 
   @override

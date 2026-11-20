@@ -7,7 +7,6 @@ import 'package:futureetp/core/api/app_error.dart';
 import 'package:futureetp/core/api/error_text.dart';
 import 'package:futureetp/core/api/models/disparity_chart.dart';
 import 'package:futureetp/core/api/models/enums.dart';
-import 'package:futureetp/core/charts/candle_chart.dart';
 import 'package:futureetp/core/charts/chart_decor.dart';
 import 'package:futureetp/core/charts/chart_detail.dart';
 import 'package:futureetp/core/charts/chart_layout.dart';
@@ -15,6 +14,7 @@ import 'package:futureetp/core/charts/chart_periods.dart';
 import 'package:futureetp/core/charts/chart_skeleton.dart';
 import 'package:futureetp/core/charts/chart_viewport.dart';
 import 'package:futureetp/core/charts/period_chips.dart';
+import 'package:futureetp/core/charts/price_chart.dart';
 import 'package:futureetp/core/settings/device_settings.dart';
 import 'package:futureetp/core/theme/tokens.dart';
 import 'package:futureetp/core/theme/up_down_color.dart';
@@ -295,7 +295,7 @@ class _DisparityChartViewState extends ConsumerState<_DisparityChartView> {
           child: Stack(
             children: [
               Positioned.fill(
-                child: CandleChart(
+                child: PriceChart(
                   key: const Key('disparity-chart'),
                   series: _model.series,
                   viewport: _viewport,
@@ -577,7 +577,7 @@ ChartDecor disparityDecor(
     priceDecimals: decimals,
     monthLabel: (year, month) => monthLabel(l10n, year, month),
     // 이평선·rare-level 값은 보이는 마지막 봉 기준, 선 색으로 쓴다
-    labelsAt: (index) => [
+    labelsIn: (_, index) => [
       for (final l in model.lines)
         if (!l.line.values[index].isNaN)
           (price: l.line.values[index], color: l.line.color),

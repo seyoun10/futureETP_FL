@@ -1,7 +1,7 @@
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:futureetp/core/charts/candle_chart.dart';
 import 'package:futureetp/core/charts/chart_viewport.dart';
+import 'package:futureetp/core/charts/price_chart.dart';
 import 'package:futureetp/core/theme/up_down_color.dart';
 import 'package:material_ui/material_ui.dart';
 
@@ -24,7 +24,7 @@ Future<void> _pump(WidgetTester tester, {bool locked = false}) async {
       child: Center(
         child: SizedBox.fromSize(
           size: _size,
-          child: CandleChart(
+          child: PriceChart(
             series: series,
             viewport: _viewport,
             crosshair: _crosshair,
@@ -38,7 +38,7 @@ Future<void> _pump(WidgetTester tester, {bool locked = false}) async {
 }
 
 Offset _at(WidgetTester tester, double x) =>
-    tester.getTopLeft(find.byType(CandleChart)) + Offset(x, _size.height / 2);
+    tester.getTopLeft(find.byType(PriceChart)) + Offset(x, _size.height / 2);
 
 /// 햅틱 호출을 센다.
 List<String> _haptics(WidgetTester tester) {

@@ -2,7 +2,7 @@ import 'dart:typed_data';
 
 import 'package:futureetp/core/api/models/disparity_chart.dart';
 import 'package:futureetp/core/api/models/enums.dart';
-import 'package:futureetp/core/charts/candle_series.dart';
+import 'package:futureetp/core/charts/chart_series.dart';
 import 'package:futureetp/core/theme/tokens.dart';
 import 'package:futureetp/core/util/format_number.dart';
 import 'package:material_ui/material_ui.dart';
@@ -86,11 +86,13 @@ class DisparityModel {
     final front = chart.basis == Basis.front;
     return DisparityModel(
       bars: bars,
-      series: CandleSeries(
-        opens: column((b) => b.open!),
-        highs: column((b) => b.high!),
-        lows: column((b) => b.low!),
-        closes: column((b) => b.close!),
+      series: ChartSeries(
+        candles: Candles(
+          opens: column((b) => b.open!),
+          highs: column((b) => b.high!),
+          lows: column((b) => b.low!),
+          closes: column((b) => b.close!),
+        ),
         lines: [for (final l in lines) l.line],
       ),
       lines: lines,
@@ -101,7 +103,7 @@ class DisparityModel {
 
   /// OHLC가 모두 있는 봉.
   final List<DisparityBar> bars;
-  final CandleSeries series;
+  final ChartSeries series;
 
   /// [series]의 선과 같은 순서.
   final List<LabeledLine> lines;
