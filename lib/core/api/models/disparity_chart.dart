@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:futureetp/core/api/models/enums.dart';
 import 'package:futureetp/core/api/models/freshness.dart';
@@ -122,7 +121,7 @@ class DisparityParams {
       other.basis == basis &&
       other.ma == ma &&
       other.window == window &&
-      listEquals(other.levels, levels);
+      const DeepCollectionEquality().equals(other.levels, levels);
 
   @override
   int get hashCode => Object.hash(basis, ma, window, Object.hashAll(levels));
