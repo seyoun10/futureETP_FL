@@ -1,7 +1,7 @@
 # Architecture
 
 > Flutter 앱의 구조. API 규약·화면 동작은 원본(`../futureETP/docs/architecture.md`·`wireframes/screens.md`)을 따르고, 여기에는 이 앱의 구조와 대응만 적는다.
-> 디렉터리는 계획 구조다. 현재 있는 것은 `app/`(app·router), `core/config`, `core/api`, `core/storage`, `core/settings`, `core/theme`, `core/util`, `core/widgets`, `core/query`, `core/charts`, `features/access_key`, `features/commodity_list`, `features/commodity`(C 껍데기·C-a·C-b·C-c·C-d·C-d-a, 차트 탭 공통 `chart_tab.dart`), `features/dev_health`(임시), `l10n`이다.
+> 디렉터리는 계획 구조다. 현재 있는 것은 `app/`(app·router), `core/config`, `core/api`, `core/storage`, `core/settings`, `core/theme`, `core/util`, `core/widgets`, `core/query`, `core/charts`, `features/access_key`, `features/commodity_list`, `features/commodity`(C 껍데기·C-a·C-b·C-c·C-d·C-d-a, 차트 탭 공통 `chart_tab.dart`), `features/settings`(B), `features/alert_settings`(B-a), `features/data_sources`, `l10n`이다.
 
 ## 디렉터리 구조
 
@@ -11,15 +11,15 @@ lib/
 ├─ app/                          라우터(go_router), 앱 루트, 테마 적용
 ├─ features/                     화면 단위: 화면 Widget·전용 위젯·Provider
 │  ├─ commodity_list/            A
-│  ├─ settings/ alert_settings/ access_key/ data_sources/   B, B-a, B-b
+│  ├─ settings/ alert_settings/ access_key/ data_sources/   B, B-a, B-b, 데이터 출처
 │  └─ commodity/                 C: disparity_chart(C-a)·contract_chart(C-c)·curve(C-b)·etp(C-d, C-d-a)
 ├─ core/
 │  ├─ config/                    변형·서버 주소(AppConfig)
 │  ├─ api/                       HTTP 래퍼, AppError, 엔드포인트 함수, 응답 모델(`models/`, FL-017)
 │  ├─ query/                     자동 새로고침·앱 복귀 재조회(`AutoRefreshNotifier`, FL-022)
 │  ├─ charts/                    CustomPainter 차트·뷰포트(핀치·드래그)
-│  ├─ widgets/                   공용 UI(ScreenHeader, FreshnessLine, QueryStateView, SegmentedControl)
-│  ├─ settings/                  기기 UI 설정 저장(언어·등락 색, FL-019)
+│  ├─ widgets/                   공용 UI(ScreenHeader, FreshnessLine, QueryStateView, SegmentedControl, SectionHeader)
+│  ├─ settings/                  기기 UI 설정 저장(언어·등락 색, FL-019), 서버 기기 설정 조회·직렬 PATCH(FL-031)
 │  ├─ storage/                   보안 저장소 인스턴스(FL-015)
 │  ├─ theme/                     테마 토큰(다크 전용), ThemeData, 등락 색(FL-020)
 │  ├─ push/                      토큰 등록, 알림 탭 이동

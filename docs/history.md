@@ -36,6 +36,7 @@
 - [x] 공용 조회 UI: 기준 시각 줄(freshness)·로딩/오류/빈 상태 분기·`nextUpdateAt` + 1분 자동 새로고침·앱 복귀 재조회 (D-048, D-075) (FL-022)
 - [x] 앱 실행 때 시간대 PATCH (D-084), 세로 잠금·[⟲] 가로 전환 (D-076) (FL-023, FL-024. [⟲] 버튼은 C-a와 함께)
 - [x] 실행 화면(splash) 검정 배경·아이콘(RN `splash-icon.png` 76pt, `flutter_native_splash`. Android 첫 프레임 전 바탕도 검정. iOS 시뮬레이터·Android 에뮬레이터 API 37에서 확인)
+- [x] 2단계 임시 화면 `features/dev_health`·`devHealth*` 문구 지움(B 화면과 함께) (2026-11-20, FL-026, FL-031)
 
 ## 4. 화면 수직 슬라이스
 - [x] C-a 차트 스파이크: 봉 756개 + 이평선·rare-level 밴드, 핀치·드래그·십자선, 가장 과거 봉이 보이면 이전 3년 이어 받기에서 범위 유지, 60fps 이상 (D-056, D-087, D-104, D-106) → 차트 방식 결정 (2026-11-19, FL-025. Android 에뮬레이터 API 37 `-gpu host` profile 빌드로 측정, iOS·실기기는 설치 때)
@@ -45,3 +46,4 @@
 - [x] C-c 월물차트: `GET /v1/commodities/:code/contracts`, log y축(0 이하면 선형), 끝값 라벨, 범례, 십자선 상세 롤 수익률, 이전 3년 받기 (D-092, D-093, D-113, D-118). 차트 코어를 선만 그리기·선형 축으로 일반화하고 C-a와 탭 상태를 함께 쓴다 (2026-11-20, FL-028. Android 에뮬레이터 API 37 dev 서버로 확인, 실기기 손동작은 C-a 항목과 함께)
 - [x] C-b 월물커브: `GET /v1/commodities/:code/curve?baseDate`, 기준일 휠 시트, 이전·다음 기준일, [↻], 변화율 라벨 배치, 롤 수익률, 휴장일 옮김 안내 (D-090, D-091, D-114~D-123) (2026-11-20, FL-029. Android 에뮬레이터 API 37 dev 서버로 확인, Android도 휠 시트로 바꿈)
 - [x] C-d ETP 목록(필터·정렬은 앱에서)·C-d-a 상세: `GET /v1/commodities/:code/etps`·`GET /v1/etps/:id`, 세그먼트 필터·정렬 값, 수집 시각 줄, 시리즈 줄, 운용사 페이지 열기 (D-017, D-047) (2026-11-20, FL-030. 위젯 테스트로 확인, 기기 확인은 TODO에 남김)
+- [x] B 설정·B-a 알림 설정·데이터 출처: 직렬·낙관적 PATCH, rare-level 입력 검증·정렬 저장, [초기화], 알림 대상·거부 시간 시트, 알림 대상이 바뀌면 A 목록 다시 받기, B-b title-bar `ScreenHeader`, 앱 버전 줄 (D-081~D-083, D-124) (2026-11-20, FL-031. 위젯 테스트로 확인, 기기 확인·권한 배너는 TODO에 남김)

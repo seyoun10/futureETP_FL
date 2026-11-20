@@ -25,6 +25,7 @@
 | i18n | `flutter_localizations` + `intl` 0.20.3(SDK 고정) + gen-l10n | FL-009. ko 기준, en |
 | 푸시 | Android `firebase_messaging` 17.1.0 + `firebase_core` 5.2.0, iOS APNs 토큰 방식은 5단계 | FL-011(검토중) |
 | 외부 링크 | `url_launcher` 6.3.3(2026-11-20 `flutter pub add`) | C-d-a 운용사 페이지(https만 연다) |
+| 앱 버전 | `package_info_plus` 10.2.2(2026-11-20 `flutter pub add`) | B 맨 아래 앱 버전 줄, `PUT /v1/devices`의 `appVersion`(FL-031) |
 | 햅틱 | `HapticFeedback`(Flutter 기본) | D-109·D-138·D-139. `core/util/haptics.dart` |
 | Cupertino 위젯 | `cupertino_ui` 1.1.7(2026-11-16) | FL-026. 공통 실패 Alert의 iOS 모양(`AlertDialog.adaptive`) |
 | 아이콘 | Flutter Material Icons | FL-026. RN Material Community Icons 대응: 뒤로 `arrow_back`, 설정 `settings_outlined` |
