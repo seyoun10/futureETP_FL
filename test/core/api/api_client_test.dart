@@ -4,6 +4,8 @@ import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:futureetp/core/api/api_client.dart';
 import 'package:futureetp/core/api/app_error.dart';
+import 'package:futureetp/core/api/models/device.dart';
+import 'package:futureetp/core/api/models/enums.dart';
 
 import '../../helpers/fake_http.dart';
 
@@ -82,6 +84,29 @@ void main() {
       expect(req.method, 'PATCH');
       expect(req.contentType, startsWith('application/json'));
       expect(jsonDecode(adapter.sentBodies.single), {'language': 'en'});
+    });
+
+    test('putDevice는 PUT /devices로 등록 본문을 보낸다', () async {
+      final adapter = _json({
+        'success': true,
+        'data': {'id': _deviceId},
+      });
+      final device = await _client(adapter).putDevice(
+        const DeviceRegistration(
+          pushToken: 'fcm-token',
+          platform: DevicePlatform.android,
+          appVersion: 'fl-1.0.0',
+        ),
+      );
+      expect(device.id, _deviceId);
+      final req = adapter.requests.single;
+      expect(req.method, 'PUT');
+      expect(req.uri.toString(), 'http://test/v1/devices');
+      expect(jsonDecode(adapter.sentBodies.single), {
+        'pushToken': 'fcm-token',
+        'platform': 'ANDROID',
+        'appVersion': 'fl-1.0.0',
+      });
     });
 
     test('키가 없으면 요청하지 않고 UNAUTHORIZED', () async {

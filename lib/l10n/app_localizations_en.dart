@@ -673,4 +673,10 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get alertSettingsGuide =>
       'Checked every 15 minutes during trading hours; each level alerts at most once per CME trading day. You are alerted when today\'s candle wick touches a rare-level line on the chart (intraday touches, so alerts can fire more often than p%).';
+
+  @override
+  String get pushChannelAlerts => 'Market alerts';
+
+  @override
+  String get pushChannelOps => 'Server alerts';
 }

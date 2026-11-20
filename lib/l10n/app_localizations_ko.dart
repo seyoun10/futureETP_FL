@@ -661,4 +661,10 @@ class AppLocalizationsKo extends AppLocalizations {
   @override
   String get alertSettingsGuide =>
       '장중 15분마다 확인하며 레벨별로 CME 거래일당 1회 알려 드립니다. 차트의 rare-level 선에 오늘 봉의 꼬리가 닿으면 알립니다(장중 터치 기준이라 p%보다 자주 울릴 수 있음).';
+
+  @override
+  String get pushChannelAlerts => '시세 알림';
+
+  @override
+  String get pushChannelOps => '운영 알림';
 }

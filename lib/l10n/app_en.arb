@@ -182,5 +182,7 @@
   "alertSettingsQuietEnd": "End",
   "alertSettingsQuietNextDay": "next day {time}",
   "alertSettingsQuietNote": "Alerts during quiet hours are sent at the end time, only the rarest one per direction.",
-  "alertSettingsGuide": "Checked every 15 minutes during trading hours; each level alerts at most once per CME trading day. You are alerted when today's candle wick touches a rare-level line on the chart (intraday touches, so alerts can fire more often than p%)."
+  "alertSettingsGuide": "Checked every 15 minutes during trading hours; each level alerts at most once per CME trading day. You are alerted when today's candle wick touches a rare-level line on the chart (intraday touches, so alerts can fire more often than p%).",
+  "pushChannelAlerts": "Market alerts",
+  "pushChannelOps": "Server alerts"
 }

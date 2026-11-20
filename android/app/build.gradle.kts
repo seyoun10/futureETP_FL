@@ -1,17 +1,22 @@
 plugins {
     id("com.android.application")
+    // FCM(D-037). android/app/google-services.json이 있어야 빌드된다(RN apps/mobile과 같은 파일, FL-032)
+    id("com.google.gms.google-services")
     // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
     id("dev.flutter.flutter-gradle-plugin")
 }
 
 android {
     namespace = "io.github.seyoon.futureetp"
-    compileSdk = flutter.compileSdkVersion
+    // flutter_local_notifications 23이 37 이상을 요구한다(Flutter 기본 36)
+    compileSdk = 37
     ndkVersion = flutter.ndkVersion
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
+        // flutter_local_notifications가 요구한다
+        isCoreLibraryDesugaringEnabled = true
     }
 
     defaultConfig {
@@ -60,4 +65,8 @@ kotlin {
 
 flutter {
     source = "../.."
+}
+
+dependencies {
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.5")
 }

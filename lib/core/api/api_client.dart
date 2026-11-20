@@ -10,6 +10,7 @@ import 'package:futureetp/core/api/health.dart';
 import 'package:futureetp/core/api/models/commodities.dart';
 import 'package:futureetp/core/api/models/contracts_chart.dart';
 import 'package:futureetp/core/api/models/curve.dart';
+import 'package:futureetp/core/api/models/device.dart';
 import 'package:futureetp/core/api/models/disparity_chart.dart';
 import 'package:futureetp/core/api/models/enums.dart';
 import 'package:futureetp/core/api/models/etp.dart';
@@ -89,6 +90,19 @@ class ApiClient {
     _decodeSettings,
     method: ApiMethod.patch,
     body: patch.toJson(),
+    cancelToken: cancelToken,
+  );
+
+  /// `PUT /v1/devices`. 이 기기(X-Device-Id)의 푸시 토큰·플랫폼·앱 버전을 등록한다(D-037, D-120).
+  /// 같은 기기면 덮어쓰므로 여러 번 보내도 무해하다. 변경 요청이라 자동 재시도는 없다(D-072).
+  Future<Device> putDevice(
+    DeviceRegistration registration, {
+    CancelToken? cancelToken,
+  }) => request(
+    '/devices',
+    (data) => Device.fromJson(data! as Map<String, dynamic>),
+    method: ApiMethod.put,
+    body: registration.toJson(),
     cancelToken: cancelToken,
   );
 

@@ -1195,6 +1195,18 @@ abstract class AppLocalizations {
   /// In ko, this message translates to:
   /// **'장중 15분마다 확인하며 레벨별로 CME 거래일당 1회 알려 드립니다. 차트의 rare-level 선에 오늘 봉의 꼬리가 닿으면 알립니다(장중 터치 기준이라 p%보다 자주 울릴 수 있음).'**
   String get alertSettingsGuide;
+
+  /// Android 알림 채널 이름(OS 알림 설정에 보임, D-045)
+  ///
+  /// In ko, this message translates to:
+  /// **'시세 알림'**
+  String get pushChannelAlerts;
+
+  /// No description provided for @pushChannelOps.
+  ///
+  /// In ko, this message translates to:
+  /// **'운영 알림'**
+  String get pushChannelOps;
 }
 
 class _AppLocalizationsDelegate
