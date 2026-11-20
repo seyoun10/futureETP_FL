@@ -17,12 +17,20 @@ class DeviceSettingsNotifier extends AsyncNotifier<DeviceSettings> {
   /// 보낸 순서대로 하나씩 PATCH한다(RN mutation scope `settings`). 실패해도 다음은 간다.
   Future<void> _queue = Future.value();
 
+  /// 성공한 PATCH 수. 조회 중에 늘면 그 조회 응답은 PATCH 전 값일 수 있다.
+  int _patched = 0;
+
   @override
-  Future<DeviceSettings> build() {
+  Future<DeviceSettings> build() async {
     ref.listen(appLifecycleProvider, (_, next) {
       if (next == AppLifecycleState.resumed) ref.invalidateSelf();
     });
-    return ref.watch(apiClientProvider).getSettings();
+    final patchedBefore = _patched;
+    final settings = await ref.watch(apiClientProvider).getSettings();
+    // 진행 중인 조회가 PATCH보다 늦게 끝나 옛 값으로 덮지 않게 한다
+    // (RN `useUpdateSettings`의 onMutate cancelQueries)
+    if (_patched == patchedBefore) return settings;
+    return state.value ?? settings;
   }
 
   /// 바꿀 필드만 보낸다. 앞선 PATCH가 끝난 뒤 보내고, 끝날 때까지 [settingsViewProvider]에 얹어 보인다.
@@ -35,6 +43,7 @@ class DeviceSettingsNotifier extends AsyncNotifier<DeviceSettings> {
     final result = _queue.then((_) => client.patchSettings(patch)).then((
       settings,
     ) {
+      _patched++;
       if (ref.mounted) state = AsyncData(settings);
       return settings;
     });

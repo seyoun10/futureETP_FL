@@ -228,6 +228,24 @@ void main() {
       expect(c.read(settingsViewProvider).value?.basis, before);
     });
 
+    test('진행 중인 설정 조회가 PATCH보다 늦게 끝나도 옛 값으로 덮지 않는다', () async {
+      // 앱 복귀 등으로 다시 받는 중(PATCH 전 서버 값을 받을 GET)
+      c.invalidate(deviceSettingsProvider);
+      await pumpEventQueue();
+      final saving = c
+          .read(deviceSettingsProvider.notifier)
+          .save(const SettingsPatch(basis: Basis.kr));
+      await pumpEventQueue();
+      // 앞선 GET이 먼저 대기열에 있다: GET보다 PATCH 응답이 먼저 온 경우
+      final get = gate.take();
+      gate.respond({..._fixture, 'basis': 'KR'});
+      expect(await saving, isNull);
+      get.complete(gate.ok({..._fixture, 'basis': 'US'}));
+      await pumpEventQueue();
+      expect(c.read(deviceSettingsProvider).value?.basis, Basis.kr);
+      expect(c.read(settingsViewProvider).value?.basis, Basis.kr);
+    });
+
     test('알림 대상을 null로 지우는 변경을 얹는다', () async {
       unawaited(
         c
@@ -261,14 +279,14 @@ class _GateAdapter implements HttpClientAdapter {
     return await completer.future;
   }
 
-  void respond(Map<String, dynamic> data) => _waiting
-      .removeAt(0)
-      .complete(
-        ResponseBody.fromString(
-          jsonEncode({'success': true, 'data': data}),
-          200,
-        ),
-      );
+  void respond(Map<String, dynamic> data) =>
+      _waiting.removeAt(0).complete(ok(data));
+
+  /// 가장 먼저 온 요청을 꺼내 나중에 답하게 한다(응답 순서 바꾸기).
+  Completer<ResponseBody> take() => _waiting.removeAt(0);
+
+  ResponseBody ok(Map<String, dynamic> data) =>
+      ResponseBody.fromString(jsonEncode({'success': true, 'data': data}), 200);
 
   void fail(String code, int status) => _waiting
       .removeAt(0)
