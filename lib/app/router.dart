@@ -6,6 +6,7 @@ import 'package:futureetp/core/api/models/enums.dart';
 import 'package:futureetp/features/access_key/access_key_screen.dart';
 import 'package:futureetp/features/commodity/commodity_shell.dart';
 import 'package:futureetp/features/commodity/commodity_tab.dart';
+import 'package:futureetp/features/commodity/contract_chart/contract_chart_tab.dart';
 import 'package:futureetp/features/commodity/disparity_chart/disparity_chart_provider.dart';
 import 'package:futureetp/features/commodity/disparity_chart/disparity_chart_tab.dart';
 import 'package:futureetp/features/commodity/tab_placeholder.dart';
@@ -97,11 +98,14 @@ final _commodityRoute = StatefulShellRoute.indexedStack(
             path: tab == CommodityTab.disparity
                 ? 'commodity/:code'
                 : 'commodity/:code/${tab.segment}',
-            builder: (context, state) => tab == CommodityTab.disparity
-                ? DisparityChartTab(
-                    codeText: state.pathParameters['code'] ?? '',
-                  )
-                : const TabPlaceholder(),
+            builder: (context, state) {
+              final code = state.pathParameters['code'] ?? '';
+              return switch (tab) {
+                CommodityTab.disparity => DisparityChartTab(codeText: code),
+                CommodityTab.contracts => ContractChartTab(codeText: code),
+                _ => const TabPlaceholder(),
+              };
+            },
           ),
         ],
       ),

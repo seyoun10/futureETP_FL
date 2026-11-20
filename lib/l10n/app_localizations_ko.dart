@@ -300,4 +300,18 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get disparityHintSameAsKr => '금·은은 미국형이 한국형과 같습니다.';
+
+  @override
+  String get contractsProvisional => '(잠정)';
+
+  @override
+  String get contractsRollYield => '롤 수익률';
+
+  @override
+  String get contractsNoData => '표시할 월물이 없습니다.';
+
+  @override
+  String chartPerYear(String pct) {
+    return '$pct/년';
+  }
 }

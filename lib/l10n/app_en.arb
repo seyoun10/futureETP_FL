@@ -75,5 +75,9 @@
   "disparityHintFront": "Front month: actual prices of the most traded contract. Prices jump on the day the contract changes.",
   "disparityHintAdjusted": "{basis}: adjusted prices chaining the returns of rolling contracts by the rule. They differ from actual contract prices.",
   "disparityHintFallback": "This commodity has no {basis} product, so the front month is shown instead.",
-  "disparityHintSameAsKr": "For gold and silver, US style is the same as Korean style."
+  "disparityHintSameAsKr": "For gold and silver, US style is the same as Korean style.",
+  "contractsProvisional": "(provisional)",
+  "contractsRollYield": "Roll yield",
+  "contractsNoData": "No contracts to show.",
+  "chartPerYear": "{pct}/yr"
 }

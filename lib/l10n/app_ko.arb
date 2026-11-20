@@ -234,5 +234,17 @@
       }
     }
   },
-  "disparityHintSameAsKr": "금·은은 미국형이 한국형과 같습니다."
+  "disparityHintSameAsKr": "금·은은 미국형이 한국형과 같습니다.",
+  "contractsProvisional": "(잠정)",
+  "contractsRollYield": "롤 수익률",
+  "contractsNoData": "표시할 월물이 없습니다.",
+  "chartPerYear": "{pct}/년",
+  "@chartPerYear": {
+    "description": "연환산 롤 수익률(C-b·C-c). pct는 formatChangePct 결과",
+    "placeholders": {
+      "pct": {
+        "type": "String"
+      }
+    }
+  }
 }

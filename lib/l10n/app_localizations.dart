@@ -553,6 +553,30 @@ abstract class AppLocalizations {
   /// In ko, this message translates to:
   /// **'금·은은 미국형이 한국형과 같습니다.'**
   String get disparityHintSameAsKr;
+
+  /// No description provided for @contractsProvisional.
+  ///
+  /// In ko, this message translates to:
+  /// **'(잠정)'**
+  String get contractsProvisional;
+
+  /// No description provided for @contractsRollYield.
+  ///
+  /// In ko, this message translates to:
+  /// **'롤 수익률'**
+  String get contractsRollYield;
+
+  /// No description provided for @contractsNoData.
+  ///
+  /// In ko, this message translates to:
+  /// **'표시할 월물이 없습니다.'**
+  String get contractsNoData;
+
+  /// 연환산 롤 수익률(C-b·C-c). pct는 formatChangePct 결과
+  ///
+  /// In ko, this message translates to:
+  /// **'{pct}/년'**
+  String chartPerYear(String pct);
 }
 
 class _AppLocalizationsDelegate

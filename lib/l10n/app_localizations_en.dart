@@ -306,4 +306,18 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get disparityHintSameAsKr =>
       'For gold and silver, US style is the same as Korean style.';
+
+  @override
+  String get contractsProvisional => '(provisional)';
+
+  @override
+  String get contractsRollYield => 'Roll yield';
+
+  @override
+  String get contractsNoData => 'No contracts to show.';
+
+  @override
+  String chartPerYear(String pct) {
+    return '$pct/yr';
+  }
 }
