@@ -7,6 +7,7 @@ import 'package:futureetp/core/api/access_key.dart';
 import 'package:futureetp/core/api/app_error.dart';
 import 'package:futureetp/core/api/device_id.dart';
 import 'package:futureetp/core/api/health.dart';
+import 'package:futureetp/core/api/models/calendar.dart';
 import 'package:futureetp/core/api/models/commodities.dart';
 import 'package:futureetp/core/api/models/contracts_chart.dart';
 import 'package:futureetp/core/api/models/curve.dart';
@@ -163,6 +164,18 @@ class ApiClient {
   Future<EtpDetail> getEtp(String id, {CancelToken? cancelToken}) => request(
     '/etps/${Uri.encodeComponent(id)}',
     (data) => EtpDetail.fromJson(data! as Map<String, dynamic>),
+    cancelToken: cancelToken,
+  );
+
+  /// `GET /v1/calendar`(A-a, D-143). [from]·[to]는 `YYYY-MM-DD`(포함), 366일 이내.
+  Future<MarketCalendar> getCalendar(
+    String from,
+    String to, {
+    CancelToken? cancelToken,
+  }) => request(
+    '/calendar',
+    (data) => MarketCalendar.fromJson(data! as Map<String, dynamic>),
+    query: {'from': from, 'to': to},
     cancelToken: cancelToken,
   );
 

@@ -1,7 +1,7 @@
 # Architecture
 
 > Flutter 앱의 구조. API 규약·화면 동작은 원본(`../futureETP/docs/architecture.md`·`wireframes/screens.md`)을 따르고, 여기에는 이 앱의 구조와 대응만 적는다.
-> 디렉터리는 계획 구조다. 현재 있는 것은 `app/`(app·router), `core/config`, `core/api`, `core/storage`, `core/settings`, `core/theme`, `core/util`, `core/widgets`, `core/query`, `core/charts`, `features/access_key`, `features/commodity_list`, `features/commodity`(C 껍데기·C-a·C-b·C-c·C-d·C-d-a, 차트 탭 공통 `chart_tab.dart`), `features/settings`(B), `features/alert_settings`(B-a), `features/data_sources`, `l10n`이다.
+> 디렉터리는 계획 구조다. 현재 있는 것은 `app/`(app·router), `core/config`, `core/api`, `core/storage`, `core/settings`, `core/theme`, `core/util`, `core/widgets`, `core/query`, `core/charts`, `features/access_key`, `features/commodity_list`, `features/calendar`(A-a, 지금은 조회 Provider만), `features/commodity`(C 껍데기·C-a·C-b·C-c·C-d·C-d-a, 차트 탭 공통 `chart_tab.dart`), `features/settings`(B), `features/alert_settings`(B-a), `features/data_sources`, `l10n`이다.
 
 ## 디렉터리 구조
 
@@ -11,6 +11,7 @@ lib/
 ├─ app/                          라우터(go_router), 앱 루트, 테마 적용
 ├─ features/                     화면 단위: 화면 Widget·전용 위젯·Provider
 │  ├─ commodity_list/            A
+│  ├─ calendar/                  A-a 휴장 달력(D-143)
 │  ├─ settings/ alert_settings/ access_key/ data_sources/   B, B-a, B-b, 데이터 출처
 │  └─ commodity/                 C: disparity_chart(C-a)·contract_chart(C-c)·curve(C-b)·etp(C-d, C-d-a)
 ├─ core/

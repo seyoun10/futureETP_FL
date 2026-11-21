@@ -1,11 +1,13 @@
 // 계약 테스트(D-142, FL-007, FL-017).
 // fixtures/*.json은 로컬 dev 서버의 실제 응답 data(차트 두 개는 마지막 60거래일만 남김).
+// calendar.json만 서버 테스트(`apps/server/src/api/calendar.test.ts`) 값에 예외 종류·missing을 더해 손으로 만들었다.
 // 각 fixture가 계약 JSON Schema를 통과하고, 모델로 디코딩되고, 모델의 toJson이 원래 JSON과 같은지 본다.
 import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:futureetp/core/api/health.dart';
+import 'package:futureetp/core/api/models/calendar.dart';
 import 'package:futureetp/core/api/models/commodities.dart';
 import 'package:futureetp/core/api/models/contracts_chart.dart';
 import 'package:futureetp/core/api/models/curve.dart';
@@ -39,6 +41,7 @@ final _responses = <String, Object? Function(Map<String, dynamic>)>{
   'etpDetail': (j) => EtpDetail.fromJson(j).toJson(),
   'settings': (j) => DeviceSettings.fromJson(j).toJson(),
   'device': (j) => Device.fromJson(j).toJson(),
+  'calendar': (j) => MarketCalendar.fromJson(j).toJson(),
 };
 
 void main() {
@@ -160,6 +163,28 @@ void main() {
                   as Map)['code']
               as List,
         ),
+      );
+    });
+
+    test('달력 enum', () {
+      const exception = ['properties', 'exceptions', 'items', 'properties'];
+      expect(
+        CalendarMarket.values.map(
+          (v) => CalendarMissing(market: v, year: 2027).toJson()['market'],
+        ),
+        unorderedEquals(contractEnum('calendar', [...exception, 'market'])),
+      );
+      expect(
+        CalendarExceptionKind.values.map(
+          (v) => CalendarException(
+            market: CalendarMarket.cme,
+            date: '2026-11-26',
+            kind: v,
+            at: null,
+            note: '',
+          ).toJson()['kind'],
+        ),
+        unorderedEquals(contractEnum('calendar', [...exception, 'kind'])),
       );
     });
 

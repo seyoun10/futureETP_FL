@@ -1,0 +1,12 @@
+{
+  "from": "2026-11-01",
+  "to": "2027-01-31",
+  "exceptions": [
+    { "market": "CME", "date": "2026-11-26", "kind": "HALT", "at": "13:30", "note": "Thanksgiving Day" },
+    { "market": "NYSE", "date": "2026-11-26", "kind": "CLOSED", "at": null, "note": "Thanksgiving Day" },
+    { "market": "NYSE", "date": "2026-11-27", "kind": "EARLY_CLOSE", "at": "13:00", "note": "Day after Thanksgiving" },
+    { "market": "KRX", "date": "2026-12-31", "kind": "CLOSED", "at": null, "note": "연말 휴장" },
+    { "market": "KRX", "date": "2027-01-04", "kind": "LATE_OPEN", "at": "10:00", "note": "신년 개장" }
+  ],
+  "missing": [{ "market": "KRX", "year": 2027 }]
+}

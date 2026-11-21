@@ -71,3 +71,12 @@ enum AppLanguage { ko, en }
 
 @JsonEnum(fieldRename: FieldRename.screamingSnake)
 enum DevicePlatform { ios, android }
+
+/// 휴장 달력 시장(calendar.json, D-143).
+@JsonEnum(fieldRename: FieldRename.screamingSnake)
+enum CalendarMarket { cme, krx, nyse }
+
+/// 휴장 달력 예외 종류(calendar.json, D-143). `CLOSED`·`HALT`는 휴장(채운 점),
+/// `EARLY_CLOSE`·`LATE_OPEN`은 조기 마감·개장 지연(빈 점).
+@JsonEnum(fieldRename: FieldRename.screamingSnake)
+enum CalendarExceptionKind { closed, halt, earlyClose, lateOpen }
