@@ -199,9 +199,12 @@ void main() {
     expect(_price(tester).locked, isTrue);
     await g.up();
     final seen = _price(tester).viewport.value;
+    // 받는 동안 켠 십자선은 붙인 뒤 지운다(옛 순번으로 다른 봉을 가리키지 않게)
+    _price(tester).crosshair.value = 5;
 
     await tester.pump(const Duration(milliseconds: 500));
     await tester.pumpAndSettle();
+    expect(_price(tester).crosshair.value, isNull);
     final v = _price(tester).viewport.value;
     expect(
       v,

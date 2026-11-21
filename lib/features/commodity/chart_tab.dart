@@ -103,7 +103,7 @@ mixin ChartTabState<W extends ConsumerStatefulWidget> on ConsumerState<W> {
   }
 
   /// 데이터가 바뀐 뒤(새로고침·이어 받기) 부른다. [shift]는 앞에 붙은 날짜 수(0 이하면 붙지 않음).
-  /// 과거가 앞에 붙었으면 보던 날짜 범위를 그대로 둔다(D-104).
+  /// 과거가 앞에 붙었으면 보던 날짜 범위를 그대로 둔다(D-104). 십자선은 지운다.
   void dataChanged(int shift) {
     final count = barCount;
     if (gesture == null) {
@@ -117,10 +117,8 @@ mixin ChartTabState<W extends ConsumerStatefulWidget> on ConsumerState<W> {
         span: viewport.value.span,
       ).clamped();
     }
-    final i = crosshair.value;
-    if (i != null) {
-      crosshair.value = shift > 0 && i + shift < count ? i + shift : null;
-    }
+    // 데이터가 바뀌면(앞에 붙음·자동 새로고침) 십자선·상세 박스를 지운다(RN `useChartViewport`와 같게)
+    crosshair.value = null;
   }
 
   /// 기간의 최근 위치.
