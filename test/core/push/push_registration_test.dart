@@ -23,8 +23,10 @@ Future<(ProviderContainer, FakeHttpAdapter)> _container(
   FakePushService push, {
   String? key = 'stored-key',
   Locale device = const Locale('ko', 'KR'),
+  FakeHttpAdapter? http,
 }) async {
-  final adapter = FakeHttpAdapter.always(FakeResponse.ok({'id': _deviceId}));
+  final adapter =
+      http ?? FakeHttpAdapter.always(FakeResponse.ok({'id': _deviceId}));
   final store = await openTestDisplayStore();
   final container = ProviderContainer(
     overrides: [
@@ -89,6 +91,22 @@ void main() {
         AndroidChannel.ops: 'Server alerts',
       });
       expect(adapter.requests, hasLength(1));
+    });
+
+    test('등록이 실패하면 앱 언어가 바뀔 때 다시 등록한다', () async {
+      var calls = 0;
+      final http = FakeHttpAdapter(
+        (_) => ++calls == 1
+            ? FakeResponse.fail('UNAUTHORIZED', 401)
+            : FakeResponse.ok({'id': _deviceId}),
+      );
+      final (c, adapter) = await _container(FakePushService(), http: http);
+      expect(adapter.requests, hasLength(1));
+      c.read(displaySettingsProvider.notifier).setLanguage(AppLanguage.en);
+      await pumpEventQueue();
+      c.read(displaySettingsProvider.notifier).setLanguage(AppLanguage.ko);
+      await pumpEventQueue();
+      expect(adapter.requests, hasLength(2));
     });
 
     test('빈 토큰이면 토큰 없이 등록한다', () async {

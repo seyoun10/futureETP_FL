@@ -14,9 +14,10 @@ import 'package:material_ui/material_ui.dart';
 /// 푸시 토큰을 서버에 등록한다(D-037, D-048, D-120, RN `PushRegistration`).
 ///
 /// 접근 키가 있을 때 앱 루트가 watch한다. 키가 바뀌면(client가 바뀌면) 다시 만들어져 새 키로
-/// 등록한다. 채널 이름은 앱 언어를 따르고, 등록은 키마다 한 번만 한다. 실패는 다음 실행 때
-/// 다시 시도한다. 빈 토큰이면 토큰 없이 등록해 서버가 이 기기로 보내지 않게 하고, 토큰 조회가
-/// 실패하면 일시 오류일 수 있어 등록하지 않는다.
+/// 등록한다. 채널 이름은 앱 언어를 따르고, 등록은 키마다 한 번만 한다. 실패하면(거절된 키의
+/// 401, 토큰 조회 오류 등) 앱 언어나 접근 키가 바뀔 때, 아니면 다음 실행 때 다시 시도한다.
+/// 빈 토큰이면 토큰 없이 등록해 서버가 이 기기로 보내지 않게 하고, 토큰 조회가 실패하면
+/// 일시 오류일 수 있어 등록하지 않는다.
 final pushRegistrationProvider = Provider<void>((ref) {
   final push = ref.watch(pushServiceProvider);
   final platform = push.platform;
@@ -50,12 +51,17 @@ final pushRegistrationProvider = Provider<void>((ref) {
       });
       if (registered || !ref.mounted) return;
       registered = true;
-      // Android 13+는 채널이 있어야 권한 창이 뜬다
-      await push.requestPermission();
-      final token = await push.getToken();
-      final value = token == null || token.isEmpty ? null : token;
-      await register(value);
-      lastToken = value;
+      try {
+        // Android 13+는 채널이 있어야 권한 창이 뜬다
+        await push.requestPermission();
+        final token = await push.getToken();
+        final value = token == null || token.isEmpty ? null : token;
+        await register(value);
+        lastToken = value;
+      } on Object {
+        registered = false;
+        rethrow;
+      }
     } on Object catch (error) {
       debugPrint('[push] registration failed: $error');
     }
