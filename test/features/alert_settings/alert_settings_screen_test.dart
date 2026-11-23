@@ -150,6 +150,14 @@ void main() {
     expect(_selected(tester, 'None'), isTrue);
   });
 
+  testWidgets('거부 시간 스위치는 iOS 스위치 프레임 높이(31)만 차지한다(RN Switch)', (tester) async {
+    await _pump(tester);
+    final box = find
+        .ancestor(of: find.byType(Switch), matching: find.byType(SizedBox))
+        .first;
+    expect(tester.getSize(box).height, 31);
+  });
+
   testWidgets('거부 시간을 켜면 23:00~다음 날 07:00, 끄면 null', (tester) async {
     final server = await _pump(tester);
     await tester.tap(find.byType(Switch));

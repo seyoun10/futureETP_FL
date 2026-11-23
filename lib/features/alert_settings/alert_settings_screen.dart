@@ -233,6 +233,9 @@ class _CriteriaSummary extends StatelessWidget {
   }
 }
 
+/// iOS `UISwitch` 프레임 높이. RN 알림 거부 시간 줄 높이가 이 값으로 정해진다.
+const _iosSwitchHeight = 31.0;
+
 /// 알림 거부 시간(D-007, D-026, RN `QuietTimeSection`). 끄면 null로 저장한다.
 /// 시작·종료는 30분 단위이고 서로 달라야 하므로 시트에서 반대쪽 시각은 고를 수 없다.
 /// 자정을 넘기면 종료 시각에 '다음 날'을 붙인다.
@@ -287,31 +290,48 @@ class _QuietTimeSection extends StatelessWidget {
             right: AppSpacing.lg,
             top: AppSpacing.lg,
           ),
-          child: Row(
-            children: [
-              Expanded(
-                child: Text(
-                  l10n.alertSettingsQuietTime,
-                  style: const TextStyle(
-                    color: AppColors.text,
-                    fontSize: AppFontSize.body,
+          // RN `minHeight: 44`는 위 여백(lg)을 포함한 높이다
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(
+              minHeight: AppSize.touchTarget - AppSpacing.lg,
+            ),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    l10n.alertSettingsQuietTime,
+                    style: const TextStyle(
+                      color: AppColors.text,
+                      fontSize: AppFontSize.body,
+                    ),
                   ),
                 ),
-              ),
-              Semantics(
-                label: l10n.alertSettingsQuietTime,
-                child: Switch.adaptive(
-                  value: quiet != null,
-                  activeTrackColor: AppColors.surfaceSelected,
-                  inactiveTrackColor: AppColors.surface,
-                  thumbColor: const WidgetStatePropertyAll(AppColors.text),
-                  onChanged: (on) {
-                    tapHaptic();
-                    onChanged(on ? _defaultQuietTime : null);
-                  },
+                Semantics(
+                  label: l10n.alertSettingsQuietTime,
+                  // iOS `UISwitch` 프레임 높이(31)만 차지한다. 터치 영역은 넘쳐 그대로 둔다
+                  child: IntrinsicWidth(
+                    child: SizedBox(
+                      height: _iosSwitchHeight,
+                      child: OverflowBox(
+                        maxHeight: double.infinity,
+                        child: Switch.adaptive(
+                          value: quiet != null,
+                          activeTrackColor: AppColors.surfaceSelected,
+                          inactiveTrackColor: AppColors.surface,
+                          thumbColor: const WidgetStatePropertyAll(
+                            AppColors.text,
+                          ),
+                          onChanged: (on) {
+                            tapHaptic();
+                            onChanged(on ? _defaultQuietTime : null);
+                          },
+                        ),
+                      ),
+                    ),
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
         if (quiet != null)
