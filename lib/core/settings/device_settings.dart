@@ -47,7 +47,15 @@ class DeviceSettingsNotifier extends AsyncNotifier<DeviceSettings> {
       if (ref.mounted) state = AsyncData(settings);
       return settings;
     });
-    _queue = result.then<void>((_) {}, onError: (Object _) {});
+    // 실패해도 응답만 못 받았을 뿐 서버에는 반영됐을 수 있어 서버 값을 다시 받는다
+    // (RN `useUpdateSettings` onError). 기다리지 않아 실패한 변경은 바로 빠지고
+    // 다음 PATCH도 밀리지 않는다
+    _queue = result.then<void>(
+      (_) {},
+      onError: (Object _) {
+        if (ref.mounted) ref.invalidateSelf();
+      },
+    );
     return result.whenComplete(() => pending.remove(patch));
   }
 

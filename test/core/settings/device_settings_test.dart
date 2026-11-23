@@ -228,6 +228,21 @@ void main() {
       expect(c.read(settingsViewProvider).value?.basis, before);
     });
 
+    test('실패하면 서버에 반영됐을 수 있어 설정을 다시 받는다', () async {
+      final saving = c
+          .read(deviceSettingsProvider.notifier)
+          .save(const SettingsPatch(basis: Basis.kr));
+      await pumpEventQueue();
+      // 응답은 실패했지만 서버에는 반영된 경우
+      gate.fail('INTERNAL', 500);
+      expect(await saving, isA<Object>());
+      await pumpEventQueue();
+      gate.respond({..._fixture, 'basis': 'KR'});
+      await pumpEventQueue();
+      expect(c.read(deviceSettingsProvider).value?.basis, Basis.kr);
+      expect(c.read(settingsViewProvider).value?.basis, Basis.kr);
+    });
+
     test('진행 중인 설정 조회가 PATCH보다 늦게 끝나도 옛 값으로 덮지 않는다', () async {
       // 앱 복귀 등으로 다시 받는 중(PATCH 전 서버 값을 받을 GET)
       c.invalidate(deviceSettingsProvider);
