@@ -1,3 +1,5 @@
+import 'dart:ui' show SemanticsFlag;
+
 import 'package:clock/clock.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -147,6 +149,25 @@ void main() {
       '11월 21일, 오늘',
     );
     expect(_rich('휴장 · Thanksgiving Day'), findsOneWidget);
+  });
+
+  testWidgets('스크린 리더는 월 제목만 제목으로, 목록은 한 줄씩 읽는다', (tester) async {
+    final handle = tester.ensureSemantics();
+    await _pump(tester, today: DateTime(2026, 11, 21), missing: const []);
+    // 제목에 요일·목록 문구가 합쳐지지 않는다
+    expect(
+      find.semantics
+          .byFlag(SemanticsFlag.isHeader)
+          .evaluate()
+          .map((n) => n.label),
+      containsAll(['2026년 11월', '2026년 12월', '2027년 1월']),
+    );
+    expect(
+      find.semantics.byLabel('11/26 (목)\nNYSE\n휴장 · Thanksgiving Day'),
+      findsOne,
+    );
+    expect(find.semantics.byLabel('월'), findsAtLeast(3));
+    handle.dispose();
   });
 
   testWidgets('3개월 밖 연도의 미입력은 안내하지 않는다', (tester) async {

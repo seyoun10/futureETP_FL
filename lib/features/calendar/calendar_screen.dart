@@ -245,7 +245,9 @@ class _MonthView extends StatelessWidget {
         children: [
           Padding(
             padding: const EdgeInsets.only(bottom: AppSpacing.sm),
+            // container가 없으면 같은 달의 요일·목록 문구까지 header 노드 하나로 합쳐진다
             child: Semantics(
+              container: true,
               header: true,
               child: Text(
                 l10n.calendarMonthTitle('${month.year}', monthName),
@@ -263,14 +265,17 @@ class _MonthView extends StatelessWidget {
                 Expanded(
                   child: Padding(
                     padding: const EdgeInsets.only(bottom: AppSpacing.xs),
-                    child: Text(
-                      l10n.calendarWeekday(key),
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        color: _isWeekend(weekday)
-                            ? AppColors.textSecondary
-                            : AppColors.text,
-                        fontSize: AppFontSize.caption,
+                    child: Semantics(
+                      container: true,
+                      child: Text(
+                        l10n.calendarWeekday(key),
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: _isWeekend(weekday)
+                              ? AppColors.textSecondary
+                              : AppColors.text,
+                          fontSize: AppFontSize.caption,
+                        ),
                       ),
                     ),
                   ),
@@ -301,15 +306,27 @@ class _MonthView extends StatelessWidget {
               spacing: AppSpacing.xs,
               children: items.isEmpty
                   ? [
-                      Text(
-                        l10n.calendarNone,
-                        style: const TextStyle(
-                          color: AppColors.textSecondary,
-                          fontSize: AppFontSize.caption,
+                      Semantics(
+                        container: true,
+                        child: Text(
+                          l10n.calendarNone,
+                          style: const TextStyle(
+                            color: AppColors.textSecondary,
+                            fontSize: AppFontSize.caption,
+                          ),
                         ),
                       ),
                     ]
-                  : [for (final e in items) _ExceptionLine(e)],
+                  : [
+                      // 날짜·시장·내용을 한 줄로 읽는다
+                      for (final e in items)
+                        MergeSemantics(
+                          child: Semantics(
+                            container: true,
+                            child: _ExceptionLine(e),
+                          ),
+                        ),
+                    ],
             ),
           ),
         ],

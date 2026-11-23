@@ -5,11 +5,6 @@
 원본 변경 따라가기: `../futureETP`에서 API·shared 스키마·화면 동작이 바뀌면 그쪽에서 이 파일의 "원본 변경 반영"에 항목을 적는다
 
 ## 원본 변경 반영
-- [ ] 휴장 달력 화면 A-a(2026-11-21, futureETP D-143): A title-bar [⚙] 왼쪽에 [📅](`calendar-month-outline`) → 이번 달~다다음 달 3개월 세로 달력, 오늘(기기 로컬)·CME/KRX/NYSE 휴장(채운 점)·조기 마감/개장 지연(빈 점)·달별 휴일 이름 목록·미입력 안내. API `GET /v1/calendar?from&to`(계약 `calendar`·`calendarQuery`), 색 `colors.market`·`today`, 문구 `calendar.*`. `../futureETP/docs/wireframes/screens.md` A-a. 캐시: 응답 `missing`이 비어 있으면 12시간, 있으면 5분 stale(화면 재진입·앱 복귀 때 다시 조회, 서버 import 뒤 재시작 없이 반영. futureETP `useMarketCalendar.ts`)
-  - [x] 모델·`getCalendar`·`calendarProvider`(캐시 규칙)
-  - [x] 3개월 달력 화면·색 토큰·`calendar.*` 문구(D-144 로컬 날짜·시각 포함, `CalendarScreen`)
-  - [x] A 제목 줄 [📅] 버튼·라우팅(`/calendar`)
-  - [ ] 기기 확인: 3개월 달력 모양·스크롤·홈 인디케이터 여백, 스크린 리더 문구
 
 ## 3. 공통 기반
 - [ ] 접근 키 QR 읽기를 실제 기기에서 확인(키 스크립트 QR, FL-018)
