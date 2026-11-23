@@ -117,6 +117,40 @@ void main() {
     expect(_crosshair.value, isNull);
   });
 
+  testWidgets('핀치를 시작한 터치에서는 멈춰도 십자선을 켜지 않고, 새 터치에서는 켠다', (tester) async {
+    await _pump(tester);
+    final calls = _haptics(tester);
+    final a = await tester.startGesture(_at(tester, 120), pointer: 10);
+    final b = await tester.startGesture(_at(tester, 180), pointer: 11);
+    for (var i = 1; i <= 5; i++) {
+      await a.moveTo(_at(tester, 120 - i * 6.0));
+      await b.moveTo(_at(tester, 180 + i * 6.0));
+      await tester.pump(const Duration(milliseconds: 16));
+    }
+    expect(_viewport.value.span, lessThan(126));
+    // 두 손가락을 댄 채 멈춘다
+    await tester.pump(crosshairLongPress * 2);
+    expect(_crosshair.value, isNull);
+    // 한 손가락만 떼고 남은 손가락을 댄 채 멈춰도
+    await b.up();
+    await tester.pump(crosshairLongPress * 2);
+    expect(_crosshair.value, isNull);
+    // 뗀 손가락을 다시 대고 멈춰도
+    final c = await tester.startGesture(_at(tester, 200), pointer: 12);
+    await tester.pump(crosshairLongPress * 2);
+    expect(_crosshair.value, isNull);
+    expect(calls, isEmpty);
+    await a.up();
+    await c.up();
+
+    // 손을 다 떼고 새로 길게 누르면 평소대로
+    final g = await tester.startGesture(_at(tester, 150), pointer: 13);
+    await tester.pump(crosshairLongPress + const Duration(milliseconds: 50));
+    expect(_crosshair.value, _viewport.value.indexAt(150, 300));
+    expect(calls, hasLength(1));
+    await g.up();
+  });
+
   testWidgets('locked면 터치를 받지 않는다', (tester) async {
     await _pump(tester, locked: true);
     final before = _viewport.value;
