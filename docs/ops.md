@@ -39,4 +39,11 @@
 
 ## iOS
 
-Apple Developer 가입 전이라 시뮬레이터로만 확인한다(FL-011). 실기기 설치 방식은 가입 뒤에 정한다.
+Apple Developer 가입 전에는 무료 Apple ID(Personal Team `E8B6A6F4B9`, 프로젝트에 지정됨)로 서명해 실기기에 설치한다. 서명이 7일 뒤 만료되면 다시 설치한다. Push 권한(entitlements)은 아직 없어 iOS 알림은 Apple 가입 뒤 5단계에서 붙인다(FL-011).
+
+- prod Release 설치(RN prod 앱 위에 덮어씀, 기기 이름은 `xcrun devicectl list devices`의 Name, 예: `14P`)
+  1. `LANG=en_US.UTF-8 flutter build ios --flavor prod --release` → `build/ios/iphoneos/Runner.app`
+  2. `xcrun devicectl device install app --device 14P build/ios/iphoneos/Runner.app`
+  3. `xcrun devicectl device process launch --device 14P --terminate-existing io.github.seyoon.futureetp`
+- 접근 키는 RN과 저장 위치가 달라 넘어오지 않는다. B-b에서 QR이나 직접 입력으로 다시 넣는다
+- FL → RN: futureETP에서 `npm run ios:prod-install -- 14P`로 RN prod를 다시 설치한다
