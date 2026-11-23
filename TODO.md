@@ -5,6 +5,7 @@
 원본 변경 따라가기: `../futureETP`에서 API·shared 스키마·화면 동작이 바뀌면 그쪽에서 이 파일의 "원본 변경 반영"에 항목을 적는다
 
 ## 원본 변경 반영
+마지막 대조: futureETP `ecf4dd1`(2026-11-23). 적힌 항목 밖에 빠진 것이 있는지는 `git -C ../futureETP log --oneline ecf4dd1..HEAD -- apps/mobile packages/shared`로 그 뒤 커밋만 Flutter 커밋과 맞춰 본다. 다 보면 이 줄의 커밋을 그 HEAD로 바꾼다
 
 ## 3. 공통 기반
 - [ ] 접근 키 QR 읽기를 실제 기기에서 확인(키 스크립트 QR, FL-018)
