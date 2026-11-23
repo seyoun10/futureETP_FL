@@ -3,6 +3,7 @@ import 'package:futureetp/core/api/app_error.dart';
 import 'package:futureetp/core/api/error_text.dart';
 import 'package:futureetp/core/api/models/enums.dart';
 import 'package:futureetp/core/api/models/etp.dart';
+import 'package:futureetp/core/theme/mdi_icons.dart';
 import 'package:futureetp/core/theme/tokens.dart';
 import 'package:futureetp/core/util/format_amount.dart';
 import 'package:futureetp/core/util/haptics.dart';
@@ -287,7 +288,11 @@ class _EtpRow extends StatelessWidget {
                 ],
               ),
             ),
-            const Icon(Icons.chevron_right, color: AppColors.textSecondary),
+            const Icon(
+              MdiIcons.chevronRight,
+              size: AppFontSize.headline,
+              color: AppColors.textSecondary,
+            ),
           ],
         ),
       ),

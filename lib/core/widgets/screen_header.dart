@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:futureetp/core/settings/device_settings.dart';
+import 'package:futureetp/core/theme/mdi_icons.dart';
 import 'package:futureetp/core/theme/tokens.dart';
 import 'package:futureetp/core/util/haptics.dart';
 import 'package:futureetp/l10n/app_localizations.dart';
@@ -48,7 +49,7 @@ class ScreenHeader extends StatelessWidget {
             children: [
               if (showBack)
                 HeaderIconButton(
-                  icon: Icons.arrow_back,
+                  icon: MdiIcons.arrowLeft,
                   label: l10n.back,
                   compact: compact,
                   onPressed: onBack ?? () => Navigator.of(context).maybePop(),
@@ -173,7 +174,7 @@ class SettingsHeaderButton extends ConsumerWidget {
     final settings = ref.watch(settingsViewProvider).value;
     final alertOff = settings != null && settings.alertCommodity == null;
     return HeaderIconButton(
-      icon: Icons.settings_outlined,
+      icon: MdiIcons.cogOutline,
       label: l10n.settingsTitle,
       compact: compact,
       badge: alertOff ? l10n.settingsAlertOffBadge : null,

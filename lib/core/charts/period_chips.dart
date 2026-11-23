@@ -1,4 +1,5 @@
 import 'package:futureetp/core/charts/chart_periods.dart';
+import 'package:futureetp/core/theme/mdi_icons.dart';
 import 'package:futureetp/core/theme/tokens.dart';
 import 'package:futureetp/core/util/haptics.dart';
 import 'package:futureetp/l10n/app_localizations.dart';
@@ -107,7 +108,7 @@ class ChartResetButton extends StatelessWidget {
         child: const SizedBox.square(
           dimension: _size,
           child: Icon(
-            Icons.restart_alt,
+            MdiIcons.restore,
             color: AppColors.text,
             size: AppFontSize.headline,
           ),

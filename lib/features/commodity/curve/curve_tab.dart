@@ -12,6 +12,7 @@ import 'package:futureetp/core/charts/chart_skeleton.dart';
 import 'package:futureetp/core/charts/curve_chart.dart';
 import 'package:futureetp/core/charts/legend_line.dart';
 import 'package:futureetp/core/charts/period_chips.dart';
+import 'package:futureetp/core/theme/mdi_icons.dart';
 import 'package:futureetp/core/theme/tokens.dart';
 import 'package:futureetp/core/theme/up_down_color.dart';
 import 'package:futureetp/core/util/format_number.dart';
@@ -370,7 +371,7 @@ class _BaseDateControls extends StatelessWidget {
           _StepButton(
             key: const Key('curve-prev'),
             label: l10n.curvePrev,
-            icon: Icons.chevron_left,
+            icon: MdiIcons.chevronLeft,
             onPressed: prev == null ? null : () => onChangeBaseDate(prev),
           ),
           Semantics(
@@ -411,7 +412,7 @@ class _BaseDateControls extends StatelessWidget {
           _StepButton(
             key: const Key('curve-next'),
             label: l10n.curveNext,
-            icon: Icons.chevron_right,
+            icon: MdiIcons.chevronRight,
             // D-1로 오면 기본값과 같은 조회를 쓴다
             onPressed: next == null
                 ? null
@@ -457,6 +458,7 @@ class _StepButton extends StatelessWidget {
               dimension: AppSize.touchTarget,
               child: Icon(
                 icon,
+                size: AppFontSize.headline,
                 color: enabled ? AppColors.text : AppColors.textSecondary,
               ),
             ),

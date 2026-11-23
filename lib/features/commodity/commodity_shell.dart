@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:futureetp/core/api/models/enums.dart';
 import 'package:futureetp/core/settings/device_settings.dart';
+import 'package:futureetp/core/theme/mdi_icons.dart';
 import 'package:futureetp/core/theme/tokens.dart';
 import 'package:futureetp/core/util/haptics.dart';
 import 'package:futureetp/core/util/orientation.dart';
@@ -125,8 +126,8 @@ class _CommodityShellState extends ConsumerState<CommodityShell> {
                   HeaderIconButton(
                     key: const Key('commodity-rotate'),
                     icon: landscape
-                        ? Icons.stay_current_portrait
-                        : Icons.stay_current_landscape,
+                        ? MdiIcons.phoneRotatePortrait
+                        : MdiIcons.phoneRotateLandscape,
                     label: l10n.commodityRotate,
                     compact: landscape,
                     onPressed: () =>

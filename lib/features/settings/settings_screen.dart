@@ -9,6 +9,7 @@ import 'package:futureetp/core/config/app_config.dart';
 import 'package:futureetp/core/config/app_version.dart';
 import 'package:futureetp/core/settings/device_settings.dart';
 import 'package:futureetp/core/settings/display_settings.dart';
+import 'package:futureetp/core/theme/mdi_icons.dart';
 import 'package:futureetp/core/theme/tokens.dart';
 import 'package:futureetp/core/util/failed_alert.dart';
 import 'package:futureetp/core/util/haptics.dart';
@@ -117,7 +118,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 title: l10n.settingsTitle,
                 actions: [
                   HeaderIconButton(
-                    icon: Icons.restart_alt,
+                    icon: MdiIcons.restore,
                     label: l10n.settingsReset,
                     onPressed: () => unawaited(_confirmReset()),
                   ),
@@ -371,7 +372,11 @@ class LinkRow extends StatelessWidget {
                 ],
               ),
             ),
-            const Icon(Icons.chevron_right, color: AppColors.textSecondary),
+            const Icon(
+              MdiIcons.chevronRight,
+              size: AppFontSize.headline,
+              color: AppColors.textSecondary,
+            ),
           ],
         ),
       ),

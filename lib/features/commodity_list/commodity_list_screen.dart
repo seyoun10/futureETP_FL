@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:futureetp/core/api/models/commodities.dart';
+import 'package:futureetp/core/theme/mdi_icons.dart';
 import 'package:futureetp/core/theme/tokens.dart';
 import 'package:futureetp/core/theme/up_down_color.dart';
 import 'package:futureetp/core/util/failed_alert.dart';
@@ -101,7 +102,7 @@ class _CommodityListScreenState extends ConsumerState<CommodityListScreen> {
               showBack: false,
               actions: [
                 HeaderIconButton(
-                  icon: Icons.calendar_month_outlined,
+                  icon: MdiIcons.calendarMonthOutline,
                   label: l10n.calendarOpen,
                   onPressed: widget.onOpenCalendar,
                 ),

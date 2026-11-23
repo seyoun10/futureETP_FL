@@ -436,3 +436,11 @@
 - 근거: `flutter_timezone`(FL-023)으로 기기 IANA 이름을 비동기로 받아 `timezone`에서 찾는 방법도 있지만, 읽지 못할 때의 대체 경로가 필요하고 결과는 OS 시간대와 같다. `latest_10y`는 전체 DB보다 작고, 달력 범위(이번 달~다다음 달)를 넉넉히 덮는다.
 - 영향: `pubspec.yaml`에 `timezone`. 10년 밖 날짜는 서머타임 규칙이 빠질 수 있으나 A-a는 3개월만 본다.
 
+
+## FL-038: 아이콘 — RN과 같은 MaterialCommunityIcons 글꼴을 번들
+- 날짜: 2026-11-23
+- 상태: 확정
+- 맥락: RN은 모든 아이콘을 `@expo/vector-icons` MaterialCommunityIcons(MDI)로 그린다. FL은 Material Icons의 비슷한 아이콘을 골라 썼는데, 시뮬레이터 비교에서 회전(`phone-rotate-*` ↔ `stay_current_*`)·되돌리기(`restore` ↔ `restart_alt`) 모양이 달랐다.
+- 결정: RN이 쓰는 `MaterialCommunityIcons.ttf`(`@expo/vector-icons` 15.1.1, Pictogrammers MDI, Apache-2.0)를 `assets/fonts/`에 넣고, 쓰는 글리프만 `lib/core/theme/mdi_icons.dart`의 `MdiIcons` 상수(`IconData`, 코드포인트는 같은 버전 glyphmap 값)로 둔다. 크기는 RN `Icon` 기본값인 `fontSize.headline`(22)이다.
+- 근거: 같은 글꼴이라 모양이 RN과 정확히 같다. 상수 `IconData`라 release 빌드의 아이콘 글꼴 tree-shaking이 쓰는 글리프만 남긴다. `material_design_icons_flutter` 같은 패키지는 판이 RN과 어긋날 수 있다.
+- 영향: 새 아이콘은 RN glyphmap에서 코드포인트를 찾아 `MdiIcons`에 더한다. RN이 `@expo/vector-icons`를 올리면 글꼴 파일을 다시 복사한다. 저장소에 글꼴 약 1.3MB.

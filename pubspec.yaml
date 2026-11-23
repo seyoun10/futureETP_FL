@@ -49,6 +49,11 @@ dev_dependencies:
 flutter:
   generate: true
   uses-material-design: true
+  # RN(@expo/vector-icons 15.1.1)과 같은 MaterialCommunityIcons 글꼴(Pictogrammers, Apache-2.0, FL-038)
+  fonts:
+    - family: MaterialCommunityIcons
+      fonts:
+        - asset: assets/fonts/MaterialCommunityIcons.ttf
 
 # 앱 아이콘은 RN(../futureETP/apps/mobile/assets/images)과 같은 이미지. 바꾸면 dart run flutter_launcher_icons
 flutter_launcher_icons:
