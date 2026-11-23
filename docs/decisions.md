@@ -444,3 +444,11 @@
 - 결정: RN이 쓰는 `MaterialCommunityIcons.ttf`(`@expo/vector-icons` 15.1.1, Pictogrammers MDI, Apache-2.0)를 `assets/fonts/`에 넣고, 쓰는 글리프만 `lib/core/theme/mdi_icons.dart`의 `MdiIcons` 상수(`IconData`, 코드포인트는 같은 버전 glyphmap 값)로 둔다. 크기는 RN `Icon` 기본값인 `fontSize.headline`(22)이다.
 - 근거: 같은 글꼴이라 모양이 RN과 정확히 같다. 상수 `IconData`라 release 빌드의 아이콘 글꼴 tree-shaking이 쓰는 글리프만 남긴다. `material_design_icons_flutter` 같은 패키지는 판이 RN과 어긋날 수 있다.
 - 영향: 새 아이콘은 RN glyphmap에서 코드포인트를 찾아 `MdiIcons`에 더한다. RN이 `@expo/vector-icons`를 올리면 글꼴 파일을 다시 복사한다. 저장소에 글꼴 약 1.3MB.
+
+## FL-039: 한글 줄 높이 — RN(iOS)보다 0.67pt 높은 차이는 둔다
+- 날짜: 2026-11-23
+- 상태: 확정
+- 맥락: 시뮬레이터 비교에서 한글이 섞인 줄이 RN보다 줄마다 약 0.67pt(12pt 글자 기준 14.33 → 15.0) 높았다. iOS는 시스템 글꼴의 한글 대체 글꼴로 UI 전용 `.Apple SD Gothic NeoI`(descent 1.68)를 써서 줄 높이가 SF와 같다. Flutter(Skia)는 일반 `Apple SD Gothic Neo`(descent 3.6)를 고르고, 숨김 글꼴이라 `fontFamilyFallback`으로 지정할 수 없다. `height`를 줘도 글꼴별 위·아래 비율로 나뉘어 차이가 남는다.
+- 결정: 맞추지 않는다. 맞추려면 Text 약 140곳을 `StrutStyle(forceStrutHeight)`를 넣는 공용 위젯으로 바꿔야 한다.
+- 근거: 화면 구성·간격 차이는 아니고, 긴 화면에서 아래로 갈수록 몇 pt 어긋나는 정도다. 전역으로 strut을 줄 수단이 없어 바꾸는 범위에 비해 얻는 것이 작다.
+- 영향: RN과 나란히 비교할 때 한글 줄이 많은 화면(B, C-d, C-d-a)은 아래쪽이 몇 pt 내려가 보인다. 이 차이는 고칠 대상에서 뺀다.
