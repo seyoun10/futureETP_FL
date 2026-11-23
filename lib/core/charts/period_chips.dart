@@ -107,7 +107,7 @@ class ChartResetButton extends StatelessWidget {
         child: const SizedBox.square(
           dimension: _size,
           child: Icon(
-            Icons.restore,
+            Icons.restart_alt,
             color: AppColors.text,
             size: AppFontSize.headline,
           ),

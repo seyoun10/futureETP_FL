@@ -133,10 +133,10 @@ class _AccessKeyScreenState extends ConsumerState<AccessKeyScreen> {
           ScreenHeader(title: l10n.accessKeyTitle, showBack: context.canPop()),
           Expanded(
             child: ListView(
-              padding: const EdgeInsets.all(AppSpacing.xl),
+              padding: const EdgeInsets.all(AppSpacing.lg),
               children: [
                 Text(l10n.accessKeyGuide),
-                const SizedBox(height: AppSpacing.lg),
+                const SizedBox(height: AppSpacing.md),
                 if (_scanning)
                   QrScanner(
                     onScanned: _onScanned,
@@ -148,6 +148,7 @@ class _AccessKeyScreenState extends ConsumerState<AccessKeyScreen> {
                   )
                 else
                   FilledButton.tonal(
+                    style: _buttonStyle,
                     onPressed: _pending
                         ? null
                         : () => setState(() {
@@ -157,7 +158,7 @@ class _AccessKeyScreenState extends ConsumerState<AccessKeyScreen> {
                           }),
                     child: Text(l10n.accessKeyScanQr),
                   ),
-                const SizedBox(height: AppSpacing.lg),
+                const SizedBox(height: AppSpacing.md),
                 TextField(
                   key: const Key('access-key-input'),
                   controller: _input,
@@ -166,13 +167,28 @@ class _AccessKeyScreenState extends ConsumerState<AccessKeyScreen> {
                   obscureText: true,
                   autocorrect: false,
                   enableSuggestions: false,
+                  textAlignVertical: TextAlignVertical.center,
+                  // RN과 같이 높이 44, 좌우 여백 12, 모서리 8
                   decoration: InputDecoration(
                     hintText: l10n.accessKeyPastePlaceholder,
+                    isDense: true,
+                    constraints: const BoxConstraints(
+                      minHeight: AppSize.touchTarget,
+                    ),
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: AppSpacing.md,
+                      vertical: AppSpacing.sm,
+                    ),
+                    border: _inputBorder,
+                    enabledBorder: _inputBorder,
+                    focusedBorder: _inputBorder,
+                    disabledBorder: _inputBorder,
                   ),
                   onSubmitted: (_) => canSubmit ? _submit() : null,
                 ),
-                const SizedBox(height: AppSpacing.lg),
+                const SizedBox(height: AppSpacing.md),
                 FilledButton.tonal(
+                  style: _buttonStyle,
                   onPressed: canSubmit ? _submit : null,
                   child: _pending
                       ? SizedBox.square(
@@ -185,7 +201,7 @@ class _AccessKeyScreenState extends ConsumerState<AccessKeyScreen> {
                       : Text(l10n.accessKeySubmit),
                 ),
                 if (error != null) ...[
-                  const SizedBox(height: AppSpacing.lg),
+                  const SizedBox(height: AppSpacing.md),
                   Text(
                     error,
                     key: const Key('access-key-error'),
@@ -201,3 +217,20 @@ class _AccessKeyScreenState extends ConsumerState<AccessKeyScreen> {
     );
   }
 }
+
+/// RN처럼 모서리 8이고, 눌 수 없을 때도 색을 바꾸지 않는다.
+final ButtonStyle _buttonStyle = FilledButton.styleFrom(
+  backgroundColor: AppColors.surfaceSelected,
+  foregroundColor: AppColors.text,
+  disabledBackgroundColor: AppColors.surfaceSelected,
+  disabledForegroundColor: AppColors.text,
+  textStyle: const TextStyle(fontSize: AppFontSize.body),
+  shape: RoundedRectangleBorder(
+    borderRadius: BorderRadius.circular(AppSpacing.sm),
+  ),
+);
+
+final _inputBorder = OutlineInputBorder(
+  borderRadius: BorderRadius.circular(AppSpacing.sm),
+  borderSide: BorderSide.none,
+);

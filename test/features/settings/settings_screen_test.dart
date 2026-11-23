@@ -275,4 +275,18 @@ void main() {
     await tester.pumpAndSettle();
     expect(server.patches.single['rareLevels'], [1, 2, 4, 8, 20]);
   });
+
+  testWidgets('키패드가 열린 채 빈 곳을 누르면 닫고 저장, 다른 칸을 누르면 그대로다', (tester) async {
+    final server = await _pump(tester);
+    await tester.tap(_field(4));
+    await tester.enterText(_field(4), '20');
+    await tester.tap(find.text('US-style'));
+    await tester.pumpAndSettle();
+    expect(FocusManager.instance.primaryFocus?.context?.widget, isNot(null));
+    expect(server.patches.where((p) => p.containsKey('rareLevels')), isEmpty);
+
+    await tester.tap(find.text('Language for screens and push notifications'));
+    await tester.pumpAndSettle();
+    expect(server.patches.last['rareLevels'], [1, 2, 4, 8, 20]);
+  });
 }

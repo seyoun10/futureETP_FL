@@ -117,51 +117,56 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 title: l10n.settingsTitle,
                 actions: [
                   HeaderIconButton(
-                    icon: Icons.restore,
+                    icon: Icons.restart_alt,
                     label: l10n.settingsReset,
                     onPressed: () => unawaited(_confirmReset()),
                   ),
                 ],
               ),
               Expanded(
-                child: ListView(
-                  // 끌면 키패드를 닫는다. 키패드가 열린 채 다른 행을 눌러도 그 행이 눌린다
-                  keyboardDismissBehavior:
-                      ScrollViewKeyboardDismissBehavior.onDrag,
-                  padding: EdgeInsets.only(
-                    bottom: keyboard > 0 ? keyboard + AppSize.touchTarget : 0,
-                  ),
-                  children: [
-                    if (_saveError case final error?)
-                      SaveErrorLine(
-                        l10n.settingsSaveFailed(errorText(l10n, error)),
+                // 끌거나 빈 곳을 누르면 키패드를 닫는다. 키패드가 열린 채 다른 행을 누르면
+                // 그 행이 눌리고 키패드는 그대로다(RN keyboardShouldPersistTaps="handled")
+                child: GestureDetector(
+                  behavior: HitTestBehavior.translucent,
+                  onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
+                  child: ListView(
+                    keyboardDismissBehavior:
+                        ScrollViewKeyboardDismissBehavior.onDrag,
+                    padding: EdgeInsets.only(
+                      bottom: keyboard > 0 ? keyboard + AppSize.touchTarget : 0,
+                    ),
+                    children: [
+                      if (_saveError case final error?)
+                        SaveErrorLine(
+                          l10n.settingsSaveFailed(errorText(l10n, error)),
+                        ),
+                      ..._displaySection(l10n),
+                      SectionHeader(l10n.settingsSectionDisparity),
+                      if (settings case AsyncError(
+                        :final error,
+                        hasValue: false,
+                        isLoading: false,
+                      ))
+                        ErrorView(
+                          error: error,
+                          onRetry: () => ref.invalidate(deviceSettingsProvider),
+                        )
+                      else
+                        ..._disparitySection(l10n, settings.value),
+                      SectionHeader(l10n.settingsSectionOther),
+                      LinkRow(
+                        label: l10n.settingsAccessKey,
+                        value: hasKey ? l10n.settingsAccessKeySaved : null,
+                        description: l10n.settingsAccessKeyDesc,
+                        onTap: widget.onOpenAccessKey,
                       ),
-                    ..._displaySection(l10n),
-                    SectionHeader(l10n.settingsSectionDisparity),
-                    if (settings case AsyncError(
-                      :final error,
-                      hasValue: false,
-                      isLoading: false,
-                    ))
-                      ErrorView(
-                        error: error,
-                        onRetry: () => ref.invalidate(deviceSettingsProvider),
-                      )
-                    else
-                      ..._disparitySection(l10n, settings.value),
-                    SectionHeader(l10n.settingsSectionOther),
-                    LinkRow(
-                      label: l10n.settingsAccessKey,
-                      value: hasKey ? l10n.settingsAccessKeySaved : null,
-                      description: l10n.settingsAccessKeyDesc,
-                      onTap: widget.onOpenAccessKey,
-                    ),
-                    LinkRow(
-                      label: l10n.settingsDataSources,
-                      description: l10n.settingsDataSourcesDesc,
-                      onTap: widget.onOpenDataSources,
-                    ),
-                  ],
+                      LinkRow(
+                        label: l10n.settingsDataSources,
+                        description: l10n.settingsDataSourcesDesc,
+                        onTap: widget.onOpenDataSources,
+                      ),
+                    ],
+                  ),
                 ),
               ),
               const FooterLine(child: _AppVersionText()),
@@ -386,15 +391,26 @@ class _KeyboardDoneBar extends StatelessWidget {
       color: AppColors.surface,
       border: Border(top: BorderSide(color: AppColors.border, width: 0.5)),
     ),
-    child: Center(
-      child: TextButton(
-        onPressed: () => FocusManager.instance.primaryFocus?.unfocus(),
-        child: Text(
-          label,
-          style: const TextStyle(
-            color: AppColors.text,
-            fontSize: AppFontSize.body,
-            fontWeight: FontWeight.w600,
+    // RN처럼 위아래 8만 두어 낮게 그린다. 누르는 영역은 줄 전체다
+    child: Semantics(
+      button: true,
+      child: GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(
+            horizontal: AppSpacing.lg,
+            vertical: AppSpacing.sm,
+          ),
+          child: Center(
+            child: Text(
+              label,
+              style: const TextStyle(
+                color: AppColors.text,
+                fontSize: AppFontSize.body,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
           ),
         ),
       ),
