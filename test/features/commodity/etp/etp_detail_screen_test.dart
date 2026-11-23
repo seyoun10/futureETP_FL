@@ -64,6 +64,11 @@ void main() {
     ]) {
       expect(find.text(text), findsOneWidget, reason: text);
     }
+    // RN 링크처럼 글자 + 위아래 8만큼만 높다(최소 터치 높이 44를 두지 않음)
+    expect(
+      tester.getSize(find.byKey(const Key('etp-open-issuer'))).height,
+      lessThan(40),
+    );
     await tester.tap(find.byKey(const Key('etp-open-issuer')));
     expect(_opened, [Uri.parse('https://www.proshares.com/')]);
   });

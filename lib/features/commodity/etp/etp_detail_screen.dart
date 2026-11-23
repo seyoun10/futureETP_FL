@@ -104,7 +104,11 @@ class _Fields extends StatelessWidget {
           Align(
             alignment: Alignment.centerLeft,
             child: Padding(
-              padding: const EdgeInsets.only(bottom: AppSpacing.md),
+              // RN 링크는 목록 간격(md)에 위 여백 md를 더 둔다
+              padding: const EdgeInsets.only(
+                top: AppSpacing.md,
+                bottom: AppSpacing.md,
+              ),
               child: Semantics(
                 link: true,
                 child: TextButton(
@@ -113,9 +117,12 @@ class _Fields extends StatelessWidget {
                   style: TextButton.styleFrom(
                     backgroundColor: AppColors.surface,
                     foregroundColor: AppColors.text,
-                    minimumSize: const Size(0, AppSize.touchTarget),
+                    // RN `Pressable`처럼 글자 + 위아래 sm 여백만큼 높다(최소 높이 없음)
+                    minimumSize: Size.zero,
+                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                     padding: const EdgeInsets.symmetric(
                       horizontal: AppSpacing.lg,
+                      vertical: AppSpacing.sm,
                     ),
                     textStyle: const TextStyle(fontSize: AppFontSize.body),
                     shape: RoundedRectangleBorder(
