@@ -23,7 +23,7 @@ String formatRareLevel(double level) => level == level.roundToDouble()
 
 _Problem? _findProblem(List<double> values) {
   if (values.any((v) => !isValidRareLevel(v))) return _Problem.invalid;
-  if (values.toSet().length != values.length) return _Problem.duplicate;
+  if (hasDuplicateRareLevels(values)) return _Problem.duplicate;
   return null;
 }
 
@@ -134,7 +134,7 @@ class _RareLevelsInputState extends State<RareLevelsInput> {
       setState(() => _problem = problem);
       return;
     }
-    final sorted = [...values]..sort();
+    final sorted = values.map(roundRareLevel).toList()..sort();
     setState(() => _editing = false);
     _showLevels();
     var changed = false;

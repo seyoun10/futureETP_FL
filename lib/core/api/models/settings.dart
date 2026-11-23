@@ -27,6 +27,13 @@ bool isValidRareLevel(double level) =>
     level <= rareLevelMax &&
     (level * 10 - (level * 10).roundToDouble()).abs() < 1e-9;
 
+/// shared `rareLevelSchema`의 transform: 소수 첫째 자리로 반올림한 값.
+double roundRareLevel(double level) => (level * 10).roundToDouble() / 10;
+
+/// shared `rareLevelsSchema`: 반올림한 값으로 중복을 본다(1과 1.00000000001은 중복).
+bool hasDuplicateRareLevels(List<double> levels) =>
+    levels.map(roundRareLevel).toSet().length != levels.length;
+
 /// `GET·PATCH /v1/settings`: 헤더 기기의 설정(D-120).
 @freezed
 abstract class DeviceSettings with _$DeviceSettings {

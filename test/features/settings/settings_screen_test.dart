@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:futureetp/core/api/models/settings.dart';
 import 'package:futureetp/core/settings/display_settings.dart';
 import 'package:futureetp/core/theme/tokens.dart';
 import 'package:futureetp/features/settings/rare_levels_input.dart';
@@ -206,6 +207,12 @@ void main() {
       expect(parseRareLevel('1e1').isNaN, isTrue);
       expect(formatRareLevel(16), '16');
       expect(formatRareLevel(0.5), '0.5');
+    });
+
+    test('반올림한 값으로 중복을 본다(shared rareLevelsSchema)', () {
+      expect(hasDuplicateRareLevels([1, 1.00000000001, 2, 4, 8]), isTrue);
+      expect(hasDuplicateRareLevels([1, 1.1, 2, 4, 8]), isFalse);
+      expect(roundRareLevel(2.50000000001), 2.5);
     });
   });
 
