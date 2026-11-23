@@ -159,6 +159,9 @@ class _CommodityShellState extends ConsumerState<CommodityShell> {
   }
 }
 
+/// RN `@react-navigation/bottom-tabs` iOS 기본 탭바 높이(위 선 포함).
+const _rnTabBarHeight = 49.0;
+
 /// 하단 탭 줄. 선택한 탭은 기간 칩과 같이 둥근 `surfaceSelected` 배경에 흰 굵은 글자다.
 class _TabBar extends StatelessWidget {
   const new({required this.selected, required this.onSelect});
@@ -181,7 +184,11 @@ class _TabBar extends StatelessWidget {
         border: Border(top: BorderSide(color: AppColors.barSeparator)),
       ),
       child: Padding(
-        padding: const EdgeInsets.all(AppSpacing.xs),
+        // RN `BottomTabBar` 기본 높이 49(위 선 1 + 탭 44를 가운데 둔 위아래 2)
+        padding: const EdgeInsets.symmetric(
+          horizontal: AppSpacing.xs,
+          vertical: (_rnTabBarHeight - 1 - AppSize.touchTarget) / 2,
+        ),
         child: Row(
           children: [
             for (final tab in CommodityTab.values)
