@@ -225,9 +225,21 @@ String monthLabel(AppLocalizations l10n, int year, int month) =>
     month == 1 ? '$year' : l10n.chartMonth('$month');
 
 /// 차트 위 정보 줄 한 줄 높이(글자 크기 배율 반영). 봉·선은 줄 수만큼 비켜 그린다(D-117).
-double chartInfoLineHeight(BuildContext context) =>
-    MediaQuery.textScalerOf(context).scale(AppFontSize.caption) * 1.4 +
-    AppSpacing.xs * 2;
+/// RN은 정보 줄을 실제로 배치한 높이를 쓰므로, 같은 글자 스타일로 한 줄(한글 포함)을 재서 쓴다.
+double chartInfoLineHeight(BuildContext context) {
+  final painter = TextPainter(
+    text: TextSpan(
+      text: '가A',
+      style: DefaultTextStyle.of(context).style
+          .merge(const TextStyle(fontSize: AppFontSize.caption)),
+    ),
+    textDirection: TextDirection.ltr,
+    textScaler: MediaQuery.textScalerOf(context),
+  )..layout();
+  final height = painter.height;
+  painter.dispose();
+  return height + AppSpacing.xs * 2;
+}
 
 /// 이전 3년 받기 로딩 표시(RN `OlderDataIndicator`).
 class OlderIndicator extends StatelessWidget {
