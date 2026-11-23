@@ -115,6 +115,23 @@ void main() {
       );
     });
 
+    test('DisparityParams 쿼리', () {
+      final query = const DisparityParams(
+        basis: Basis.front,
+        ma: MaPeriod.ma50,
+        window: DistributionWindow.y5,
+        levels: [0.5, 1, 2.5, 4, 8],
+      ).toQuery();
+      expect(query['levels'], '0.5,1,2.5,4,8');
+      _expectValid('disparityQuery', query);
+      expect(
+        _schema('disparityQuery')
+            .validate({...query, 'levels': '1,,2'}, validateFormats: true)
+            .isValid,
+        isFalse,
+      );
+    });
+
     test('DeviceRegistration', () {
       final json = const DeviceRegistration(
         pushToken: null,
