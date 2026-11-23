@@ -37,6 +37,14 @@ void main() {
     );
   });
 
+  test('기기 시간대 변환은 tz.local이 아니라 기기 시간대를 따른다', () {
+    // TZDateTime을 돌려주면 toLocal()이 tz.local(UTC)로 바뀌어 기기에서 UTC 시각이 보였다
+    final instant = zonedTimeToInstant('2026-11-19', 10, 0, 'Asia/Seoul');
+    expect(instant, isNot(isA<tz.TZDateTime>()));
+    expect(deviceLocal(instant), DateTime.utc(2026, 11, 19, 1).toLocal());
+    expect(deviceLocal(instant).isUtc, isFalse);
+  });
+
   test('시각이 있는 일정은 그 시각의 로컬 날짜·시각으로 옮긴다', () {
     final halt = _ex(
       CalendarMarket.cme,

@@ -38,6 +38,9 @@ tz.Location _location(String name) {
 }
 
 /// [timeZone]의 벽시계 [date] [hour]:[minute] → UTC 시각. 서머타임 경계도 맞춘다.
+///
+/// 일반 [DateTime]으로 돌려준다. [tz.TZDateTime.toLocal]은 기기 시간대가 아니라
+/// `tz.local`(초기값 UTC)로 바꾸므로 [deviceLocal]이 UTC 시각을 내게 된다.
 DateTime zonedTimeToInstant(
   String date,
   int hour,
@@ -45,14 +48,18 @@ DateTime zonedTimeToInstant(
   String timeZone,
 ) {
   final d = DateTime.parse(date);
-  return tz.TZDateTime(
+  final zoned = tz.TZDateTime(
     _location(timeZone),
     d.year,
     d.month,
     d.day,
     hour,
     minute,
-  ).toUtc();
+  );
+  return DateTime.fromMicrosecondsSinceEpoch(
+    zoned.microsecondsSinceEpoch,
+    isUtc: true,
+  );
 }
 
 String _pad(int n) => n.toString().padLeft(2, '0');
