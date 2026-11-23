@@ -392,7 +392,7 @@ class _BaseDateControls extends StatelessWidget {
                   ),
                   child: Padding(
                     padding: const EdgeInsets.symmetric(
-                      horizontal: AppSpacing.md,
+                      horizontal: AppSpacing.sm,
                     ),
                     child: Center(
                       widthFactor: 1,

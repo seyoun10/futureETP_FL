@@ -258,5 +258,11 @@ void main() {
     expect(find.byType(TabMessage), findsOneWidget);
     expect(find.text('No contracts to show.'), findsOneWidget);
     expect(find.byKey(const Key('curve-base-date')), findsOneWidget);
+    // RN처럼 안내는 탭 맨 위(여백 lg)에 놓인다
+    expect(
+      tester.getTopLeft(find.text('No contracts to show.')).dy -
+          tester.getTopLeft(find.byType(TabMessage)).dy,
+      16,
+    );
   });
 }

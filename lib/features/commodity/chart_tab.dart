@@ -198,14 +198,16 @@ mixin ChartTabState<W extends ConsumerStatefulWidget> on ConsumerState<W> {
 int prependShift(String? oldFirst, List<String> dates) =>
     oldFirst == null ? -1 : dates.indexOf(oldFirst);
 
-/// 탭 가운데 안내 문구(없는 원자재, 값 없음).
+/// 탭 위쪽 가운데 안내 문구(없는 원자재, 값 없음).
 class TabMessage extends StatelessWidget {
   const new(this.text, {super.key});
 
   final String text;
 
   @override
-  Widget build(BuildContext context) => Center(
+  Widget build(BuildContext context) => Align(
+    // RN `ChartTabMessage`는 탭 맨 위에 가로 가운데로 놓인다
+    alignment: Alignment.topCenter,
     child: Padding(
       padding: const EdgeInsets.all(AppSpacing.lg),
       child: Text(
