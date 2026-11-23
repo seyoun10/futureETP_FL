@@ -1225,6 +1225,90 @@ abstract class AppLocalizations {
   /// In ko, this message translates to:
   /// **'운영 알림'**
   String get pushChannelOps;
+
+  /// A-a 제목(D-143)
+  ///
+  /// In ko, this message translates to:
+  /// **'휴장 달력'**
+  String get calendarTitle;
+
+  /// A title-bar [📅] 스크린 리더 이름
+  ///
+  /// In ko, this message translates to:
+  /// **'휴장 달력'**
+  String get calendarOpen;
+
+  /// No description provided for @calendarMonthTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'{year}년 {month}'**
+  String calendarMonthTitle(String year, String month);
+
+  /// 달 이름. month는 1~12
+  ///
+  /// In ko, this message translates to:
+  /// **'{month, select, 1{1월} 2{2월} 3{3월} 4{4월} 5{5월} 6{6월} 7{7월} 8{8월} 9{9월} 10{10월} 11{11월} 12{12월} other{{month}월}}'**
+  String calendarMonthName(String month);
+
+  /// 요일 약칭
+  ///
+  /// In ko, this message translates to:
+  /// **'{day, select, sun{일} mon{월} tue{화} wed{수} thu{목} fri{금} sat{토} other{}}'**
+  String calendarWeekday(String day);
+
+  /// 시장 이름
+  ///
+  /// In ko, this message translates to:
+  /// **'{market, select, CME{CME} KRX{KRX} NYSE{NYSE} other{{market}}}'**
+  String calendarMarket(String market);
+
+  /// 예외 종류. time은 기기 로컬 HH:mm(D-144)
+  ///
+  /// In ko, this message translates to:
+  /// **'{kind, select, CLOSED{휴장} HALT{휴장 ({time} 거래 중단)} EARLY_CLOSE{조기 마감 {time}} LATE_OPEN{개장 지연 {time}} other{}}'**
+  String calendarKind(String kind, String time);
+
+  /// No description provided for @calendarLegendToday.
+  ///
+  /// In ko, this message translates to:
+  /// **'오늘'**
+  String get calendarLegendToday;
+
+  /// No description provided for @calendarLegendClosed.
+  ///
+  /// In ko, this message translates to:
+  /// **'휴장'**
+  String get calendarLegendClosed;
+
+  /// No description provided for @calendarLegendShortened.
+  ///
+  /// In ko, this message translates to:
+  /// **'조기 마감·개장 지연'**
+  String get calendarLegendShortened;
+
+  /// No description provided for @calendarListDate.
+  ///
+  /// In ko, this message translates to:
+  /// **'{date} ({weekday})'**
+  String calendarListDate(String date, String weekday);
+
+  /// No description provided for @calendarNone.
+  ///
+  /// In ko, this message translates to:
+  /// **'휴장·단축 거래 없음'**
+  String get calendarNone;
+
+  /// No description provided for @calendarMissing.
+  ///
+  /// In ko, this message translates to:
+  /// **'{market} {year}년 휴장 정보가 아직 없습니다'**
+  String calendarMissing(String market, String year);
+
+  /// 날짜 칸 스크린 리더 문구 앞부분
+  ///
+  /// In ko, this message translates to:
+  /// **'{month} {day}일'**
+  String calendarCellDate(String month, String day);
 }
 
 class _AppLocalizationsDelegate

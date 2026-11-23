@@ -187,5 +187,19 @@
   "alertSettingsQuietNote": "Alerts during quiet hours are sent at the end time, only the rarest one per direction.",
   "alertSettingsGuide": "Checked every 15 minutes during trading hours; each level alerts at most once per CME trading day. You are alerted when today's candle wick touches a rare-level line on the chart (intraday touches, so alerts can fire more often than p%).",
   "pushChannelAlerts": "Market alerts",
-  "pushChannelOps": "Server alerts"
+  "pushChannelOps": "Server alerts",
+  "calendarTitle": "Market holidays",
+  "calendarOpen": "Market holidays",
+  "calendarMonthTitle": "{month} {year}",
+  "calendarMonthName": "{month, select, 1{January} 2{February} 3{March} 4{April} 5{May} 6{June} 7{July} 8{August} 9{September} 10{October} 11{November} 12{December} other{{month}}}",
+  "calendarWeekday": "{day, select, sun{Sun} mon{Mon} tue{Tue} wed{Wed} thu{Thu} fri{Fri} sat{Sat} other{}}",
+  "calendarMarket": "{market, select, CME{CME} KRX{KRX} NYSE{NYSE} other{{market}}}",
+  "calendarKind": "{kind, select, CLOSED{Closed} HALT{Closed (trading halts {time})} EARLY_CLOSE{Early close {time}} LATE_OPEN{Late open {time}} other{}}",
+  "calendarLegendToday": "Today",
+  "calendarLegendClosed": "Closed",
+  "calendarLegendShortened": "Early close / late open",
+  "calendarListDate": "{date} ({weekday})",
+  "calendarNone": "No holidays or shortened sessions",
+  "calendarMissing": "{market} {year} holidays are not available yet",
+  "calendarCellDate": "{month} {day}"
 }

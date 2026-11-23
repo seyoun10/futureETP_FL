@@ -504,5 +504,101 @@
   "@pushChannelAlerts": {
     "description": "Android 알림 채널 이름(OS 알림 설정에 보임, D-045)"
   },
-  "pushChannelOps": "운영 알림"
+  "pushChannelOps": "운영 알림",
+  "calendarTitle": "휴장 달력",
+  "@calendarTitle": {
+    "description": "A-a 제목(D-143)"
+  },
+  "calendarOpen": "휴장 달력",
+  "@calendarOpen": {
+    "description": "A title-bar [📅] 스크린 리더 이름"
+  },
+  "calendarMonthTitle": "{year}년 {month}",
+  "@calendarMonthTitle": {
+    "placeholders": {
+      "year": {
+        "type": "String"
+      },
+      "month": {
+        "type": "String"
+      }
+    }
+  },
+  "calendarMonthName": "{month, select, 1{1월} 2{2월} 3{3월} 4{4월} 5{5월} 6{6월} 7{7월} 8{8월} 9{9월} 10{10월} 11{11월} 12{12월} other{{month}월}}",
+  "@calendarMonthName": {
+    "description": "달 이름. month는 1~12",
+    "placeholders": {
+      "month": {
+        "type": "String"
+      }
+    }
+  },
+  "calendarWeekday": "{day, select, sun{일} mon{월} tue{화} wed{수} thu{목} fri{금} sat{토} other{}}",
+  "@calendarWeekday": {
+    "description": "요일 약칭",
+    "placeholders": {
+      "day": {
+        "type": "String"
+      }
+    }
+  },
+  "calendarMarket": "{market, select, CME{CME} KRX{KRX} NYSE{NYSE} other{{market}}}",
+  "@calendarMarket": {
+    "description": "시장 이름",
+    "placeholders": {
+      "market": {
+        "type": "String"
+      }
+    }
+  },
+  "calendarKind": "{kind, select, CLOSED{휴장} HALT{휴장 ({time} 거래 중단)} EARLY_CLOSE{조기 마감 {time}} LATE_OPEN{개장 지연 {time}} other{}}",
+  "@calendarKind": {
+    "description": "예외 종류. time은 기기 로컬 HH:mm(D-144)",
+    "placeholders": {
+      "kind": {
+        "type": "String"
+      },
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "calendarLegendToday": "오늘",
+  "calendarLegendClosed": "휴장",
+  "calendarLegendShortened": "조기 마감·개장 지연",
+  "calendarListDate": "{date} ({weekday})",
+  "@calendarListDate": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      },
+      "weekday": {
+        "type": "String"
+      }
+    }
+  },
+  "calendarNone": "휴장·단축 거래 없음",
+  "calendarMissing": "{market} {year}년 휴장 정보가 아직 없습니다",
+  "@calendarMissing": {
+    "placeholders": {
+      "market": {
+        "type": "String"
+      },
+      "year": {
+        "type": "String"
+      }
+    }
+  },
+  "calendarCellDate": "{month} {day}일",
+  "@calendarCellDate": {
+    "description": "날짜 칸 스크린 리더 문구 앞부분",
+    "placeholders": {
+      "month": {
+        "type": "String"
+      },
+      "day": {
+        "type": "String"
+      }
+    }
+  }
 }

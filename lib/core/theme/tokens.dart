@@ -32,6 +32,16 @@ abstract final class AppColors {
 
   /// [⚙] 알림 꺼짐 점.
   static const badge = Color(0xFFEF5350);
+
+  /// 휴장 달력 오늘 테두리(D-143).
+  static const today = Color(0xFFFFFFFF);
+}
+
+/// 휴장 달력 시장별 점·꼬리표 색(D-143). 등락 색·차트 선과 따로 본다.
+abstract final class MarketColors {
+  static const cme = Color(0xFFFFA726);
+  static const krx = Color(0xFF4FC3F7);
+  static const nyse = Color(0xFF81C784);
 }
 
 /// 차트 색.

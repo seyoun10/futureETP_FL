@@ -7,6 +7,7 @@ import 'package:futureetp/core/api/api_client.dart';
 import 'package:futureetp/core/api/models/calendar.dart';
 import 'package:futureetp/core/query/auto_refresh.dart';
 import 'package:futureetp/core/query/keep_alive.dart';
+import 'package:futureetp/features/calendar/local_schedule.dart';
 import 'package:material_ui/material_ui.dart';
 
 /// 달력 조회 범위. `YYYY-MM-DD`(포함).
@@ -70,3 +71,6 @@ calendarProvider = AsyncNotifierProvider.autoDispose
     .family<CalendarNotifier, MarketCalendar, CalendarRange>(
       CalendarNotifier.new,
     );
+
+/// UTC → 기기 벽시계 변환(FL-037). 위젯 테스트는 시간대를 고정한다.
+final calendarToLocalProvider = Provider<ToLocal>((ref) => deviceLocal);

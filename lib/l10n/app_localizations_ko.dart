@@ -676,4 +676,100 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get pushChannelOps => '운영 알림';
+
+  @override
+  String get calendarTitle => '휴장 달력';
+
+  @override
+  String get calendarOpen => '휴장 달력';
+
+  @override
+  String calendarMonthTitle(String year, String month) {
+    return '$year년 $month';
+  }
+
+  @override
+  String calendarMonthName(String month) {
+    String _temp0 = intl.Intl.selectLogic(month, {
+      '1': '1월',
+      '2': '2월',
+      '3': '3월',
+      '4': '4월',
+      '5': '5월',
+      '6': '6월',
+      '7': '7월',
+      '8': '8월',
+      '9': '9월',
+      '10': '10월',
+      '11': '11월',
+      '12': '12월',
+      'other': '$month월',
+    });
+    return '$_temp0';
+  }
+
+  @override
+  String calendarWeekday(String day) {
+    String _temp0 = intl.Intl.selectLogic(day, {
+      'sun': '일',
+      'mon': '월',
+      'tue': '화',
+      'wed': '수',
+      'thu': '목',
+      'fri': '금',
+      'sat': '토',
+      'other': '',
+    });
+    return '$_temp0';
+  }
+
+  @override
+  String calendarMarket(String market) {
+    String _temp0 = intl.Intl.selectLogic(market, {
+      'CME': 'CME',
+      'KRX': 'KRX',
+      'NYSE': 'NYSE',
+      'other': '$market',
+    });
+    return '$_temp0';
+  }
+
+  @override
+  String calendarKind(String kind, String time) {
+    String _temp0 = intl.Intl.selectLogic(kind, {
+      'CLOSED': '휴장',
+      'HALT': '휴장 ($time 거래 중단)',
+      'EARLY_CLOSE': '조기 마감 $time',
+      'LATE_OPEN': '개장 지연 $time',
+      'other': '',
+    });
+    return '$_temp0';
+  }
+
+  @override
+  String get calendarLegendToday => '오늘';
+
+  @override
+  String get calendarLegendClosed => '휴장';
+
+  @override
+  String get calendarLegendShortened => '조기 마감·개장 지연';
+
+  @override
+  String calendarListDate(String date, String weekday) {
+    return '$date ($weekday)';
+  }
+
+  @override
+  String get calendarNone => '휴장·단축 거래 없음';
+
+  @override
+  String calendarMissing(String market, String year) {
+    return '$market $year년 휴장 정보가 아직 없습니다';
+  }
+
+  @override
+  String calendarCellDate(String month, String day) {
+    return '$month $day일';
+  }
 }

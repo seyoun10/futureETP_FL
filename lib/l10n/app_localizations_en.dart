@@ -688,4 +688,100 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get pushChannelOps => 'Server alerts';
+
+  @override
+  String get calendarTitle => 'Market holidays';
+
+  @override
+  String get calendarOpen => 'Market holidays';
+
+  @override
+  String calendarMonthTitle(String year, String month) {
+    return '$month $year';
+  }
+
+  @override
+  String calendarMonthName(String month) {
+    String _temp0 = intl.Intl.selectLogic(month, {
+      '1': 'January',
+      '2': 'February',
+      '3': 'March',
+      '4': 'April',
+      '5': 'May',
+      '6': 'June',
+      '7': 'July',
+      '8': 'August',
+      '9': 'September',
+      '10': 'October',
+      '11': 'November',
+      '12': 'December',
+      'other': '$month',
+    });
+    return '$_temp0';
+  }
+
+  @override
+  String calendarWeekday(String day) {
+    String _temp0 = intl.Intl.selectLogic(day, {
+      'sun': 'Sun',
+      'mon': 'Mon',
+      'tue': 'Tue',
+      'wed': 'Wed',
+      'thu': 'Thu',
+      'fri': 'Fri',
+      'sat': 'Sat',
+      'other': '',
+    });
+    return '$_temp0';
+  }
+
+  @override
+  String calendarMarket(String market) {
+    String _temp0 = intl.Intl.selectLogic(market, {
+      'CME': 'CME',
+      'KRX': 'KRX',
+      'NYSE': 'NYSE',
+      'other': '$market',
+    });
+    return '$_temp0';
+  }
+
+  @override
+  String calendarKind(String kind, String time) {
+    String _temp0 = intl.Intl.selectLogic(kind, {
+      'CLOSED': 'Closed',
+      'HALT': 'Closed (trading halts $time)',
+      'EARLY_CLOSE': 'Early close $time',
+      'LATE_OPEN': 'Late open $time',
+      'other': '',
+    });
+    return '$_temp0';
+  }
+
+  @override
+  String get calendarLegendToday => 'Today';
+
+  @override
+  String get calendarLegendClosed => 'Closed';
+
+  @override
+  String get calendarLegendShortened => 'Early close / late open';
+
+  @override
+  String calendarListDate(String date, String weekday) {
+    return '$date ($weekday)';
+  }
+
+  @override
+  String get calendarNone => 'No holidays or shortened sessions';
+
+  @override
+  String calendarMissing(String market, String year) {
+    return '$market $year holidays are not available yet';
+  }
+
+  @override
+  String calendarCellDate(String month, String day) {
+    return '$month $day';
+  }
 }
