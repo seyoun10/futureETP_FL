@@ -90,4 +90,27 @@ void main() {
     expect(plainNumber(-1), '-1');
     expect(plainNumber(1.5), '1.5');
   });
+
+  test('이름순: 한국어 기기면 한글이 라틴 앞, 아니면 라틴이 앞이고 숫자·기호는 문자 앞이다', () {
+    final names = ['TIGER', '신한', 'kodex', '메리츠', '1x', 'ACE'];
+    List<String> sorted({required bool hangulFirst}) =>
+        [...names]
+          ..sort((a, b) => compareEtpName(a, b, hangulFirst: hangulFirst));
+    expect(sorted(hangulFirst: true), [
+      '1x',
+      '메리츠',
+      '신한',
+      'ACE',
+      'kodex',
+      'TIGER',
+    ]);
+    expect(sorted(hangulFirst: false), [
+      '1x',
+      'ACE',
+      'kodex',
+      'TIGER',
+      '메리츠',
+      '신한',
+    ]);
+  });
 }

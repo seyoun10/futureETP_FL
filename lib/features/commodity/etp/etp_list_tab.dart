@@ -52,9 +52,18 @@ class _EtpListTabState extends ConsumerState<EtpListTab> {
         onRetry: () => ref.invalidate(provider),
         builder: (context, data) {
           if (data.etps.isEmpty) return _Message(l10n.etpEmpty);
-          final rows = sortEtps(filterEtps(data.etps, _filters), _sort);
+          // RN `localeCompare`는 앱 언어가 아니라 기기 로캘을 따른다
+          final hangulFirst =
+              View.of(context).platformDispatcher.locale.languageCode == 'ko';
+          final rows = sortEtps(
+            filterEtps(data.etps, _filters),
+            _sort,
+            hangulFirst: hangulFirst,
+          );
           return ListView.builder(
             key: const Key('etp-list'),
+            // 기본값이면 상단 안전 영역만큼 띄운다. 탭 안이라 띄우지 않는다
+            padding: EdgeInsets.zero,
             itemCount: rows.isEmpty ? 2 : rows.length + 1,
             itemBuilder: (context, i) {
               if (i == 0) {

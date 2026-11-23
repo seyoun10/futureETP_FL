@@ -40,18 +40,43 @@ int compareLeverage(double a, double b) {
 int _byMarket(EtpSummary a, EtpSummary b) =>
     a.market.index.compareTo(b.market.index);
 
-/// 이름순. RN `localeCompare`처럼 대소문자를 먼저 무시한다.
-int _byName(EtpSummary a, EtpSummary b) {
-  final folded = a.name.toLowerCase().compareTo(b.name.toLowerCase());
-  return folded != 0 ? folded : a.name.compareTo(b.name);
+/// 글자 갈래 순위. RN `localeCompare`(Hermes ICU, 기기 로캘)는 공백·기호 → 숫자 → 문자 순이고,
+/// 한국어 기기면 한글이 라틴보다 앞, 그 밖에는 라틴이 앞이다.
+int _scriptRank(int c, {required bool hangulFirst}) {
+  final isHangul = (c >= 0xAC00 && c <= 0xD7A3) || (c >= 0x3131 && c <= 0x318E);
+  final isLatin = (c >= 0x41 && c <= 0x5A) || (c >= 0x61 && c <= 0x7A);
+  final isDigit = c >= 0x30 && c <= 0x39;
+  if (isDigit) return 1;
+  if (isHangul) return hangulFirst ? 2 : 3;
+  if (isLatin) return hangulFirst ? 3 : 2;
+  return c > 0x7F ? 4 : 0;
+}
+
+/// 이름순. RN `localeCompare`처럼 대소문자를 먼저 무시하고 글자 갈래([_scriptRank]) 순으로 견준다.
+/// 한글 음절 코드는 가나다 순서라 같은 갈래 안에서는 코드 순서로 견준다.
+int compareEtpName(String a, String b, {required bool hangulFirst}) {
+  final x = a.toLowerCase().codeUnits;
+  final y = b.toLowerCase().codeUnits;
+  for (var i = 0; i < x.length && i < y.length; i++) {
+    if (x[i] == y[i]) continue;
+    final rank = _scriptRank(
+      x[i],
+      hangulFirst: hangulFirst,
+    ).compareTo(_scriptRank(y[i], hangulFirst: hangulFirst));
+    return rank != 0 ? rank : x[i].compareTo(y[i]);
+  }
+  final length = x.length.compareTo(y.length);
+  return length != 0 ? length : a.compareTo(b);
 }
 
 /// 기본: 시장(KRX → US), 배수, 이름순(screens.md C-d).
-int _byDefault(EtpSummary a, EtpSummary b) {
+int _byDefault(EtpSummary a, EtpSummary b, {required bool hangulFirst}) {
   final market = _byMarket(a, b);
   if (market != 0) return market;
   final leverage = compareLeverage(a.leverage, b.leverage);
-  return leverage != 0 ? leverage : _byName(a, b);
+  return leverage != 0
+      ? leverage
+      : compareEtpName(a.name, b.name, hangulFirst: hangulFirst);
 }
 
 /// 큰 순서이고 값이 없으면 뒤로.
@@ -71,9 +96,16 @@ int _byValueDesc(double? a, double? b) => switch ((a, b)) {
     };
 
 /// 순자산·거래대금은 통화가 달라 시장 안에서만 정렬한다(D-017).
-List<EtpSummary> sortEtps(List<EtpSummary> etps, EtpSort sort) {
+/// [hangulFirst]는 이름순에서 한글을 라틴보다 앞에 둔다(RN처럼 기기 로캘이 한국어일 때).
+List<EtpSummary> sortEtps(
+  List<EtpSummary> etps,
+  EtpSort sort, {
+  bool hangulFirst = false,
+}) {
+  int byDefault(EtpSummary a, EtpSummary b) =>
+      _byDefault(a, b, hangulFirst: hangulFirst);
   final sorted = [...etps];
-  if (sort == EtpSort.byDefault) return sorted..sort(_byDefault);
+  if (sort == EtpSort.byDefault) return sorted..sort(byDefault);
   return sorted..sort((a, b) {
     final market = _byMarket(a, b);
     if (market != 0) return market;
@@ -81,7 +113,7 @@ List<EtpSummary> sortEtps(List<EtpSummary> etps, EtpSort sort) {
       sortValue(a, sort).value,
       sortValue(b, sort).value,
     );
-    return value != 0 ? value : _byDefault(a, b);
+    return value != 0 ? value : byDefault(a, b);
   });
 }
 

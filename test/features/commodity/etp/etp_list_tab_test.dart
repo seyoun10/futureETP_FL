@@ -72,6 +72,24 @@ Future<void> _choose(WidgetTester tester, String control, String label) async {
 }
 
 void main() {
+  testWidgets('필터는 상단 안전 영역만큼 띄우지 않고 탭 맨 위에서 시작한다', (tester) async {
+    tester.view.padding = const FakeViewPadding(top: 186);
+    addTearDown(tester.view.resetPadding);
+    await _pump(tester, _list());
+    expect(tester.getTopLeft(find.byKey(const Key('etp-list'))).dy, 0);
+    expect(tester.getTopLeft(find.byKey(const Key('etp-filter-market'))).dy, 0);
+  });
+
+  testWidgets('기기 로캘이 한국어면 이름순에서 한글이 라틴보다 앞이다(RN localeCompare)', (
+    tester,
+  ) async {
+    tester.platformDispatcher.localeTestValue = const Locale('ko', 'KR');
+    addTearDown(tester.platformDispatcher.clearLocaleTestValue);
+    await _pump(tester, _list());
+    expect(_row(tester, 0).first, '메리츠 솔랙티브 금 선물 ETN(H)');
+    expect(_row(tester, 3).first, 'KODEX 골드선물(H)');
+  });
+
   testWidgets('기본 정렬: KRX 먼저, 배수·이름순. 행을 누르면 그 ETP를 연다', (tester) async {
     await _pump(tester, _list());
     expect(_row(tester, 0), ['KODEX 골드선물(H)', 'KRX · ETF · 1x · Hedged']);
