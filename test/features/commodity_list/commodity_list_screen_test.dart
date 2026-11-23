@@ -73,10 +73,12 @@ final Map<String, Object?> _settings = jsonDecode(
 /// 목록 응답을 차례로 꺼낸다(다 쓰면 마지막 것을 되풀이).
 late List<FakeResponse> _responses;
 var _listCalls = 0;
+var _calendarOpens = 0;
 String? _alertCommodity;
 
 Future<void> _pump(WidgetTester tester) async {
   _listCalls = 0;
+  _calendarOpens = 0;
   final adapter = FakeHttpAdapter((req) {
     if (req.path == '/settings') {
       return FakeResponse.ok({..._settings, 'alertCommodity': _alertCommodity});
@@ -104,6 +106,7 @@ Future<void> _pump(WidgetTester tester) async {
       child: testApp(
         home: CommodityListScreen(
           onOpenSettings: () {},
+          onOpenCalendar: () => _calendarOpens++,
           onOpenCommodity: (_) {},
         ),
       ),
@@ -181,6 +184,22 @@ void main() {
     expect(find.textContaining('Trade date 10/22'), findsOneWidget);
     // 알림 대상이 있으면 [⚙]에 점이 없다
     expect(find.byKey(const Key('header-badge')), findsNothing);
+  });
+
+  testWidgets('[📅]은 [⚙] 바로 왼쪽이고 누르면 햅틱과 함께 A-a로 간다', (tester) async {
+    await _pump(tester);
+    final calendar = find.bySemanticsLabel('Market holidays');
+    final settings = find.bySemanticsLabel('Settings');
+    expect(calendar, findsOneWidget);
+    expect(
+      tester.getCenter(calendar).dx,
+      lessThan(tester.getCenter(settings).dx),
+    );
+    final haptics = _haptics(tester);
+    await tester.tap(calendar);
+    await tester.pump();
+    expect(_calendarOpens, 1);
+    expect(haptics, ['HapticFeedbackType.selectionClick']);
   });
 
   testWidgets('알림 대상이 없으면 [⚙]에 빨간 점', (tester) async {

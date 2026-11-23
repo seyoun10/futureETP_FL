@@ -1,7 +1,7 @@
 # Architecture
 
 > Flutter 앱의 구조. API 규약·화면 동작은 원본(`../futureETP/docs/architecture.md`·`wireframes/screens.md`)을 따르고, 여기에는 이 앱의 구조와 대응만 적는다.
-> 디렉터리는 계획 구조다. 현재 있는 것은 `app/`(app·router), `core/config`, `core/api`, `core/storage`, `core/settings`, `core/theme`, `core/util`, `core/widgets`, `core/query`, `core/charts`, `features/access_key`, `features/commodity_list`, `features/calendar`(A-a, A에서 들어가는 버튼은 아직 없음), `features/commodity`(C 껍데기·C-a·C-b·C-c·C-d·C-d-a, 차트 탭 공통 `chart_tab.dart`), `features/settings`(B), `features/alert_settings`(B-a), `features/data_sources`, `l10n`이다.
+> 디렉터리는 계획 구조다. 현재 있는 것은 `app/`(app·router), `core/config`, `core/api`, `core/storage`, `core/settings`, `core/theme`, `core/util`, `core/widgets`, `core/query`, `core/charts`, `features/access_key`, `features/commodity_list`, `features/calendar`(A-a), `features/commodity`(C 껍데기·C-a·C-b·C-c·C-d·C-d-a, 차트 탭 공통 `chart_tab.dart`), `features/settings`(B), `features/alert_settings`(B-a), `features/data_sources`, `l10n`이다.
 
 ## 디렉터리 구조
 

@@ -5,6 +5,7 @@ import 'package:futureetp/core/api/access_key.dart';
 import 'package:futureetp/core/api/models/enums.dart';
 import 'package:futureetp/features/access_key/access_key_screen.dart';
 import 'package:futureetp/features/alert_settings/alert_settings_screen.dart';
+import 'package:futureetp/features/calendar/calendar_screen.dart';
 import 'package:futureetp/features/commodity/commodity_shell.dart';
 import 'package:futureetp/features/commodity/commodity_tab.dart';
 import 'package:futureetp/features/commodity/contract_chart/contract_chart_tab.dart';
@@ -23,6 +24,9 @@ import 'package:url_launcher/url_launcher.dart';
 /// 경로(RN Expo Router와 같은 경로, D-074).
 abstract final class AppRoutes {
   static const home = '/';
+
+  /// A-a 휴장 달력(D-143).
+  static const calendar = '/calendar';
   static const settings = '/settings';
   static const accessKey = '/settings/access-key';
   static const alerts = '/settings/alerts';
@@ -49,6 +53,7 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: AppRoutes.home,
         builder: (context, state) => CommodityListScreen(
           onOpenSettings: () => unawaited(context.push(AppRoutes.settings)),
+          onOpenCalendar: () => unawaited(context.push(AppRoutes.calendar)),
           onOpenCommodity: (code) {
             // 화면 전환 동안 C-a 조회를 먼저 시작한다. 실패는 화면이 다시 조회하고 보여 준다(RN prefetch)
             if (CommodityCode.fromWire(code) case final c?) {
@@ -71,6 +76,10 @@ final routerProvider = Provider<GoRouter>((ref) {
             ),
           ),
         ],
+      ),
+      GoRoute(
+        path: AppRoutes.calendar,
+        builder: (context, state) => const CalendarScreen(),
       ),
       GoRoute(
         path: AppRoutes.settings,

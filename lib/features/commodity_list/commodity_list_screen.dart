@@ -23,11 +23,15 @@ class CommodityListScreen extends ConsumerStatefulWidget {
   const new({
     super.key,
     required this.onOpenSettings,
+    required this.onOpenCalendar,
     required this.onOpenCommodity,
   });
 
   /// [⚙]. 라우트는 앱 계층이 갖는다.
   final VoidCallback onOpenSettings;
+
+  /// [📅] A-a 휴장 달력(D-143). [⚙] 바로 왼쪽이다.
+  final VoidCallback onOpenCalendar;
 
   /// 행을 누르면 C(C-a 탭)로 간다. 인자는 경로 코드(`GC`).
   final ValueChanged<String> onOpenCommodity;
@@ -85,6 +89,7 @@ class _CommodityListScreenState extends ConsumerState<CommodityListScreen> {
   Widget build(BuildContext context) {
     final query = ref.watch(commodityListProvider);
     final palette = ref.watch(upDownPaletteProvider);
+    final l10n = AppLocalizations.of(context);
     // 새로고침 중에는 헤더까지 터치를 막는다. 목록 위 인디케이터는 그대로 보인다
     return AbsorbPointer(
       absorbing: _refreshing,
@@ -94,7 +99,14 @@ class _CommodityListScreenState extends ConsumerState<CommodityListScreen> {
             ScreenHeader(
               title: 'futureETP',
               showBack: false,
-              actions: [SettingsHeaderButton(onPressed: widget.onOpenSettings)],
+              actions: [
+                HeaderIconButton(
+                  icon: Icons.calendar_month_outlined,
+                  label: l10n.calendarOpen,
+                  onPressed: widget.onOpenCalendar,
+                ),
+                SettingsHeaderButton(onPressed: widget.onOpenSettings),
+              ],
             ),
             Expanded(
               child: QueryStateView(

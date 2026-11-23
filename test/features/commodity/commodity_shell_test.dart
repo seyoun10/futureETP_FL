@@ -13,6 +13,7 @@ import 'package:futureetp/core/api/app_error.dart';
 import 'package:futureetp/core/config/app_config.dart';
 import 'package:futureetp/core/settings/device_settings.dart';
 import 'package:futureetp/core/settings/display_settings.dart';
+import 'package:futureetp/features/calendar/calendar_screen.dart';
 import 'package:futureetp/features/commodity/commodity_shell.dart';
 import 'package:futureetp/features/commodity/etp/etp_detail_screen.dart';
 import 'package:futureetp/features/commodity_list/commodity_list_screen.dart';
@@ -37,6 +38,7 @@ Future<ProviderContainer> _pump(WidgetTester tester) async {
   final adapter = FakeHttpAdapter(
     (req) => switch (req.path) {
       '/commodities' => FakeResponse.ok(_fixture('commodities')),
+      '/calendar' => FakeResponse.ok(_fixture('calendar')),
       '/commodities/GC/etps' => FakeResponse.ok(_fixture('etpList')),
       final p when p.startsWith('/etps/') => FakeResponse.ok(
         _fixture('etpDetail'),
@@ -83,6 +85,19 @@ void main() {
   setUp(() async {
     FlutterSecureStorage.setMockInitialValues({});
     _displayStore = await openTestDisplayStore();
+  });
+
+  testWidgets('A [📅]을 누르면 A-a로 가고 [←]로 돌아온다', (tester) async {
+    final c = await _pump(tester);
+    await tester.tap(find.bySemanticsLabel('Market holidays'));
+    await tester.pumpAndSettle();
+    // push라 위치는 A 그대로이고 A-a가 위에 쌓인다
+    expect(find.byType(CalendarScreen), findsOneWidget);
+
+    await tester.tap(find.bySemanticsLabel('Back'));
+    await tester.pumpAndSettle();
+    expect(find.byType(CalendarScreen), findsNothing);
+    expect(_location(c), '/');
   });
 
   testWidgets('A 행을 누르면 C-a 탭으로 가고, 탭·[←]로 오간다', (tester) async {
