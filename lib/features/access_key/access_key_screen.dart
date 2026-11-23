@@ -159,32 +159,40 @@ class _AccessKeyScreenState extends ConsumerState<AccessKeyScreen> {
                     child: Text(l10n.accessKeyScanQr),
                   ),
                 const SizedBox(height: AppSpacing.md),
-                TextField(
-                  key: const Key('access-key-input'),
-                  controller: _input,
-                  enabled: !_pending,
-                  // 키 값은 화면에 보여 주지 않는다(screens.md B-b)
-                  obscureText: true,
-                  autocorrect: false,
-                  enableSuggestions: false,
-                  textAlignVertical: TextAlignVertical.center,
-                  // RN과 같이 높이 44, 좌우 여백 12, 모서리 8
-                  decoration: InputDecoration(
-                    hintText: l10n.accessKeyPastePlaceholder,
-                    isDense: true,
-                    constraints: const BoxConstraints(
-                      minHeight: AppSize.touchTarget,
-                    ),
-                    contentPadding: const EdgeInsets.symmetric(
-                      horizontal: AppSpacing.md,
-                      vertical: AppSpacing.sm,
-                    ),
-                    border: _inputBorder,
-                    enabledBorder: _inputBorder,
-                    focusedBorder: _inputBorder,
-                    disabledBorder: _inputBorder,
+                // RN `TextInput`과 같이 높이 44 상자(모서리 8, surface) 안에
+                // 좌우 여백 12, 글자 14. InputDecorator 채움은 최소 높이까지
+                // 늘지 않아 상자를 따로 그린다
+                Container(
+                  height: AppSize.touchTarget,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: AppSpacing.md,
                   ),
-                  onSubmitted: (_) => canSubmit ? _submit() : null,
+                  alignment: Alignment.centerLeft,
+                  decoration: BoxDecoration(
+                    color: AppColors.surface,
+                    borderRadius: BorderRadius.circular(AppSpacing.sm),
+                  ),
+                  child: TextField(
+                    key: const Key('access-key-input'),
+                    controller: _input,
+                    enabled: !_pending,
+                    // 키 값은 화면에 보여 주지 않는다(screens.md B-b)
+                    obscureText: true,
+                    autocorrect: false,
+                    enableSuggestions: false,
+                    style: const TextStyle(
+                      color: AppColors.text,
+                      fontSize: AppFontSize.body,
+                    ),
+                    decoration: InputDecoration.collapsed(
+                      hintText: l10n.accessKeyPastePlaceholder,
+                      hintStyle: const TextStyle(
+                        color: AppColors.textSecondary,
+                        fontSize: AppFontSize.body,
+                      ),
+                    ),
+                    onSubmitted: (_) => canSubmit ? _submit() : null,
+                  ),
                 ),
                 const SizedBox(height: AppSpacing.md),
                 FilledButton.tonal(
@@ -224,13 +232,10 @@ final ButtonStyle _buttonStyle = FilledButton.styleFrom(
   foregroundColor: AppColors.text,
   disabledBackgroundColor: AppColors.surfaceSelected,
   disabledForegroundColor: AppColors.text,
+  // RN `Pressable`처럼 보이는 상자(44)만 차지한다
+  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
   textStyle: const TextStyle(fontSize: AppFontSize.body),
   shape: RoundedRectangleBorder(
     borderRadius: BorderRadius.circular(AppSpacing.sm),
   ),
-);
-
-final _inputBorder = OutlineInputBorder(
-  borderRadius: BorderRadius.circular(AppSpacing.sm),
-  borderSide: BorderSide.none,
 );

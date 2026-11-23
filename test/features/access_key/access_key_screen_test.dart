@@ -106,6 +106,23 @@ void main() {
     expect(tester.widget<FilledButton>(_submit).onPressed, isNull);
   });
 
+  testWidgets('입력 칸·버튼은 RN처럼 높이 44이고 사이가 12다', (tester) async {
+    await tester.pumpWidget(_app(_server()));
+    await tester.pumpAndSettle();
+    final input = tester.getRect(
+      find
+          .ancestor(
+            of: find.byKey(const Key('access-key-input')),
+            matching: find.byType(Container),
+          )
+          .first,
+    );
+    final submit = tester.getRect(_submit);
+    expect(input.height, 44);
+    expect(submit.height, 44);
+    expect(submit.top - input.bottom, 12);
+  });
+
   testWidgets('서버가 받은 키를 저장하고 A로 간다', (tester) async {
     final adapter = _server();
     await tester.pumpWidget(_app(adapter));
