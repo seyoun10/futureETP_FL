@@ -32,16 +32,18 @@ Map<String, Object?> _olderPage() {
 late Map<String, Object?> _settings;
 late List<RequestOptions> _chartRequests;
 
+/// 과거·최근 응답 지연(진행 중인 받기와 다시 조회가 겹치는 경우).
+Duration? _olderDelay;
+Duration? _latestDelay;
+
 ProviderContainer _container() {
   _chartRequests = [];
   final adapter = FakeHttpAdapter((req) {
     if (req.path == '/settings') return FakeResponse.ok(_settings);
     _chartRequests.add(req);
-    return FakeResponse.ok(
-      req.queryParameters.containsKey('before')
-          ? _olderPage()
-          : _fixture('disparityChart'),
-    );
+    return req.queryParameters.containsKey('before')
+        ? FakeResponse.ok(_olderPage(), delay: _olderDelay)
+        : FakeResponse.ok(_fixture('disparityChart'), delay: _latestDelay);
   });
   final c = ProviderContainer(
     retry: (_, _) => null,
@@ -66,7 +68,11 @@ final AsyncNotifierProvider<DisparityChartNotifier, DisparityData> _gc =
     disparityChartProvider(CommodityCode.gc);
 
 void main() {
-  setUp(() => _settings = _fixture('settings'));
+  setUp(() {
+    _settings = _fixture('settings');
+    _olderDelay = null;
+    _latestDelay = null;
+  });
 
   test('기기 설정 값으로 최근 3년을 받는다', () async {
     final c = _container();
@@ -109,6 +115,30 @@ void main() {
     expect(data.chart.bars, hasLength(63));
     expect(data.chart.hasMore, isFalse);
   });
+
+  // RN dfa05cf: 자동 새로고침이 진행 중인 과거 받기를 취소하지 않는다
+  for (final (name, older, latest) in [
+    ('다시 조회가 먼저 끝나도', 50, 10),
+    ('과거 받기가 먼저 끝나도', 10, 50),
+  ]) {
+    test('과거 받기 중 다시 조회해도 과거 봉이 남는다($name)', () async {
+      final c = _container();
+      await c.read(_gc.future);
+      _olderDelay = Duration(milliseconds: older);
+      _latestDelay = Duration(milliseconds: latest);
+
+      final loading = c.read(_gc.notifier).loadOlder();
+      c.invalidate(_gc);
+      final refreshed = c.read(_gc.future);
+      await Future.wait([loading, refreshed]);
+      await Future<void>.delayed(Duration.zero);
+
+      final chart = c.read(_gc).requireValue.chart;
+      expect(chart.bars, hasLength(63));
+      expect(chart.bars.first.tradeDate, '2023-01-03');
+      expect(chart.hasMore, isFalse);
+    });
+  }
 
   test('조건(설정)이 바뀌면 과거 봉을 버리고 새로 받는다', () async {
     final c = _container();
