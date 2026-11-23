@@ -427,3 +427,12 @@
   - 대상은 Flutter 쪽에 같은 이름·인자의 순수 함수가 있는 것만이다. 위젯·Riverpod·i18n을 거치는 함수(`upDownColor`는 RN 저장소 상태를 import)와 ETP 이름 정렬(RN `localeCompare`는 기기 ICU에 따라 다르다)은 넣지 않았다.
 - 근거: 임시로 돌렸을 때 실제 불일치를 찾았고, `tickDecimals` 보정을 빼면 세 테스트가 35~36개 불일치로 실패하는 것을 확인했다. 기준값 커밋은 FL-017 계약 테스트와 같은 방식이라 CI에서 그대로 돈다.
 - 영향: RN 쪽 대상 파일이 바뀌면 로컬 `./tool/check.sh`가 실패한다. `./tool/sync_rn_cross.sh` → `flutter test test/cross` → 다르면 Flutter를 RN에 맞추거나 RN 쪽 버그면 RN을 고친다. 다시 만들 때마다 약 600KB가 저장소 기록에 쌓인다.
+
+## FL-037: 휴장 달력 시각 변환 — 시장 시간대는 `timezone`, 기기 쪽은 `DateTime.toLocal`
+- 날짜: 2026-11-23
+- 상태: 확정
+- 맥락: D-144로 A-a가 시장 현지 날짜·시각(CT/KST/ET)을 기기 로컬로 옮긴다. RN은 `Intl.DateTimeFormat`의 IANA 시간대를 쓰는데, Dart 기본 라이브러리는 기기 시간대 밖의 IANA 시간대를 계산하지 못한다.
+- 결정: 시장 벽시계 → UTC는 `timezone` 패키지(`data/latest_10y`, 처음 쓸 때 한 번 불러옴)로 계산한다. UTC → 기기 로컬은 `DateTime.toLocal()`(OS 시간대)을 쓴다. "오늘"도 `DateTime.now()`라 같은 기준이다. 변환 함수(`ToLocal`)를 인자로 받아 테스트는 시간대를 고정한다(`lib/features/calendar/local_schedule.dart`).
+- 근거: `flutter_timezone`(FL-023)으로 기기 IANA 이름을 비동기로 받아 `timezone`에서 찾는 방법도 있지만, 읽지 못할 때의 대체 경로가 필요하고 결과는 OS 시간대와 같다. `latest_10y`는 전체 DB보다 작고, 달력 범위(이번 달~다다음 달)를 넉넉히 덮는다.
+- 영향: `pubspec.yaml`에 `timezone`. 10년 밖 날짜는 서머타임 규칙이 빠질 수 있으나 A-a는 3개월만 본다.
+
