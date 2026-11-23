@@ -12,6 +12,12 @@ const yLabelPad = 10.0;
 /// 차트 글자 크기(RN `CHART_FONT_SIZE`).
 const chartFontSize = 11.0;
 
+/// 십자선 라벨 상자 안쪽 여백(RN `CROSSHAIR_LABEL_PAD`).
+const crosshairLabelPad = 3.0;
+
+/// 십자선 라벨 상자 높이(RN `crosshairLabelHeight`). y축 라벨 겹침·잘림 판정에도 쓴다.
+const double crosshairLabelHeight = chartFontSize + crosshairLabelPad * 2;
+
 /// 가이드 점선(십자선·현재가·대표월물 전환일)의 선·빈칸 길이.
 const guideDash = (2.0, 2.0);
 

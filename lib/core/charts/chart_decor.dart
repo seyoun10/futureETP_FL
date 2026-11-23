@@ -207,7 +207,8 @@ void _yLabels(
   ChartDecor decor,
   List<PriceLabel> labels,
 ) {
-  final height = chartTextHeight;
+  // RN `YAxisLayer`처럼 글자 높이가 아닌 십자선 라벨 상자 높이로 겹침을 본다
+  const height = crosshairLabelHeight;
   final x = f.plot.right + 4;
   final special = stackLabels(
     [for (final l in labels) f.y(l.price)],
@@ -307,16 +308,25 @@ void _extremeTags(
 List<double> yTicks(ChartFrame f) =>
     f.range.ticks(f.priceAt(f.plot.bottom), f.priceAt(f.full.top), 6);
 
+/// x축 월 경계를 찾을 봉 구간. RN `XAxisLayer`처럼 봉 가운데 기준으로 화면 양끝 바로 바깥 봉까지
+/// 본다. 화면 밖 경계의 라벨은 화면 안쪽 끝으로 당겨 그린다(왼쪽 끝 `5월`).
+@visibleForTesting
+(int, int) xTickRange(ChartViewport v) => (
+  math.max(0, (v.start - 0.5).floor()),
+  math.min(v.count - 1, (v.end - 0.5).ceil()),
+);
+
 List<MonthTick> _xTicks(ChartFrame f, ChartDecor decor) {
   final v = f.viewport;
   final widest = [
     for (var m = 1; m <= 12; m++)
       chartText(decor.monthLabel(2000, m), ChartColors.tick).width,
   ].reduce(math.max);
+  final (i0, i1) = xTickRange(v);
   return monthTicks(
     decor.dates,
-    v.first,
-    v.last,
+    i0,
+    i1,
     (widest + _tickGap) / v.barWidth(f.plot.width),
   );
 }
