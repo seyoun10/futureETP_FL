@@ -55,7 +55,7 @@ flutter:
       fonts:
         - asset: assets/fonts/MaterialCommunityIcons.ttf
 
-# 앱 아이콘은 RN(../futureETP/apps/mobile/assets/images)과 같은 이미지. 바꾸면 dart run flutter_launcher_icons
+# 앱 아이콘은 RN(../futureETP_ReactNative/apps/mobile/assets/images)과 같은 이미지. 바꾸면 dart run flutter_launcher_icons
 flutter_launcher_icons:
   image_path: assets/icon/icon.png
   android: true

@@ -1,6 +1,6 @@
 # Architecture
 
-> Flutter 앱의 구조. API 규약·화면 동작은 원본(`../futureETP/docs/architecture.md`·`wireframes/screens.md`)을 따르고, 여기에는 이 앱의 구조와 대응만 적는다.
+> Flutter 앱의 구조. API 규약·화면 동작은 원본(`../futureETP_ReactNative/docs/architecture.md`·`wireframes/screens.md`)을 따르고, 여기에는 이 앱의 구조와 대응만 적는다.
 > 디렉터리는 계획 구조다. 현재 있는 것은 `app/`(app·router), `core/config`, `core/api`, `core/storage`, `core/settings`, `core/theme`, `core/util`, `core/widgets`, `core/query`, `core/charts`, `features/access_key`, `features/commodity_list`, `features/calendar`(A-a), `features/commodity`(C 껍데기·C-a·C-b·C-c·C-d·C-d-a, 차트 탭 공통 `chart_tab.dart`), `features/settings`(B), `features/alert_settings`(B-a), `features/data_sources`, `l10n`이다.
 
 ## 디렉터리 구조
@@ -52,7 +52,7 @@ docs/                            tech-stack, architecture, decisions
 
 ## RN 구조 대응
 
-| RN(`../futureETP/apps/mobile/src`) | 이 앱 |
+| RN(`../futureETP_ReactNative/apps/mobile/src`) | 이 앱 |
 |---|---|
 | `src/app/`(Expo Router) | `lib/app/router.dart`(go_router) |
 | `src/features/*` | `lib/features/*` |
@@ -66,7 +66,7 @@ docs/                            tech-stack, architecture, decisions
 
 ## D-번호 적용
 
-공통 결정은 `../futureETP/docs/decisions.md`. 이 앱에 어떻게 적용하는지만 나눈다.
+공통 결정은 `../futureETP_ReactNative/docs/decisions.md`. 이 앱에 어떻게 적용하는지만 나눈다.
 
 - 그대로 적용: 제품·화면·API·UX 결정. 예) D-001~D-026(제품), D-036·D-042·D-044·D-048·D-072(API·에러·접근 키·자동 새로고침), D-075~D-086, D-090~D-093, D-102~D-125, D-137~D-139(화면 동작)
 - 플랫폼 수단으로 바꿔 적용: D-030(상태·패칭), D-031(스타일·테마), D-033(i18n), D-041(레이어), D-043·D-052(변형), D-073(표시 설정 저장), D-087(차트 부품), D-128(deprecated API 금지 → 이 언어의 deprecated 경고를 오류로), D-039의 Android release 서명·ABI(FL-034)

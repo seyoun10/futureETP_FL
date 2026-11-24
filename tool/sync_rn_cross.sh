@@ -5,7 +5,7 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."
 root=$(pwd)
-rn=$(cd ../futureETP/apps/mobile && pwd)
+rn=$(cd ../futureETP_ReactNative/apps/mobile && pwd)
 out=test/cross/fixtures/rn_outputs.json
 mkdir -p "$(dirname "$out")"
 # RN 앱 폴더에서 돌려야 RN의 tsx·tsconfig·d3-scale을 쓴다

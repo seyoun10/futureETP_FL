@@ -1,6 +1,6 @@
 # 결정 기록 (Decision Log)
 
-> Flutter 앱의 결정과 근거를 시간순으로 추가한다. 번호는 `FL-xxx`이고 공통 결정 D-xxx(`../futureETP/docs/decisions.md`)와 겹치지 않는다.
+> Flutter 앱의 결정과 근거를 시간순으로 추가한다. 번호는 `FL-xxx`이고 공통 결정 D-xxx(`../futureETP_ReactNative/docs/decisions.md`)와 겹치지 않는다.
 > 번복 시 기존 항목은 지우지 말고 상태를 `대체됨`으로 바꾼다. 공통으로 바뀌어야 할 결정(제품·API·화면 동작)은 여기가 아니라 futureETP에 D-xxx로 적는다.
 
 <!--
@@ -19,7 +19,7 @@
 - 상태: 확정 (사용자 요청, D-141)
 - 맥락: 같은 서버로 RN·Flutter·Swift·Kotlin 앱 네 개를 만든다. 제품·화면·API 계약 문서를 저장소마다 둘지 정해야 했다.
 - 선택지: (a) futureETP 원본 + 상대경로 참조 (b) 저장소마다 복사 (c) 상위 공통 폴더로 이동
-- 결정: (a). 이 저장소는 `CLAUDE.md`·`TODO.md`·`docs/tech-stack.md`·`architecture.md`·`decisions.md`만 갖고, 나머지는 `../futureETP/...`를 읽는다. 두 저장소는 같은 상위 폴더(`_project/`)에 나란히 있어야 한다.
+- 결정: (a). 이 저장소는 `CLAUDE.md`·`TODO.md`·`docs/tech-stack.md`·`architecture.md`·`decisions.md`만 갖고, 나머지는 `../futureETP_ReactNative/...`를 읽는다. 두 저장소는 같은 상위 폴더(`_project/futureETP/`)에 나란히 있어야 한다.
 - 근거: 복사하면 제품 결정이 바뀔 때 네 곳을 고쳐야 해 어긋난다. 원본 변경은 futureETP가 이 저장소 `TODO.md`의 "원본 변경 반영"에 적는다.
 - 영향: `CLAUDE.md` "공통 문서", `TODO.md` "원본 변경 반영".
 
@@ -65,7 +65,7 @@
 ## FL-007: 응답 모델은 freezed 손 작성 + JSON Schema 계약 테스트
 - 날짜: 2026-11-19
 - 상태: 확정
-- 맥락: D-142로 계약이 `../futureETP/packages/shared/contract/schemas/*.json`(draft 2020-12)에 있다.
+- 맥락: D-142로 계약이 `../futureETP_ReactNative/packages/shared/contract/schemas/*.json`(draft 2020-12)에 있다.
 - 선택지: (a) `freezed` + `json_serializable`로 손 작성 + 계약 테스트 (b) 스키마에서 모델 자동 생성(quicktype 등)
 - 결정: (a) `freezed` 4.0.3·`freezed_annotation` 3.1.0·`json_serializable` 6.15.2·`json_annotation` 4.12.0·`build_runner` 2.17.1. 계약 테스트는 `json_schema` 5.2.2(draft 2020-12 지원)로 저장한 dev 서버 응답이 스키마를 통과하는지와 모델로 디코딩되는지를 함께 본다.
 - 근거: 스키마 생성 도구는 nullable·enum·`pattern` 표현이 거칠고 생성 결과를 손봐야 해 재생성이 어렵다. 스키마가 15개로 적어 손 작성 비용이 작고, 어긋남은 계약 테스트가 잡는다. 디코딩 실패는 `SCHEMA_MISMATCH`(D-042).
@@ -117,7 +117,7 @@
 ## FL-014: 원격 저장소와 CI
 - 날짜: 2026-11-19
 - 상태: 확정 (사용자 선택)
-- 결정: GitHub `seyoun10/futureETP_FL`(public, RN 저장소와 같음). `.github/workflows/check.yml`이 push(main)·PR마다 Ubuntu에서 Flutter 3.50.0으로 `./tool/check.sh`를 돌린다. 앱 빌드(Android·iOS)는 CI에서 하지 않는다.
+- 결정: GitHub `seyoun10/futureETP_Flutter`(public, RN 저장소와 같음). `.github/workflows/check.yml`이 push(main)·PR마다 Ubuntu에서 Flutter 3.50.0으로 `./tool/check.sh`를 돌린다. 앱 빌드(Android·iOS)는 CI에서 하지 않는다.
 - 근거: 개인 앱이고 설치는 로컬 빌드(D-039 대응)라 빌드 산출물이 필요 없다. 검사만 돌리면 Linux 러너 하나로 충분하다.
 - 보충(2026-11-20): `check.sh`가 맨 앞에서 build_runner를 돌려 `lib`의 `*.g.dart`·`*.freezed.dart`가 바뀌면 멈춘다. 모델 소스만 바꾸고 생성 파일을 다시 만들지 않은 커밋(`disparity_chart.dart`의 `flutter/foundation` import로 freezed 결과가 바뀐 일)을 CI가 못 잡았다. `git diff --exit-code`가 아니라 전후 해시 비교라 커밋 전 로컬에서도 생성만 했으면 통과한다. l10n 생성 파일(`lib/l10n/app_localizations*.dart`)은 `flutter pub get`이 `check.sh`보다 먼저 다시 만들어 이 방식으로는 못 잡으므로, 워크플로가 `pub get` 뒤에 `flutter gen-l10n`을 돌리고 `git status --porcelain -- lib/l10n`이 비어 있지 않으면 멈춘다(CI만, ARB만 커밋하고 생성 파일을 다시 만들지 않은 경우).
 - 영향: 로컬 Flutter를 올리면 워크플로의 `flutter-version`도 함께 올린다. 커밋된 파일에 비밀값을 두지 않는다(env/dev.json·google-services.json·서명 파일은 .gitignore).
@@ -149,7 +149,7 @@
 ## FL-017: 응답 모델 세부와 계약 테스트 배치
 - 날짜: 2026-11-19
 - 상태: 확정
-- 맥락: FL-007로 freezed 손 작성 + JSON Schema 계약 테스트를 정했다. CI는 이 저장소만 checkout해 `../futureETP`의 스키마를 읽을 수 없다.
+- 맥락: FL-007로 freezed 손 작성 + JSON Schema 계약 테스트를 정했다. CI는 이 저장소만 checkout해 `../futureETP_ReactNative`의 스키마를 읽을 수 없다.
 - 결정:
   - 모델은 `lib/core/api/models/`. 응답 9개(health는 손 작성 그대로)와 요청 본문 2개(`SettingsPatch`·`DeviceRegistration`, 손 작성 `toJson`).
   - 시각(`asOf` 등)은 `DateTime`, CME 거래일·월물(`YYYY-MM-DD`·`YYYY-MM`)은 `String`(달력 시각이 아님). 가격 등 number는 `double`, integer는 `int`.
@@ -394,7 +394,7 @@
 ## FL-034: Android release 빌드 — RN과 같은 서명 키, versionCode 10000 + 커밋 수, arm64-v8a만
 - 날짜: 2026-11-20
 - 상태: 확정 (기기 설치·RN 앱 위 덮어 설치는 기기 확인 때)
-- 맥락: TODO 6단계. 템플릿은 release를 debug 키로 서명한다. RN은 `~/.config/futureetp/android-release.jks`·`.properties`로 서명하고, `versionCode`는 커밋 수(`../futureETP`, 2026-11-20 502), 네이티브 라이브러리는 arm64-v8a만 넣는다(D-039 보충). 앱 ID가 같아(FL-002) 같은 키·더 큰 versionCode면 RN 앱 위에 덮어 설치된다(지우는 단계가 없다). 단 RN `expo-secure-store`·AsyncStorage와 Flutter `flutter_secure_storage`·`shared_preferences`는 저장 형식이 달라 접근 키·installation ID·표시 설정은 이어지지 않는다(FL-035).
+- 맥락: TODO 6단계. 템플릿은 release를 debug 키로 서명한다. RN은 `~/.config/futureetp/android-release.jks`·`.properties`로 서명하고, `versionCode`는 커밋 수(`../futureETP_ReactNative`, 2026-11-20 502), 네이티브 라이브러리는 arm64-v8a만 넣는다(D-039 보충). 앱 ID가 같아(FL-002) 같은 키·더 큰 versionCode면 RN 앱 위에 덮어 설치된다(지우는 단계가 없다). 단 RN `expo-secure-store`·AsyncStorage와 Flutter `flutter_secure_storage`·`shared_preferences`는 저장 형식이 달라 접근 키·installation ID·표시 설정은 이어지지 않는다(FL-035).
 - 결정:
   - `android/app/build.gradle.kts`의 `signingConfigs.release`가 RN과 같은 properties 파일(gradle 속성 `futureetp.signingProperties`로 바꿀 수 있음)을 읽는다. 파일이 없거나 필수 키(`storeFile`·`storePassword`·`keyAlias`·`keyPassword`)가 비면 release 작업에서 빌드를 멈춘다. `storeFile` 상대 경로는 properties 파일 위치 기준이다(RN과 같은 이유: debug 키 APK를 깔면 지우고 다시 깔아야 해서 접근 키가 사라진다).
   - `versionCode`는 `tool/build_android_release.sh`가 `--build-number`로 `10000 + git rev-list --count HEAD`를 넘긴다. main에서만 빌드해 단조 증가하고(스크립트가 main·앱 경로 커밋됨을 확인한다) RN 값(수백)보다 항상 커서 RN 앱 위에 덮어 설치된다. 반대로 RN 앱으로 돌아가려면 versionCode가 낮아 지우고 설치해야 한다.
@@ -419,7 +419,7 @@
 ## FL-036: RN 교차 테스트 — RN 순수 함수 결과를 기준값으로 커밋
 - 날짜: 2026-11-20
 - 상태: 확정
-- 맥락: 숫자 표기·차트 눈금처럼 화면에 바로 보이는 순수 함수는 RN과 결과가 같아야 한다. 손으로 고른 예시 테스트는 부동소수 경계를 놓친다. 2026-11-20 임시 교차 테스트에서 C-b y축 자릿수 불일치(4,000개 중 174개, `1.1` → `1.10`)를 찾았고, 같은 원인의 RN C-a 버그도 드러나 양쪽을 고쳤다(`../futureETP` `62ecbd7`). CI는 이 저장소만 checkout해 RN 코드를 돌릴 수 없다(FL-017과 같은 사정).
+- 맥락: 숫자 표기·차트 눈금처럼 화면에 바로 보이는 순수 함수는 RN과 결과가 같아야 한다. 손으로 고른 예시 테스트는 부동소수 경계를 놓친다. 2026-11-20 임시 교차 테스트에서 C-b y축 자릿수 불일치(4,000개 중 174개, `1.1` → `1.10`)를 찾았고, 같은 원인의 RN C-a 버그도 드러나 양쪽을 고쳤다(`../futureETP_ReactNative` `62ecbd7`). CI는 이 저장소만 checkout해 RN 코드를 돌릴 수 없다(FL-017과 같은 사정).
 - 결정:
   - `tool/rn_cross/generate.mts`가 고정 seed 난수 입력을 RN 함수(`formatNumber`·`formatAmount`·`chartPeriods`·`curveLayout`·`priceLabels`, d3 `scaleLinear`·`scaleLog` 눈금)에 넣어 결과를 `test/cross/fixtures/rn_outputs.json`(약 600KB)에 쓴다. `tool/sync_rn_cross.sh`가 RN 앱 폴더에서 RN의 tsx로 돌린다. 입력에는 반올림 경계(`1.005`, `x.5`)·부호·큰 수를 섞는다.
   - `test/cross/rn_cross_test.dart`가 같은 입력을 Flutter 함수에 넣어 비교한다. 눈금 값은 마지막 자리 오차(1e-9 상대)까지 같다고 보고, 문자열·자릿수·정수 결과는 정확히 같아야 한다. 다르면 처음 5개를 RN·Flutter 값과 함께 보인다.

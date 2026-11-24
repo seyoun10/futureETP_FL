@@ -19,7 +19,7 @@ import 'package:futureetp/core/api/models/settings.dart';
 import 'package:json_schema/json_schema.dart';
 
 const _schemaDir = 'test/contract/schemas';
-const _upstreamDir = '../futureETP/packages/shared/contract';
+const _upstreamDir = '../futureETP_ReactNative/packages/shared/contract';
 
 Object? _readJson(String path) => jsonDecode(File(path).readAsStringSync());
 

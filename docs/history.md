@@ -3,12 +3,12 @@
 > `TODO.md`에서 끝난 블록을 같은 절 이름 아래로 옮겨 둔다. 최신이 아래.
 
 ## 원본 변경 반영
-- [x] API 계약 JSON Schema 생성(2026-11-19, futureETP D-142): `../futureETP/packages/shared/contract/`. 3단계 응답 모델은 이 파일을 기준으로 한다(TODO 3단계 응답 모델 항목에 반영됨, 2026-11-19 확인)
+- [x] API 계약 JSON Schema 생성(2026-11-19, futureETP D-142): `../futureETP_ReactNative/packages/shared/contract/`. 3단계 응답 모델은 이 파일을 기준으로 한다(TODO 3단계 응답 모델 항목에 반영됨, 2026-11-19 확인)
 - [x] 레이어 import 방향 lint 강제(2026-11-19, futureETP D-041 변경): feature 간 import 금지, 공용 계층 → features·라우트 금지. `docs/architecture.md` "규칙"과 TODO 2단계에 반영됨 (2026-11-19 확인)
-- [x] 첫 로딩 가운데 스피너(2026-11-19, futureETP 527a3b2): 첫 조회 중 스켈레톤(공용 막대·차트 격자) 위 가운데에 큰 스피너를 겹친다. 차트 탭은 차트 자리 가운데이고, 데이터가 온 뒤 첫 기간 맞춤 전(차트를 감춘 동안)에도 띄운다(e94b2c2). `../futureETP/docs/wireframes/screens.md` 공통 로딩 항목. 공용 막대(`LoadingView`·`CenterSpinner`)는 넣음, 차트 격자 스켈레톤은 C-a와 함께 넣음(2026-11-19, `ChartSkeleton`). 첫 기간 맞춤은 첫 프레임 전에 끝나 감출 동안이 없다(FL-027)
+- [x] 첫 로딩 가운데 스피너(2026-11-19, futureETP 527a3b2): 첫 조회 중 스켈레톤(공용 막대·차트 격자) 위 가운데에 큰 스피너를 겹친다. 차트 탭은 차트 자리 가운데이고, 데이터가 온 뒤 첫 기간 맞춤 전(차트를 감춘 동안)에도 띄운다(e94b2c2). `../futureETP_ReactNative/docs/wireframes/screens.md` 공통 로딩 항목. 공용 막대(`LoadingView`·`CenterSpinner`)는 넣음, 차트 격자 스켈레톤은 C-a와 함께 넣음(2026-11-19, `ChartSkeleton`). 첫 기간 맞춤은 첫 프레임 전에 끝나 감출 동안이 없다(FL-027)
 - [x] 휴장 달력 일정을 기기 로컬로(2026-11-23, futureETP D-144, FL `local_schedule.dart`·FL-037): 예외 일정을 시장 날짜 대신 기기 로컬 날짜 칸에 둔다. 시각 있는 일정은 `at`(시장 현지)을, CLOSED는 정규 개장 시각(CME 전날 17:00 CT, KRX 09:00 KST, NYSE 09:30 ET)을 로컬로 바꾼 날짜. 목록과 날짜 칸 점은 로컬 시각순(휴장은 정규 개장 시각, 같은 시각은 시장 순). 문구 시각은 로컬 `HH:mm`이고 시간대 표기 없음(`calendar.kinds`의 `{{tz}}`·`calendar.timeZones` 삭제). 조회 범위를 앞뒤 하루씩 넓히고 3개월 밖 연도 `missing`은 숨김. 같은 날 같은 시장 점이 둘일 수 있음. futureETP `features/calendar/localSchedule.ts`, screens.md A-a
 - [x] rare 레벨 입력 규칙 강화(2026-11-21, futureETP 품질 검증 B2/D1·D3): rare 레벨은 소수 첫째 자리로 반올림한 값으로 중복을 본다(1과 1.00000000001은 중복). C-a `levels` query는 `^d+(.d+)?(,d+(.d+)?)*$`만 받는다(공백·`0x8`·`1e1` 거절, 계약 `disparityQuery`). 앱 입력 검증이 같은 규칙인지, 직렬화가 숫자 기본 문자열(`1`, `2.5`)인지 확인. 반영: 중복은 반올림 값으로 보고 반올림 값으로 저장(`hasDuplicateRareLevels`·`roundRareLevel`), 입력은 `^\d+(\.\d+)?$`, `levels` 직렬화는 `1`·`2.5`(`DisparityParams`, 41949c4)
-- [x] 휴장 달력 화면 A-a(2026-11-21, futureETP D-143): A title-bar [⚙] 왼쪽에 [📅](`calendar-month-outline`) → 이번 달~다다음 달 3개월 세로 달력, 오늘(기기 로컬)·CME/KRX/NYSE 휴장(채운 점)·조기 마감/개장 지연(빈 점)·달별 휴일 이름 목록·미입력 안내. API `GET /v1/calendar?from&to`(계약 `calendar`·`calendarQuery`), 색 `colors.market`·`today`, 문구 `calendar.*`. `../futureETP/docs/wireframes/screens.md` A-a. 캐시: 응답 `missing`이 비어 있으면 12시간, 있으면 5분 stale(화면 재진입·앱 복귀 때 다시 조회, 서버 import 뒤 재시작 없이 반영. futureETP `useMarketCalendar.ts`)
+- [x] 휴장 달력 화면 A-a(2026-11-21, futureETP D-143): A title-bar [⚙] 왼쪽에 [📅](`calendar-month-outline`) → 이번 달~다다음 달 3개월 세로 달력, 오늘(기기 로컬)·CME/KRX/NYSE 휴장(채운 점)·조기 마감/개장 지연(빈 점)·달별 휴일 이름 목록·미입력 안내. API `GET /v1/calendar?from&to`(계약 `calendar`·`calendarQuery`), 색 `colors.market`·`today`, 문구 `calendar.*`. `../futureETP_ReactNative/docs/wireframes/screens.md` A-a. 캐시: 응답 `missing`이 비어 있으면 12시간, 있으면 5분 stale(화면 재진입·앱 복귀 때 다시 조회, 서버 import 뒤 재시작 없이 반영. futureETP `useMarketCalendar.ts`)
   - [x] 모델·`getCalendar`·`calendarProvider`(캐시 규칙)
   - [x] 3개월 달력 화면·색 토큰·`calendar.*` 문구(D-144 로컬 날짜·시각 포함, `CalendarScreen`)
   - [x] A 제목 줄 [📅] 버튼·라우팅(`/calendar`)
@@ -35,7 +35,7 @@
 ## 3. 공통 기반
 - [x] installation ID(첫 실행 UUID) 생성·보안 저장소 보관 (D-120, FL-015)
 - [x] API client: 헤더(Bearer·`X-Device-Id`), 타임아웃 15초, 봉투 디코딩, `AppError`, 재시도 규칙 (D-042, D-072, FL-016). `UNAUTHORIZED` → B-b 이동은 접근 키 항목
-- [x] 응답 모델: `../futureETP/packages/shared/contract/schemas/*.json`과 맞춘 모델(손으로 또는 생성 도구) + 계약 테스트(실제 dev 서버 응답을 저장한 예시를 모델로 디코딩하고, 같은 예시가 JSON Schema를 통과하는지) (D-142, FL-017)
+- [x] 응답 모델: `../futureETP_ReactNative/packages/shared/contract/schemas/*.json`과 맞춘 모델(손으로 또는 생성 도구) + 계약 테스트(실제 dev 서버 응답을 저장한 예시를 모델로 디코딩하고, 같은 예시가 JSON Schema를 통과하는지) (D-142, FL-017)
 - [x] 접근 키 B-b: 붙여넣기·QR(`futureetp-key:v1:` 접두사), `GET /v1/settings`로 확인 뒤 저장, 키 없으면 첫 화면이 B-b, `UNAUTHORIZED`면 어느 화면에서든 B-b + 거절 줄 (D-044, D-077~D-079) (FL-018)
 - [x] i18n ko/en, 앱 안 언어 설정을 서버 기기 설정과 맞춤 (D-033, D-073, D-137). iOS 카메라 권한 문구 한국어(InfoPlist.strings, D-078 보충) (FL-019)
 - [x] 테마 토큰(다크 전용)·등락 색 설정 저장 (D-031, D-073) (FL-019, FL-020)
@@ -55,7 +55,7 @@
 - [x] C-b 월물커브: `GET /v1/commodities/:code/curve?baseDate`, 기준일 휠 시트, 이전·다음 기준일, [↻], 변화율 라벨 배치, 롤 수익률, 휴장일 옮김 안내 (D-090, D-091, D-114~D-123) (2026-11-20, FL-029. Android 에뮬레이터 API 37 dev 서버로 확인, Android도 휠 시트로 바꿈)
 - [x] C-d ETP 목록(필터·정렬은 앱에서)·C-d-a 상세: `GET /v1/commodities/:code/etps`·`GET /v1/etps/:id`, 세그먼트 필터·정렬 값, 수집 시각 줄, 시리즈 줄, 운용사 페이지 열기 (D-017, D-047) (2026-11-20, FL-030. 위젯 테스트로 확인, 기기 확인은 TODO에 남김)
 - [x] B 설정·B-a 알림 설정·데이터 출처: 직렬·낙관적 PATCH, rare-level 입력 검증·정렬 저장, [초기화], 알림 대상·거부 시간 시트, 알림 대상이 바뀌면 A 목록 다시 받기, B-b title-bar `ScreenHeader`, 앱 버전 줄 (D-081~D-083, D-124) (2026-11-20, FL-031. 위젯 테스트로 확인, 기기 확인은 TODO에 남김, 권한 배너는 FL-033)
-- [x] 화면별 세부 동작을 `../futureETP/docs/wireframes/screens.md`와 대조(A·B·B-a·B-b·C·C-a~C-d-a·공통 규칙, X 푸시는 5단계). 고친 차이: C-a·C-c 가로 격자·y 눈금·롤 음영을 위 정보 줄 뒤까지, C-a·C-c [↻]를 C-b와 같은 전체 폭 가운데로, C-a 기준값 안내를 둘째 줄 위에 띄움, C-a 저점대비·고점대비를 화면에 걸친 봉까지 셈(RN `visibleRange`) (D-117) (2026-11-20)
+- [x] 화면별 세부 동작을 `../futureETP_ReactNative/docs/wireframes/screens.md`와 대조(A·B·B-a·B-b·C·C-a~C-d-a·공통 규칙, X 푸시는 5단계). 고친 차이: C-a·C-c 가로 격자·y 눈금·롤 음영을 위 정보 줄 뒤까지, C-a·C-c [↻]를 C-b와 같은 전체 폭 가운데로, C-a 기준값 안내를 둘째 줄 위에 띄움, C-a 저점대비·고점대비를 화면에 걸친 봉까지 셈(RN `visibleRange`) (D-117) (2026-11-20)
 - [x] RN 앱과 iOS 시뮬레이터 화면 대조(2026-11-23, iPhone 17 두 대에 RN·FL dev를 나란히 띄워 A·A-a·B·B-a·B-b·데이터 출처·C-a~C-d-a 비교). 고친 차이: Material 3 글자 기하(줄 높이 1.43·자간 0.25)를 빼 줄 높이·자간을 RN과 같게(A 대표월물 ● 잘림 포함), C-d 목록 위 안전 영역 빈칸·기기 로캘 한국어면 한글 이름 먼저 정렬, C 탭바 높이 49, C-d-a 운용사 링크 크기, 차트 탭 안내 위쪽 배치·C-b 기준일 버튼 여백, y축 눈금 라벨 겹침 높이(글자 11 + 6)·x축 양끝 바깥 봉까지 월 경계, 아이콘을 RN과 같은 MDI 글꼴로(FL-038), B-a 거부 시간 줄 높이(iOS 스위치 31), B-b 입력 칸 44·글자 14·버튼 터치 여백. 남긴 차이: 한글 섞인 줄이 줄마다 0.67pt 높음(FL-039)
 - [x] iOS 실기기 확인(iPhone 14 Pro, prod Release, Personal Team 서명): C-a·C-b·C-c 핀치·드래그·십자선·햅틱·성능·기준일 휠 시트, B·B-a rare-level 키패드 [완료] 줄·끌어서 닫기·저장·오류 줄·거부 시간 시트·앱 버전 줄. Android는 TODO에 남김 (2026-11-23, FL-025, FL-027~FL-029, FL-031)
 

@@ -12,7 +12,7 @@ import 'package:futureetp/core/util/format_amount.dart';
 import 'package:futureetp/core/util/format_number.dart';
 
 const _fixturePath = 'test/cross/fixtures/rn_outputs.json';
-const _rnDir = '../futureETP/apps/mobile';
+const _rnDir = '../futureETP_ReactNative/apps/mobile';
 
 /// 차이를 보일 불일치 수.
 const _shownMismatches = 5;

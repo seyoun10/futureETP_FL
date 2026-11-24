@@ -1,6 +1,6 @@
 import 'package:json_annotation/json_annotation.dart';
 
-// 계약(`../futureETP/packages/shared/contract/schemas/*.json`)의 enum 값.
+// 계약(`../futureETP_ReactNative/packages/shared/contract/schemas/*.json`)의 enum 값.
 // 모르는 값은 디코딩 실패 → SCHEMA_MISMATCH(D-042).
 
 /// 원자재 코드(api.json `pathParams.code`).

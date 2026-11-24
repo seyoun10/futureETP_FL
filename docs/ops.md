@@ -1,6 +1,6 @@
 # 운영: 기기 설치·업데이트
 
-서버 운영(주소·접근 키 생성·dev 서버)은 원본 `../futureETP/docs/ops.md`. 이 문서는 Flutter 앱을 개인 기기에 까는 절차만 둔다.
+서버 운영(주소·접근 키 생성·dev 서버)은 원본 `../futureETP_ReactNative/docs/ops.md`. 이 문서는 Flutter 앱을 개인 기기에 까는 절차만 둔다.
 
 ## Android prod 변형 설치 (FL-034, FL-035)
 
@@ -9,7 +9,7 @@
 ### 처음 한 번
 
 1. 서명 키: `~/.config/futureetp/android-release.jks`·`android-release.properties`(RN과 같은 키, D-039). 없으면 release 빌드가 멈춘다
-2. FCM 설정: `cp ../futureETP/apps/mobile/google-services.json android/app/`
+2. FCM 설정: `cp ../futureETP_ReactNative/apps/mobile/google-services.json android/app/`
 3. 기기: 설정 > 휴대전화 정보 > 빌드 번호 7번 눌러 개발자 옵션 → USB 디버깅 켜기. USB로 연결하고 기기의 "USB 디버깅 허용"에 동의한다. 케이블 없이 하려면 개발자 옵션 > 무선 디버깅 → `adb pair <IP:페어링 포트>` → `adb connect <IP:포트>`
 4. `adb devices`에 기기가 `device`로 보이는지 확인한다
 

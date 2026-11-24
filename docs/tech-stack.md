@@ -2,7 +2,7 @@
 
 > Flutter 앱의 스택. 버전은 2026-11-19 pub.dev API 기준 최신 안정판이고, Flutter 3.50.0 임시 프로젝트에서 함께 해결되는 것을 확인했다.
 > 결정 근거는 `decisions.md`(FL-xxx)에 적고 여기에는 결과만 적는다. 버전은 확정할 때 웹 검색으로 최신 안정판을 확인하고 출처 날짜를 함께 적는다.
-> 서버·DB·배치는 `../futureETP/docs/tech-stack.md`(공용).
+> 서버·DB·배치는 `../futureETP_ReactNative/docs/tech-stack.md`(공용).
 
 상태: 확정 (2026-11-19). iOS 푸시는 5단계
 
@@ -35,7 +35,7 @@
 
 ## RN 스택과의 대응
 
-| RN(`../futureETP`) | 이 앱 |
+| RN(`../futureETP_ReactNative`) | 이 앱 |
 |---|---|
 | TanStack Query(서버 상태·캐시·자동 새로고침) | 상태 계층 + repository 캐시 |
 | Zustand persist(언어·등락 색) | 기기 설정 저장 |
