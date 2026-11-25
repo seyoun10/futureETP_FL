@@ -10,7 +10,7 @@
 |---|---|---|
 | SDK / 언어 | Flutter 3.50.0 (stable, 2026-11-09) · Dart 3.14.0 | `~/development/flutter` git clone, `flutter --version` 2026-11-19 확인 |
 | iOS 의존성 | Swift Package Manager(기본), 미지원 플러그인만 CocoaPods 대체 | FL-003 |
-| Android 빌드 | Zulu JDK 17(`flutter config --jdk-dir`), Android SDK 37(`compileSdk = 37`, FL-032), AVD `Pixel_API_36` | RN과 공유. `android/app/google-services.json`은 RN `apps/mobile`에서 복사(커밋 안 함) |
+| Android 빌드 | Zulu JDK 17(`flutter config --jdk-dir`), Android SDK 37(`compileSdk = 37`, FL-032), AVD `Medium_Phone_API_37.0`(전용) | JDK·SDK는 RN과 공유. `android/app/google-services.json`은 RN `apps/mobile`에서 복사(커밋 안 함) |
 | 상태 관리 | `flutter_riverpod` 3.5.0, 코드 생성 없음 | FL-004. `Notifier`·`AsyncNotifier`·family만 |
 | 내비게이션 | `go_router` 18.1.4 | FL-005. C 하단 탭은 `StatefulShellRoute.indexedStack` |
 | HTTP | `dio` 5.11.1 | FL-006. 재시도는 D-072대로 직접 구현 |

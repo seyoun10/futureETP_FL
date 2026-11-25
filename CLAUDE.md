@@ -80,6 +80,8 @@ Flutter로 만드는 futureETP 앱(Android·iOS). 기능·화면·동작은 RN �
 
 Flutter SDK는 `~/development/flutter`(stable, PATH는 `~/.zshrc`).
 
+전용 기기: iOS 시뮬레이터 `iPhone Air`(`xcrun simctl boot "iPhone Air"` 뒤 `flutter run -d "iPhone Air" …`), Android 에뮬레이터 `Medium_Phone_API_37.0`(`flutter emulators --launch Medium_Phone_API_37.0` 뒤 `flutter run -d emulator-<port> …`). 다른 저장소 기기에는 설치하지 않는다(앱 ID가 같아 덮어쓴다). 전체 배정은 `../CLAUDE.md`
+
 - `flutter pub get`: 의존성 설치(`generate: true`라 ARB 문구 코드 `lib/l10n/app_localizations*.dart`도 다시 만든다. 직접은 `flutter gen-l10n`)
 - `cp ../futureETP_ReactNative/apps/mobile/google-services.json android/app/`: Android 빌드 전 처음 한 번(FCM 설정, 커밋 안 함, FL-032)
 - `cp env/dev.example.json env/dev.json`: 처음 한 번. 값이 비면 에뮬레이터 기본 주소(Android `http://10.0.2.2:3000`, iOS `http://localhost:3000`)
@@ -97,4 +99,4 @@ Flutter SDK는 `~/development/flutter`(stable, PATH는 `~/.zshrc`).
 - `dart run flutter_launcher_icons`: 앱 아이콘 다시 만들기(`assets/icon`)
 - `dart run flutter_native_splash:create`: 실행 화면 다시 만들기(`assets/splash`, 설정은 `pubspec.yaml`)
 - dev 서버 실행은 `../futureETP_ReactNative`에서 `npm run dev -w apps/server`(port 3000)
-- 에뮬레이터에 RN dev 앱이 깔려 있으면 같은 앱 ID라 서명 충돌로 설치되지 않는다(FL-002). RN 앱을 지우거나 다른 AVD·시뮬레이터를 쓴다
+- 기기에 RN dev 앱이 깔려 있으면 같은 앱 ID라 서명 충돌로 설치되지 않는다(FL-002). 위 전용 기기를 쓰면 생기지 않는다
