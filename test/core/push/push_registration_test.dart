@@ -35,7 +35,7 @@ Future<(ProviderContainer, FakeHttpAdapter)> _container(
       storedAccessKeyProvider.overrideWithValue(key),
       pushServiceProvider.overrideWithValue(push),
       appVersionProvider.overrideWith(
-        (ref) async => (version: 'fl-1.0.0', build: '1'),
+        (ref) async => (version: '1.0.0', build: '1'),
       ),
       apiClientProvider.overrideWith((ref) {
         final key = ref.watch(accessKeyProvider.select((s) => s.key));

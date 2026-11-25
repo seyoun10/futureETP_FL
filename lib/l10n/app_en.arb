@@ -154,7 +154,7 @@
   "settingsAlertsDesc": "Commodity for rare-level alerts and quiet hours",
   "settingsAccessKeyDesc": "Secret key for connecting to the server",
   "settingsDataSourcesDesc": "Where prices and data come from",
-  "settingsAppVersion": "App version: {version} (build {build}) · {variant}",
+  "settingsAppVersion": "Flutter {variant}: {version} (build {build})",
   "dataSourcesFutures": "Futures prices",
   "dataSourcesEtp": "ETP",
   "dataSourcesExchangeLabel": "Exchange",

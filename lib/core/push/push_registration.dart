@@ -37,7 +37,8 @@ final pushRegistrationProvider = Provider<void>((ref) {
       DeviceRegistration(
         pushToken: token,
         platform: platform,
-        appVersion: version.version,
+        // 같은 서버를 쓰는 다른 클라이언트와 구분한다(FL-002)
+        appVersion: 'fl-${version.version}',
       ),
     );
   }

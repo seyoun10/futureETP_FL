@@ -45,7 +45,7 @@ class SettingsServer {
     displaySettingsStoreProvider.overrideWithValue(displayStore),
     storedAccessKeyProvider.overrideWithValue('key'),
     appVersionProvider.overrideWith(
-      (ref) async => (version: 'fl-1.0.0', build: '1'),
+      (ref) async => (version: '1.0.0', build: '1'),
     ),
     apiClientProvider.overrideWithValue(
       ApiClient(

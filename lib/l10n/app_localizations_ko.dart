@@ -564,7 +564,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String settingsAppVersion(String version, String build, String variant) {
-    return '앱 버전: $version (빌드 $build) · $variant';
+    return 'Flutter $variant: $version (빌드 $build)';
   }
 
   @override

@@ -14,6 +14,9 @@
   - [x] A 제목 줄 [📅] 버튼·라우팅(`/calendar`)
   - [x] 기기 확인: 3개월 달력 모양·스크롤·홈 인디케이터 여백, 스크린 리더 문구(iOS 시뮬레이터 2026-11-23. 일정 시각이 UTC로 나오던 것·월 제목에 목록 문구가 합쳐 읽히던 것 수정)
 
+- [x] 설정 키패드는 [완료]로만 닫기(2026-11-25, futureETP D-083 보충, `37e9fe5`): B rare-level 키패드를 화면을 끌거나 빈 곳을 눌러도 닫지 않는다. iOS는 키패드 위 [완료] 줄, Android는 키패드의 완료 키로만 닫고, 열린 채 다른 행을 누르면 그 행이 눌린다(futureETP `SettingsScreen.tsx` `keyboardDismissMode="none"`·`keyboardShouldPersistTaps="always"`). screens.md B. 반영: 목록의 끌어서 닫기·빈 곳 눌러 닫기를 뺌(FL-031)
+- [x] 설정 키패드가 입력칸을 가리지 않게(2026-11-25, futureETP D-083 보충, `a4e29c9`): B rare-level 키패드가 올라오면 포커스된 입력칸과 그 아래 안내 줄이 키패드·iOS [완료] 줄에 가리지 않도록 화면을 끌어올린다(futureETP `components/useKeepFocusedInputVisible.ts`: 입력칸 아래 + 48pt가 보이는 영역 아래를 넘은 만큼 스크롤). screens.md B. 반영: 키패드가 커지는 프레임마다 입력칸 틀 아래 + 48이 [완료] 줄 위(없으면 키패드 위)보다 아래면 그만큼 목록을 내림(`settings_screen.dart` `overlapToScroll`, FL-031)
+- [x] 설정 맨 아래 줄 머리에 클라이언트 구분·변형(2026-11-25, futureETP D-141, `ccb0eb3`·`7f00cb7`): 같은 앱 ID를 쓰는 앱 중 어느 것이, dev·prod 중 어느 변형이 떠 있는지 보이도록 B 맨 아래 줄을 `Flutter prod:`·`Flutter dev:`로 시작한다(RN은 `앱 번들:` → `RN prod:`, 네이티브 앱은 예: `Flutter prod: 1.0.0 (빌드 1)`). 줄은 한 줄 고정이라 글자 수를 늘리지 않는다. screens.md B 맨 아래 앱 번들 줄. 반영: `Flutter prod: 1.0.0 (빌드 1)`. `appVersionProvider`는 접두사 없는 버전, `PUT /v1/devices`에 보낼 때 `fl-`를 붙임(FL-031)
 ## 0. 환경
 - [x] Flutter SDK 설치(현재 Mac에 없음): 공식 안내대로 설치하고 `flutter doctor`가 Android·iOS 모두 통과하는지 확인
 - [x] `flutter config --jdk-dir`로 Zulu JDK 17(RN과 같은 JDK)을 쓰게 하고 Android SDK·에뮬레이터 `Pixel_API_36`은 RN과 함께 쓴다

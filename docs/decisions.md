@@ -356,8 +356,8 @@
 - 결정:
   - 저장(`core/settings/device_settings.dart`): `DeviceSettingsNotifier.patch`가 PATCH를 보낸 순서대로 하나씩 보내고(실패해도 다음은 감), 끝날 때까지 `pendingSettingsPatchesProvider`에 둔다. 화면·[⚙] 점은 서버 값 위에 끝나지 않은 변경을 얹은 `settingsViewProvider`를 읽는다. 서버 값에는 확인한 값만 두므로 실패한 변경은 그냥 빠진다. `save`는 실패를 `reportError`(D-079)로 알리고 에러를 돌려주며, 오류 줄은 화면마다 마지막 저장의 결과로 둔다(RN `useUpdateSettings` 훅마다의 `isError`).
   - A 목록은 서버가 확인한 `alertCommodity`가 바뀌면 다시 받는다(`CommodityListNotifier`가 설정을 listen, D-124). core가 feature를 import하지 않으려고 무효화를 목록 쪽에 둔다.
-  - rare-level(`features/settings/rare_levels_input.dart`): 다섯 칸이 모두 포커스를 잃거나 키패드가 내려가면(Android 뒤로 버튼처럼 포커스를 둔 채 내려간 경우 포함) 검증·정렬해 저장한다. 키패드는 목록을 끌거나(`keyboardDismissBehavior.onDrag`) iOS [완료] 줄·Android 완료 키로 닫는다. [완료] 줄은 화면 Stack에서 키패드 높이 위에 그린다. 화면은 키패드만큼 줄이지 않아 맨 아래 줄을 키패드가 덮는다.
-  - 맨 아래 줄은 OTA가 없어(D-039 EAS Update 적용 안 함) RN 앱 번들 줄 대신 `앱 버전: fl-1.0.0 (빌드 1) · dev`(설치한 빌드·변형)를 보인다. 버전은 `package_info_plus`(`core/config/app_version.dart`)로 읽고 5단계 `PUT /v1/devices`의 `appVersion`에도 쓴다.
+  - rare-level(`features/settings/rare_levels_input.dart`): 다섯 칸이 모두 포커스를 잃거나 키패드가 내려가면(Android 뒤로 버튼처럼 포커스를 둔 채 내려간 경우 포함) 검증·정렬해 저장한다. 키패드는 iOS [완료] 줄·Android 완료 키로만 닫는다(목록을 끌거나 빈 곳을 눌러도 닫지 않음, 2026-11-25 futureETP D-083 보충). 키패드가 커지는 프레임마다 포커스된 입력칸 틀 아래 + 48이 [완료] 줄 위(없으면 키패드 위)보다 아래면 그만큼 목록을 바로 내린다(RN `useKeepFocusedInputVisible`, 목록 아래 키패드만큼 여백이 스크롤 여유). Flutter 자체 caret 보이기는 화면을 키패드만큼 줄이지 않아 키패드를 모른다. [완료] 줄은 화면 Stack에서 키패드 높이 위에 그린다. 화면은 키패드만큼 줄이지 않아 맨 아래 줄을 키패드가 덮는다.
+  - 맨 아래 줄은 OTA가 없어(D-039 EAS Update 적용 안 함) RN 앱 번들 줄 대신 `Flutter dev: 1.0.0 (빌드 1)`(클라이언트 구분·변형·설치한 빌드, D-141, 2026-11-25 RN `RN prod:`에 맞춤)를 보인다. 버전은 `package_info_plus`(`core/config/app_version.dart`)로 읽고 5단계 `PUT /v1/devices`의 `appVersion`에는 `fl-`를 붙여 쓴다.
   - B-a 대상 원자재의 '없음'은 RN처럼 따로 값(`NONE`)을 두고, 조회 중에는 어느 칸도 고르지 않는다. 거부 시간 시트는 `showModalBottomSheet` 안 4열 48칸이다. 알림 권한 배너는 권한 조회가 푸시 등록과 묶여 5단계에서 붙인다.
   - B-b title-bar를 공용 `ScreenHeader`로 바꾸고, 처음 온 B-b(스택의 처음)는 [←]를 숨긴다(`context.canPop()`). 2단계 임시 화면 `features/dev_health`와 `devHealth*` 문구를 지웠다(FL-026).
   - 묶음 제목 `SectionHeader`와 저장 실패 줄 `SaveErrorLine`은 B·B-a·데이터 출처가 함께 써서 `core/widgets/section_header.dart`에 둔다.
