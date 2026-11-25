@@ -8,6 +8,7 @@
 마지막 대조: futureETP `17a2dfa`(2026-11-23). 적힌 항목 밖에 빠진 것이 있는지는 `git -C ../futureETP_ReactNative log --oneline 17a2dfa..HEAD -- apps/mobile packages/shared`로 그 뒤 커밋만 Flutter 커밋과 맞춰 본다. 다 보면 이 줄의 커밋을 그 HEAD로 바꾼다
 - [ ] 설정 키패드는 [완료]로만 닫기(2026-11-25, futureETP D-083 보충, `821b8c5`): B rare-level 키패드를 화면을 끌거나 빈 곳을 눌러도 닫지 않는다. iOS는 키패드 위 [완료] 줄, Android는 키패드의 완료 키로만 닫고, 열린 채 다른 행을 누르면 그 행이 눌린다(futureETP `SettingsScreen.tsx` `keyboardDismissMode="none"`·`keyboardShouldPersistTaps="always"`). screens.md B
 - [ ] 설정 키패드가 입력칸을 가리지 않게(2026-11-25, futureETP D-083 보충, `675fb8d`): B rare-level 키패드가 올라오면 포커스된 입력칸과 그 아래 안내 줄이 키패드·iOS [완료] 줄에 가리지 않도록 화면을 끌어올린다(futureETP `components/useKeepFocusedInputVisible.ts`: 입력칸 아래 + 48pt가 보이는 영역 아래를 넘은 만큼 스크롤). screens.md B
+- [ ] 설정 맨 아래 줄 머리에 클라이언트 구분(2026-11-25, futureETP D-141, `b16c6e7`): 같은 앱 ID를 쓰는 앱 중 어느 것이 설치됐는지 보이도록 B 맨 아래 줄을 `Flutter`로 시작한다(RN은 `앱 번들:` → `RN 번들:`, 네이티브 앱은 예: `Flutter 버전: 1.0.0 (빌드 1) · dev`). 줄은 한 줄 고정이라 글자 수를 늘리지 않는다. screens.md B 맨 아래 앱 번들 줄
 
 ## 4. 화면 수직 슬라이스 (RN 순서)
 - [ ] 기기 확인: 화면 구현을 먼저 마치고 나중에 한꺼번에 한다. Android는 `docs/ops.md`의 "Android 실기기 확인 체크리스트"대로 한다
