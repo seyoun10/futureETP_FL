@@ -1022,10 +1022,10 @@ abstract class AppLocalizations {
   /// **'시세와 데이터를 가져오는 곳'**
   String get settingsDataSourcesDesc;
 
-  /// B 최하단 줄. OTA가 없어 RN 앱 번들 줄 대신 설치한 빌드를 보인다(FL-031)
+  /// B 최하단 줄. 같은 앱 ID를 쓰는 앱과 구분하려고 클라이언트·변형으로 시작하고, OTA가 없어 RN 앱 번들 대신 설치한 빌드를 보인다(D-141, FL-031)
   ///
   /// In ko, this message translates to:
-  /// **'앱 버전: {version} (빌드 {build}) · {variant}'**
+  /// **'Flutter {variant}: {version} (빌드 {build})'**
   String settingsAppVersion(String version, String build, String variant);
 
   /// No description provided for @dataSourcesFutures.

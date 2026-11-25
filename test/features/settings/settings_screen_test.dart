@@ -97,7 +97,7 @@ void main() {
     expect(find.text('Off'), findsOneWidget);
     expect(find.text('Set'), findsOneWidget);
     expect(
-      find.textContaining('App version: fl-1.0.0 (build 1) · '),
+      find.textContaining(RegExp(r'^Flutter (dev|prod): 1\.0\.0 \(build 1\)$')),
       findsOneWidget,
     );
   });
@@ -276,17 +276,79 @@ void main() {
     expect(server.patches.single['rareLevels'], [1, 2, 4, 8, 20]);
   });
 
-  testWidgets('키패드가 열린 채 빈 곳을 누르면 닫고 저장, 다른 칸을 누르면 그대로다', (tester) async {
+  testWidgets('키패드는 끌거나 빈 곳을 눌러도 닫히지 않고, 다른 행은 눌린다', (tester) async {
     final server = await _pump(tester);
     await tester.tap(_field(4));
     await tester.enterText(_field(4), '20');
+    tester.view.viewInsets = const FakeViewPadding(bottom: 300);
+    addTearDown(tester.view.resetViewInsets);
+    await tester.pumpAndSettle();
+    bool focused() => tester.widget<TextField>(_field(4)).focusNode!.hasFocus;
+
     await tester.tap(find.text('US-style'));
     await tester.pumpAndSettle();
-    expect(FocusManager.instance.primaryFocus?.context?.widget, isNot(null));
-    expect(server.patches.where((p) => p.containsKey('rareLevels')), isEmpty);
+    expect(focused(), isTrue);
+    expect(_selected(tester, 'US-style'), isTrue);
 
     await tester.tap(find.text('Language for screens and push notifications'));
+    await tester.drag(find.byType(ListView), const Offset(0, -200));
     await tester.pumpAndSettle();
-    expect(server.patches.last['rareLevels'], [1, 2, 4, 8, 20]);
+    expect(focused(), isTrue);
+    expect(server.patches.where((p) => p.containsKey('rareLevels')), isEmpty);
+  });
+
+  group('키패드가 올라오면 입력칸이 가리지 않게 끌어올린다', () {
+    // 화면 높이 2400에서 입력칸이 키패드 위 영역 아래에 오도록 키패드를 높게 둔다
+    Future<void> openKeyboard(WidgetTester tester, double height) async {
+      await tester.tap(_field(0));
+      tester.view.viewInsets = FakeViewPadding(bottom: height);
+      addTearDown(tester.view.resetViewInsets);
+      await tester.pumpAndSettle();
+    }
+
+    double gapBelowInput(WidgetTester tester, double visibleBottom) =>
+        visibleBottom - tester.getRect(_field(0)).bottom;
+
+    for (final platform in [TargetPlatform.android, TargetPlatform.iOS]) {
+      testWidgets('${platform.name}: 칸 아래 + 48이 보인다', (tester) async {
+        await _pump(tester, platform: platform);
+        final before = tester.getRect(_field(0)).bottom;
+        // 칸 아래가 키패드 위보다 100 아래가 되게 한다
+        final keyboard = 2400 - before + 100;
+        await openKeyboard(tester, keyboard);
+        final visibleBottom = platform == TargetPlatform.iOS
+            // [완료] 줄 위
+            ? tester
+                  .getRect(
+                    find
+                        .ancestor(
+                          of: find.text('Done'),
+                          matching: find.byType(DecoratedBox),
+                        )
+                        .first,
+                  )
+                  .top
+            : 2400 - keyboard;
+        expect(
+          gapBelowInput(tester, visibleBottom),
+          greaterThanOrEqualTo(focusedInputGap - 0.01),
+        );
+      });
+    }
+
+    testWidgets('이미 보이면 움직이지 않는다', (tester) async {
+      await _pump(tester);
+      final before = tester.getRect(_field(0)).top;
+      await openKeyboard(tester, 300);
+      expect(tester.getRect(_field(0)).top, before);
+    });
+
+    test('가려진 만큼만 내린다', () {
+      const input = Rect.fromLTRB(0, 500, 48, 540);
+      expect(overlapToScroll(input, 600), 0);
+      expect(overlapToScroll(input, 588), 0);
+      expect(overlapToScroll(input, 550), 38);
+      expect(overlapToScroll(input, 550, gap: 0), 0);
+    });
   });
 }

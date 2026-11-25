@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math' as math;
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:futureetp/core/api/access_key.dart';
@@ -41,9 +42,79 @@ class SettingsScreen extends ConsumerStatefulWidget {
   ConsumerState<SettingsScreen> createState() => _SettingsScreenState();
 }
 
+/// 포커스된 입력칸 아래로 남길 여백. 칸 아래 안내 한 줄까지 보이게 한다(RN `FOCUSED_INPUT_GAP`).
+const double focusedInputGap = 48;
+
+/// 입력칸(`input`)과 그 아래 [gap]이 보이는 영역 아래(`visibleBottom`)를 넘은 만큼 더 내려야 할 거리.
+/// 안 가려지면 0(RN `overlapToScroll`).
+double overlapToScroll(
+  Rect input,
+  double visibleBottom, {
+  double gap = focusedInputGap,
+}) => math.max(0, input.bottom + gap - visibleBottom);
+
 class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   /// 이 화면에서 마지막으로 저장한 것의 실패. 새로 저장하면 지운다.
   Object? _saveError;
+
+  final _scroll = ScrollController();
+  final GlobalKey _listKey = GlobalKey();
+  final GlobalKey _doneBarKey = GlobalKey();
+  var _keyboard = 0.0;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // 키패드가 올라오는 동안 프레임마다 맞춰 입력칸이 키패드를 따라 올라가게 한다
+    final keyboard = MediaQuery.viewInsetsOf(context).bottom;
+    if (keyboard > _keyboard) {
+      WidgetsBinding.instance.addPostFrameCallback(
+        (_) => _keepFocusedInputVisible(),
+      );
+    }
+    _keyboard = keyboard;
+  }
+
+  @override
+  void dispose() {
+    _scroll.dispose();
+    super.dispose();
+  }
+
+  /// 포커스된 입력칸이 키패드(+ iOS [완료] 줄)에 가리면 목록을 그만큼 끌어올린다
+  /// (RN `useKeepFocusedInputVisible`). 보이는 영역 아래는 목록 아래와 [완료] 줄 위(없으면 키패드 위) 중
+  /// 높은 쪽이다. 목록 아래에 키패드만큼 여백을 둬 끌어올릴 여유가 있다.
+  void _keepFocusedInputVisible() {
+    final focused = FocusManager.instance.primaryFocus?.context;
+    if (!mounted || !_scroll.hasClients || _keyboard == 0 || focused == null) {
+      return;
+    }
+    if (Scrollable.maybeOf(focused)?.position != _scroll.position) return;
+    // RN처럼 안쪽 편집 영역이 아니라 입력칸 틀 전체로 잰다
+    RenderObject? input;
+    focused.visitAncestorElements((element) {
+      if (element.widget is! TextField) return true;
+      input = element.findRenderObject();
+      return false;
+    });
+    final list = _listKey.currentContext?.findRenderObject();
+    final box = input;
+    if (box is! RenderBox || list is! RenderBox) return;
+    Rect frame(RenderBox box) => box.localToGlobal(Offset.zero) & box.size;
+    final bar = _doneBarKey.currentContext?.findRenderObject();
+    final keyboardTop = bar is RenderBox
+        ? frame(bar).top
+        : MediaQuery.sizeOf(context).height - _keyboard;
+    final overlap = overlapToScroll(
+      frame(box),
+      math.min(frame(list).bottom, keyboardTop),
+    );
+    if (overlap <= 0) return;
+    final position = _scroll.position;
+    _scroll.jumpTo(
+      math.min(position.pixels + overlap, position.maxScrollExtent),
+    );
+  }
 
   void _save(SettingsPatch patch) {
     setState(() => _saveError = null);
@@ -125,49 +196,48 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 ],
               ),
               Expanded(
-                // 끌거나 빈 곳을 누르면 키패드를 닫는다. 키패드가 열린 채 다른 행을 누르면
-                // 그 행이 눌리고 키패드는 그대로다(RN keyboardShouldPersistTaps="handled")
-                child: GestureDetector(
-                  behavior: HitTestBehavior.translucent,
-                  onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
-                  child: ListView(
-                    keyboardDismissBehavior:
-                        ScrollViewKeyboardDismissBehavior.onDrag,
-                    padding: EdgeInsets.only(
-                      bottom: keyboard > 0 ? keyboard + AppSize.touchTarget : 0,
-                    ),
-                    children: [
-                      if (_saveError case final error?)
-                        SaveErrorLine(
-                          l10n.settingsSaveFailed(errorText(l10n, error)),
-                        ),
-                      ..._displaySection(l10n),
-                      SectionHeader(l10n.settingsSectionDisparity),
-                      if (settings case AsyncError(
-                        :final error,
-                        hasValue: false,
-                        isLoading: false,
-                      ))
-                        ErrorView(
-                          error: error,
-                          onRetry: () => ref.invalidate(deviceSettingsProvider),
-                        )
-                      else
-                        ..._disparitySection(l10n, settings.value),
-                      SectionHeader(l10n.settingsSectionOther),
-                      LinkRow(
-                        label: l10n.settingsAccessKey,
-                        value: hasKey ? l10n.settingsAccessKeySaved : null,
-                        description: l10n.settingsAccessKeyDesc,
-                        onTap: widget.onOpenAccessKey,
-                      ),
-                      LinkRow(
-                        label: l10n.settingsDataSources,
-                        description: l10n.settingsDataSourcesDesc,
-                        onTap: widget.onOpenDataSources,
-                      ),
-                    ],
+                // rare-level 키패드는 [완료](iOS 키패드 위 줄, Android 완료 키)로만
+                // 닫는다. 끌거나 빈 곳을 눌러도 닫히지 않고, 열린 채 다른 행을
+                // 누르면 그 행이 눌린다
+                // (RN keyboardDismissMode="none",
+                // keyboardShouldPersistTaps="always")
+                child: ListView(
+                  key: _listKey,
+                  controller: _scroll,
+                  padding: EdgeInsets.only(
+                    bottom: keyboard > 0 ? keyboard + AppSize.touchTarget : 0,
                   ),
+                  children: [
+                    if (_saveError case final error?)
+                      SaveErrorLine(
+                        l10n.settingsSaveFailed(errorText(l10n, error)),
+                      ),
+                    ..._displaySection(l10n),
+                    SectionHeader(l10n.settingsSectionDisparity),
+                    if (settings case AsyncError(
+                      :final error,
+                      hasValue: false,
+                      isLoading: false,
+                    ))
+                      ErrorView(
+                        error: error,
+                        onRetry: () => ref.invalidate(deviceSettingsProvider),
+                      )
+                    else
+                      ..._disparitySection(l10n, settings.value),
+                    SectionHeader(l10n.settingsSectionOther),
+                    LinkRow(
+                      label: l10n.settingsAccessKey,
+                      value: hasKey ? l10n.settingsAccessKeySaved : null,
+                      description: l10n.settingsAccessKeyDesc,
+                      onTap: widget.onOpenAccessKey,
+                    ),
+                    LinkRow(
+                      label: l10n.settingsDataSources,
+                      description: l10n.settingsDataSourcesDesc,
+                      onTap: widget.onOpenDataSources,
+                    ),
+                  ],
                 ),
               ),
               const FooterLine(child: _AppVersionText()),
@@ -179,7 +249,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               left: 0,
               right: 0,
               bottom: keyboard,
-              child: _KeyboardDoneBar(label: l10n.done),
+              child: _KeyboardDoneBar(key: _doneBarKey, label: l10n.done),
             ),
         ],
       ),
@@ -281,7 +351,8 @@ String windowLabel(AppLocalizations l10n, DistributionWindow window) =>
       DistributionWindow.all => l10n.settingsWindowAll,
     };
 
-/// 설치한 빌드(OTA가 없어 RN 앱 번들 줄 대신, FL-031).
+/// `Flutter prod: 1.0.0 (빌드 1)`. 같은 앱 ID를 쓰는 앱(D-141) 중 어느 것이, 어느 변형이 떠 있는지와
+/// 설치한 빌드를 보인다(OTA가 없어 RN 앱 번들 줄 대신, FL-031).
 class _AppVersionText extends ConsumerWidget {
   const new();
 
@@ -386,7 +457,7 @@ class LinkRow extends StatelessWidget {
 
 /// 키패드 위 [완료] 줄(iOS). 누르면 키패드를 닫고, 닫히면 rare-level을 검증·저장한다.
 class _KeyboardDoneBar extends StatelessWidget {
-  const new({required this.label});
+  const new({super.key, required this.label});
 
   final String label;
 

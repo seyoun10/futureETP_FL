@@ -576,7 +576,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String settingsAppVersion(String version, String build, String variant) {
-    return 'App version: $version (build $build) · $variant';
+    return 'Flutter $variant: $version (build $build)';
   }
 
   @override
