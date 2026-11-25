@@ -6,12 +6,13 @@
 
 ## 원본 변경 반영
 마지막 대조: futureETP `17a2dfa`(2026-11-23). 적힌 항목 밖에 빠진 것이 있는지는 `git -C ../futureETP_ReactNative log --oneline 17a2dfa..HEAD -- apps/mobile packages/shared`로 그 뒤 커밋만 Flutter 커밋과 맞춰 본다. 다 보면 이 줄의 커밋을 그 HEAD로 바꾼다
+- [ ] 설정 키패드는 [완료]로만 닫기(2026-11-25, futureETP D-083 보충, `821b8c5`): B rare-level 키패드를 화면을 끌거나 빈 곳을 눌러도 닫지 않는다. iOS는 키패드 위 [완료] 줄, Android는 키패드의 완료 키로만 닫고, 열린 채 다른 행을 누르면 그 행이 눌린다(futureETP `SettingsScreen.tsx` `keyboardDismissMode="none"`·`keyboardShouldPersistTaps="always"`). screens.md B
 
 ## 4. 화면 수직 슬라이스 (RN 순서)
 - [ ] 기기 확인: 화면 구현을 먼저 마치고 나중에 한꺼번에 한다. Android는 `docs/ops.md`의 "Android 실기기 확인 체크리스트"대로 한다
   - [ ] C-a·C-b·C-c Android 실기기 확인: 핀치·드래그·십자선 손동작, 햅틱 촉감, 성능, 기준일 휠 시트(FL-025·FL-027~FL-029. iOS는 끝남)
   - [ ] Android 실기기 prod 설치(`docs/ops.md`): RN 앱 위 덮어 설치, 알림이 두 번 오지 않는지(FCM 토큰 중복, FL-035)
-  - [ ] B·B-a Android 기기 확인: rare-level 키패드(완료 키·뒤로 버튼·끌어서 닫기), 저장·오류 줄, 거부 시간 시트, 앱 버전 줄(FL-031. iOS는 끝남)
+  - [ ] B·B-a Android 기기 확인: rare-level 키패드(완료 키·뒤로 버튼으로 닫힘, 끌어도 안 닫힘), 저장·오류 줄, 거부 시간 시트, 앱 버전 줄(FL-031. iOS는 끝남)
 
 ## 5. 푸시
 - [ ] iOS APNs 기기 토큰 등록(Apple 가입 뒤)
