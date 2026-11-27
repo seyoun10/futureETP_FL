@@ -1,6 +1,6 @@
 // RN 교차 테스트(FL-036). 같은 입력을 RN 순수 함수와 Flutter 함수에 넣어 결과가 같은지 본다.
 // fixtures/rn_outputs.json은 `tool/sync_rn_cross.sh`가 RN 코드로 만든 기준값이다.
-// 옆에 RN 저장소가 있으면 fixture를 만든 RN 원본이 지금과 같은지도 본다(CI는 건너뛴다).
+// 옆에 RN 저장소가 있으면 fixture를 만든 RN 원본이 지금과 같은지도 본다(CI도 RN 저장소를 함께 받는다).
 import 'dart:convert';
 import 'dart:io';
 
@@ -67,7 +67,7 @@ void main() {
           reason: '$key가 바뀌었다. tool/sync_rn_cross.sh로 다시 만든 뒤 차이를 맞춘다',
         );
       }
-    }, skip: rnExists ? false : 'RN 저장소 없음(CI)');
+    }, skip: rnExists ? false : 'RN 저장소 없음');
   });
 
   group('숫자 표기', () {

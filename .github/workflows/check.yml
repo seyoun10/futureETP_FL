@@ -1,4 +1,6 @@
 # 커밋 전 검사(./tool/check.sh)를 push·PR마다 다시 돌린다. 앱 빌드는 하지 않는다(FL-014).
+# 계약 테스트·RN 교차 테스트가 원본(../futureETP_ReactNative)을 읽으므로 원본 저장소 main을 형제 폴더로 함께 받는다.
+# 원본이 바뀌어 여기가 실패하면 TODO.md "원본 변경 반영" 대상이다.
 name: check
 
 on:
@@ -6,17 +8,29 @@ on:
     branches: [main]
   pull_request:
   workflow_dispatch:
+  # 원본이 바뀌어도 이 저장소 커밋이 없으면 돌지 않으므로 매일 한 번 main을 원본 최신과 다시 맞춰 본다(06:00 KST)
+  schedule:
+    - cron: "0 21 * * *"
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
   check:
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: futureETP_Flutter
     steps:
       - uses: actions/checkout@v7
+        with:
+          path: futureETP_Flutter
+      - uses: actions/checkout@v7
+        with:
+          repository: seyoun10/futureETP_ReactNative
+          path: futureETP_ReactNative
       # 로컬 SDK(docs/tech-stack.md)와 같은 버전. 로컬을 올리면 여기도 올린다
       - uses: subosito/flutter-action@v2
         with:
